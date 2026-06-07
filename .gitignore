@@ -13,3 +13,4 @@ telegram_post_state.json
 # OS
 .DS_Store
 Thumbs.db
+electron/node_modules/
