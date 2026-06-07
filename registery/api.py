@@ -9,6 +9,10 @@ app.mount('/ui', StaticFiles(directory='ui', html=True))
 app.mount("/notifications", __import__("registery.notifications").notifications.notifs)
 app.mount("/memory", __import__("registery.memory").memory.mem)
 app.mount('/processes', __import__('registery.processes').processes.procs)
+app.mount('/guardrails', __import__('registery.guardrails').guardrails.guardrails)
+app.mount('/github', __import__('registery.github').github.github)
+app.mount('/browser', __import__('registery.browser').browser.browser)
+app.mount('/portfolio', __import__('registery.portfolio').portfolio.portfolio)
 
 REGISTRY_PATH = 'skills'
 USERS_PATH = 'users'
@@ -97,9 +101,10 @@ def _parse_yaml_frontmatter(text: str) -> dict:
     if not text.startswith("---"):
         return out
     _, body, _ = text.split("---", 2)
-    for line in body.splitlines():
-        if ":" not in line:
+    for raw in body.splitlines():
+        if ":" not in raw:
             continue
+        line = raw.lstrip("\t").strip()
         k, v = line.split(":", 1)
         k, v = k.strip(), v.strip()
         if k == "tags":
