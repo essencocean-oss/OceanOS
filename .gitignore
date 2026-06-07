@@ -15,3 +15,4 @@ telegram_post_state.json
 Thumbs.db
 electron/node_modules/
 electron/dist/
+electron/dist/
