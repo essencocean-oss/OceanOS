@@ -134,9 +134,18 @@
       <div class="item" onclick="loadWorkflow()">Load workflow</div>
 
       <div class="section">Installed</div>
-      <div class="item">onboarding</div>
-      <div class="item">daily-brief</div>
-      <div class="item">crypto-trader</div>
+      <div class="item" onclick="openModule('guardrails')">🛡️ Guardrails / Approval</div>
+      <div class="item" onclick="openModule('github')">🐙 GitHub Integration</div>
+      <div class="item" onclick="openModule('browser')">🌐 Browser Automation</div>
+      <div class="item" onclick="openModule('portfolio')">📈 Portfolio Tracker</div>
+      <div class="item" onclick="openModule('memory')">🧠 Memory</div>
+      <div class="item" onclick="openModule('spawn')">🧩 Spawn Runtime</div>
+      <div class="item" onclick="openModule('onboarding')">👋 Onboarding</div>
+      <div class="item" onclick="openModule('daily-brief')">📰 Daily Brief</div>
+      <div class="item" onclick="openModule('crypto-trader')">📊 Crypto Trader</div>
+      <div class="item" onclick="openModule('solana-checkout')">💳 Solana Checkout</div>
+      <div class="item" onclick="openModule('telegram-poster')">📣 Telegram Poster</div>
+      <div class="item" onclick="openModule('x-poster')">🐦 X Poster</div>
     </div>
 
     <div class="center">
@@ -250,19 +259,36 @@ function boot(){
   fetch('http://localhost:8000/health')
     .then(r=>r.json()).then(d=>{ t.innerHTML += '\nRegistry OK: '+JSON.stringify(d); }).catch(()=>{ t.innerHTML += '\nRegistry not reachable.'; });
 }
-function runTerminal(){ alert('Terminal mode available in v0.2.0.'); }
+function runTerminal(){ alert('Terminal mode in v0.2.0.'); }
+
+function openModule(module){
+  const el=document.getElementById('chat-status');
+  if(el) el.innerHTML='Opening '+module+' module...';
+}
+
 function installSkill(){
   const name=prompt('Skill name?');
   if(!name) return;
   fetch('http://localhost:8000/skills/'+encodeURIComponent(name))
     .then(r=>r.ok?r.json():Promise.reject('not found'))
     .then(d=>{
-      document.getElementById('chat-status').innerHTML='Installed '+name;
+      const s=document.getElementById('chat-status'); if(s) s.innerHTML='Installed '+name;
       return fetch('http://localhost:8000/skills/'+encodeURIComponent(name)+'/download', {method:'POST'});
     })
-    .then(()=>{ alert('Download tracked'); })
-    .catch(()=>{ document.getElementById('chat-status').innerHTML='Skill not found in registry.'; });
+    .then(()=> alert('Download tracked'))
+    .catch(()=>{ const s=document.getElementById('chat-status'); if(s) s.innerHTML='Skill not found in registry.'; });
 }
+function refreshSkills(){
+  fetch('http://localhost:8000/skills')
+    .then(r=>r.json())
+    .then(d=>{
+      const t=document.getElementById('term');
+      if(!t) return;
+      t.innerHTML += '\\nSkills loaded: '+d.items.length;
+    })
+    .catch(()=>{});
+}
+setTimeout(refreshSkills, 1500);
 </script>
 </body>
 </html>
