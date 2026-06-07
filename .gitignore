@@ -23,3 +23,5 @@ electron/dist/
 electron/dist/
 electron/dist/
 electron/node_modules/
+electron/dist/
+electron/node_modules/
