@@ -11,3 +11,17 @@ REGISTRY_PATH = 'skills'
 USERS_PATH = 'users'
 WORKSPACES_PATH = 'workspaces'
 
+workflows = {}
+
+@app.post("/workflow")
+def save_workflow(data: dict):
+    name = data.get("name", "default")
+    skills = data.get("skills", [])
+    workflows[name] = {"skills": skills, "saved_at": datetime.utcnow().isoformat() + "Z"}
+    return {"saved": name, "skills": skills}
+
+@app.get("/workflow/{name}")
+def load_workflow(name: str):
+    if name not in workflows:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return workflows[name]
