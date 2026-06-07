@@ -247,7 +247,11 @@ function installSkill(){
   if(!name) return;
   fetch('http://localhost:8000/skills/'+encodeURIComponent(name))
     .then(r=>r.ok?r.json():Promise.reject('not found'))
-    .then(d=>{ document.getElementById('chat-status').innerHTML='Installed '+name; })
+    .then(d=>{
+      document.getElementById('chat-status').innerHTML='Installed '+name;
+      return fetch('http://localhost:8000/skills/'+encodeURIComponent(name)+'/download', {method:'POST'});
+    })
+    .then(()=>{ alert('Download tracked'); })
     .catch(()=>{ document.getElementById('chat-status').innerHTML='Skill not found in registry.'; });
 }
 </script>
