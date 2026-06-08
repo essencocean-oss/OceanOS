@@ -56,7 +56,9 @@ switch ($Action) {
         $result = Invoke-Commit -Files $has -Msg "chore: autonomous commit"
         if ($LASTEXITCODE -ne 0 -or $result.status -ne 'ok') { throw "Push failed`n$($result.push_output)" }
         try {
-            powershell -ExecutionPolicy Bypass -File (Join-Path $Root 'Run-HermesTask.ps1') notify "HermesOS push: $(git rev-parse --short HEAD) — $(($has -join ', '))"
+            $short = & $GitExe rev-parse --short HEAD
+            $list = ($has -join ', ')
+            powershell -ExecutionPolicy Bypass -File (Join-Path $Root 'Run-HermesTask.ps1') notify "HermesOS push: $short — $list"
         } catch {}
         $result
     }
@@ -77,7 +79,7 @@ os.makedirs("assets", exist_ok=True)
 img = Image.new("RGB", (800,400), color="white")
 d = ImageDraw.Draw(img)
 d.rectangle([50,50,300,150], fill="#e0e0e0", outline="#333", width=3)
-d.text((70,90), "' + ($Arg1 -replace '\"','\'"'"' ) + @'", fill="black")
+d.text((70,90), "placeholder", fill="black")
 d.rectangle([400,50,700,150], fill="#e0e0e0", outline="#333", width=3)
 d.text((420,90), "Terminal", fill="black")
 d.line((300,100,400,100), fill="#333", width=4)
@@ -106,10 +108,11 @@ class Report(FPDF):
         self.ln(2)
 pdf=Report()
 pdf.add_page()
-pdf.section('Status','$safe')
+pdf.section('Status','PLACEHOLDER')
 pdf.output('report.pdf')
 print('Wrote report.pdf')
 '@
+        $py = $py -replace 'PLACEHOLDER', [script]::escape($safe)
         Set-Content make_report.py -Value $py -Encoding UTF8
         python make_report.py
     }
