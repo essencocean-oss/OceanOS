@@ -13,6 +13,7 @@ app.mount('/guardrails', __import__('registery.guardrails').guardrails.guardrail
 app.mount('/github', __import__('registery.github').github.github)
 app.mount('/browser', __import__('registery.browser').browser.browser)
 app.mount('/portfolio', __import__('registery.portfolio').portfolio.portfolio)
+app.mount('/sandbox', __import__('registery.sandbox').sandbox.sandbox)
 
 REGISTRY_PATH = 'skills'
 USERS_PATH = 'users'
@@ -41,12 +42,17 @@ def rate_skill(name: str, data: dict):
     ratings[name].append({"user_id": user_id, "stars": stars})
     return {"name": name, "avg_stars": sum(r["stars"] for r in ratings[name]) / len(ratings[name])}
 
-@app.get("/skills/{name}/ratings")
+@app.get('/skills/{name}/ratings')
 def get_ratings(name: str):
     if name not in ratings:
         return {"name": name, "avg_stars": 0, "count": 0}
     arr = ratings[name]
     return {"name": name, "avg_stars": sum(r["stars"] for r in arr) / len(arr), "count": len(arr)}
+
+@app.get('/health')
+def health():
+    docker_cmd = os.environ.get('HERMES_DOCKER_CMD', 'docker')
+    return {'status': 'ok', 'service': 'hermesos-registry', 'sandbox': _docker_available() if shutil.which(docker_cmd) else False}
 
 @app.post("/skills/{name}/download")
 def track_download(name: str):
