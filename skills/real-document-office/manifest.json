@@ -1,0 +1,9 @@
+{
+  "name": "real-document-office",
+  "version": "0.1.0",
+  "description": "Create real office documents on Windows: DOCX, PDF, and ODT from Python. No Office install required.",
+  "author": "essencocean-oss",
+  "tags": ["office", "docx", "pdf", "odt", "documents", "windows"],
+  "price_cents": 0,
+  "license_key_required": false
+}
