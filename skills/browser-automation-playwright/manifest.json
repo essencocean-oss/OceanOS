@@ -1,0 +1,9 @@
+{
+  "name": "browser-automation-playwright",
+  "version": "0.1.0",
+  "description": "Browser automation with Playwright on Windows.",
+  "author": "essencocean-oss",
+  "tags": ["browser", "automation", "playwright", "windows"],
+  "price_cents": 0,
+  "license_key_required": false
+}
