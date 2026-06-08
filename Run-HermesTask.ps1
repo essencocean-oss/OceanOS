@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory=$true, Position=0)]
-    [ValidateSet('commit','run','generate-image','generate-pdf')]
+    [ValidateSet('commit','run','generate-image','generate-pdf','notify')]
     [string]$Action,
     [Parameter(Position=1)]
     [string]$Arg1
