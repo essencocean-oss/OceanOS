@@ -21,7 +21,7 @@
   <a href="README.es-LATAM.md">Español (LATAM)</a>
 </p>
 
-> **This project is in active development.** Features may change, and some things might break. If you run into a problem or have an idea, [open an issue](https://github.com/fathah/hermes-desktop/issues). Contributions are welcome!
+> **This project is in active development.** Features may change, and some things might break. If you run into a problem or have an idea, [open an issue](https://github.com/fathah/oceanos-desktop/issues). Contributions are welcome!
 
 OceanOS is a native desktop runtime for installing, configuring, working with, and extending [Hermes Agent](https://github.com/NousResearch/hermes-agent) — a self-improving AI assistant with tool use, multi-platform messaging, and a closed learning loop.
 
@@ -29,11 +29,11 @@ Instead of managing the CLI by hand, the app walks through install, provider set
 
 ## Sponsors
 
-<a href="https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=hermes-desktop" target="_blank" rel="noopener noreferrer">
+<a href="https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=oceanos-desktop" target="_blank" rel="noopener noreferrer">
     <img src="src/renderer/src/assets/logos/atlascloud.svg" alt="Atlas Cloud" height="100" style="display: block;">
   </a>
   
-  > **[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=hermes-desktop)** is a full-modal, OpenAI-compatible AI inference platform (DeepSeek, Qwen, GLM, Kimi, MiniMax, and more). Use it in Hermes Desktop by selecting **Atlas Cloud** as your provider — the base URL is pre-configured automatically.
+  > **[Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=oceanos-desktop)** is a full-modal, OpenAI-compatible AI inference platform (DeepSeek, Qwen, GLM, Kimi, MiniMax, and more). Use it in Hermes Desktop by selecting **Atlas Cloud** as your provider — the base URL is pre-configured automatically.
 
 ## Install
 
@@ -46,17 +46,17 @@ Instead of managing the CLI by hand, the app walks through install, provider set
 > **WSL users:** If the installer stalls at `Switching to root user to install dependencies...`, Playwright is waiting for a sudo password that has no TTY to read from. Grant passwordless sudo for the install, then revert when finished:
 >
 > ```bash
-> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
+> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/oceanos-install
 > # …re-run the installer; once it finishes:
-> sudo rm /etc/sudoers.d/hermes-install
+> sudo rm /etc/sudoers.d/oceanos-install
 > ```
 >
-> Tracked in [#109](https://github.com/fathah/hermes-desktop/issues/109).
+> Tracked in [#109](https://github.com/fathah/oceanos-desktop/issues/109).
 
 ### Fedora (RPM)
 
 ```bash
-sudo dnf install ./hermes-desktop-<version>.rpm
+sudo dnf install ./oceanos-desktop-<version>.rpm
 ```
 
 > **Fedora users:** The `.rpm` is not GPG-signed. If your system enforces signature checking, append `--nogpgcheck` to the install command. Auto-update is not supported for `.rpm` builds (limitation of `electron-updater`); reinstall the new `.rpm` to update.
@@ -149,7 +149,7 @@ In local mode, chat requests go through `http://127.0.0.1:8642` with SSE streami
 
 | Provider        | Notes                                                                                                                                                                               |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Atlas Cloud** | OpenAI-compatible gateway — DeepSeek, Qwen, GLM, Kimi, MiniMax and more ([atlascloud.ai](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=hermes-desktop)) |
+| **Atlas Cloud** | OpenAI-compatible gateway — DeepSeek, Qwen, GLM, Kimi, MiniMax and more ([atlascloud.ai](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=oceanos-desktop)) |
 
 ### LLM Providers
 
@@ -275,7 +275,7 @@ Hermes files are managed in:
 
 ## Contributing
 
-Contributions are welcome! Check out the [Contributing Guide](CONTRIBUTING.md) to get started. If you're not sure where to begin, take a look at the [open issues](https://github.com/fathah/hermes-desktop/issues). Found a bug or have a feature request? [File an issue](https://github.com/fathah/hermes-desktop/issues/new).
+Contributions are welcome! Check out the [Contributing Guide](CONTRIBUTING.md) to get started. If you're not sure where to begin, take a look at the [open issues](https://github.com/fathah/oceanos-desktop/issues). Found a bug or have a feature request? [File an issue](https://github.com/fathah/oceanos-desktop/issues/new).
 
 ## Related Project
 
