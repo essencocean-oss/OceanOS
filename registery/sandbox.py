@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 import os, json, shutil, subprocess
 
-sandbox = FastAPI(title='HermesOS Sandbox Registry')
+sandbox = FastAPI(title='OceanOS Sandbox Registry')
 REGISTRY_PATH = 'skills'
 DEFAULT_IMAGE = os.environ.get('HERMES_SANDBOX_IMAGE', 'python:3.11-slim')
 DOCKER_CMD = os.environ.get('HERMES_DOCKER_CMD', 'docker')

@@ -1,4 +1,4 @@
-# HermesOS — Server Runtime (Windows-native, no Docker)
+# OceanOS — Server Runtime (Windows-native, no Docker)
 
 ## Quick start
 ```powershell

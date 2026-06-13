@@ -1,7 +1,7 @@
 ---
 name: portfolio-tracker
 description: Crypto portfolio tracker using wallet + exchange balances and PnL math.
-author: HermesOS
+author: OceanOS
 tags:
   - crypto
   - wallet

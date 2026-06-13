@@ -22,6 +22,6 @@ Generate real documents without requiring Microsoft Office installation.
 
 ## Run
 ```powershell
-python skills\real-document-office\scripts\create_doc.py --title "Report" --body "Hello from HermesOS" --out report.docx
-python skills\real-document-office\scripts\create_doc.py --title "Report" --body "Hello from HermesOS" --out report.pdf
+python skills\real-document-office\scripts\create_doc.py --title "Report" --body "Hello from OceanOS" --out report.docx
+python skills\real-document-office\scripts\create_doc.py --title "Report" --body "Hello from OceanOS" --out report.pdf
 ```

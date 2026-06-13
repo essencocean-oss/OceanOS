@@ -17,5 +17,5 @@ def send_telegram(text):
     return {"ok": r.status_code == 200, "status": r.status_code}
 
 if __name__ == "__main__":
-    msg = sys.argv[1] if len(sys.argv) > 1 else "Hello from HermesOS skill engine"
+    msg = sys.argv[1] if len(sys.argv) > 1 else "Hello from OceanOS skill engine"
     print(send_telegram(msg))

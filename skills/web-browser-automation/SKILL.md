@@ -1,7 +1,7 @@
 ---
 name: web-browser-automation
 description: Browser automation for login flows, scraping, screenshots, and QA.
-author: HermesOS
+author: OceanOS
 tags:
   - browser
   - automation

@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import type { AuditRecord, GuardResult, ScanContext, ScanFinding, WindowsAdapter } from "./types";
 
-const AUDIT_PATH = path.resolve(process.env.HERMESOS_AUDIT ?? "logs/sentinel.audit.jsonl");
+const AUDIT_PATH = path.resolve(process.env.OCEANOS_AUDIT ?? "logs/sentinel.audit.jsonl");
 let auditReady = false;
 
 function hashFor(content: string): string {

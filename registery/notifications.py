@@ -4,7 +4,7 @@ from typing import Optional
 import json, os
 from datetime import datetime
 
-notifs = FastAPI(title='HermesOS Notifications')
+notifs = FastAPI(title='OceanOS Notifications')
 NOTIF_PATH = 'notifications.json'
 
 class Notification(BaseModel):

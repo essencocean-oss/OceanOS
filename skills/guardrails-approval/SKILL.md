@@ -1,7 +1,7 @@
 ---
 name: guardrails-approval
 description: Enforce command approval, secret redaction, and PII hashing rules.
-author: HermesOS
+author: OceanOS
 tags:
   - security
   - privacy

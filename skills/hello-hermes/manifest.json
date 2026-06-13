@@ -6,7 +6,7 @@
   "tags": ["example", "utility"],
   "price_cents": 0,
   "license_key_required": false,
-  "source_repo": "https://github.com/essencocean-oss/HermesOS",
+  "source_repo": "https://github.com/essencocean-oss/OceanOS",
   "entrypoint": "run.py",
   "permissions": ["terminal", "file"]
 }

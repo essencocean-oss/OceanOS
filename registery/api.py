@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os, json, shutil
 
-app = FastAPI(title='HermesOS Registry')
+app = FastAPI(title='OceanOS Registry')
 app.mount('/ui', StaticFiles(directory='ui', html=True))
 app.mount("/notifications", __import__("registery.notifications").notifications.notifs)
 app.mount("/memory", __import__("registery.memory").memory.mem)
@@ -55,7 +55,7 @@ def get_ratings(name: str):
 @app.get('/health')
 def health():
     docker_cmd = os.environ.get('HERMES_DOCKER_CMD', 'docker')
-    return {'status': 'ok', 'service': 'hermesos-registry', 'sandbox': False}
+    return {'status': 'ok', 'service': 'oceanos-registry', 'sandbox': False}
 
 @app.post("/skills/{name}/download")
 def track_download(name: str):
@@ -153,8 +153,8 @@ def list_skills():
         "github-integration": "https://github.com/NousResearch/hermes-agent",
         "guardrails-approval": "https://github.com/NousResearch/hermes-agent",
         "web-browser-automation": "https://github.com/NousResearch/hermes-agent",
-        "portfolio-tracker": "https://github.com/essencocean-oss/HermesOS",
-        "telegram-poster": "https://github.com/essencocean-oss/HermesOS",
+        "portfolio-tracker": "https://github.com/essencocean-oss/OceanOS",
+        "telegram-poster": "https://github.com/essencocean-oss/OceanOS",
     }
     items = []
     for name, m in manifests.items():

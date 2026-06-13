@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""HermesOS server installer (Windows-native, no Docker required)."""
+"""OceanOS server installer (Windows-native, no Docker required)."""
 
 from pathlib import Path
 import os

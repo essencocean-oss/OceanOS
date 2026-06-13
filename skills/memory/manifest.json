@@ -2,7 +2,7 @@
   "name": "memory",
   "version": "0.1.0",
   "description": "Long-term memory store with keyword retrieval and TTL support",
-  "author": "HermesOS",
+  "author": "OceanOS",
   "tags": ["storage", "context", "recall"],
   "price_cents": 0,
   "license_key_required": false,

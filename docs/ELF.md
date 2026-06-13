@@ -1,1 +1,1 @@
-# HermesOS Evergreen Framework
+# OceanOS Evergreen Framework

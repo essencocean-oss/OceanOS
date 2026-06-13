@@ -32,7 +32,7 @@ except Exception as e:
     print("GETME_ERR", repr(e))
 
 try:
-    payload = json.dumps({"chat_id": "6677764672", "text": "HermesOS live notify test"}).encode()
+    payload = json.dumps({"chat_id": "6677764672", "text": "OceanOS live notify test"}).encode()
     r = urllib.request.urlopen(urllib.request.Request(
         f"https://api.telegram.org/bot{token}/sendMessage",
         data=payload,

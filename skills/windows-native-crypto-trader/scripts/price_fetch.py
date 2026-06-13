@@ -4,7 +4,7 @@ CMD = (sys.argv[1:2] or [None])[0]
 ARG = (sys.argv[2:3] or [None])[0]
 
 def http_get(url):
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "HermesOS/1.0"})
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "OceanOS/1.0"})
     with urllib.request.urlopen(req, timeout=20) as r:
         return json.loads(r.read())
 
@@ -36,7 +36,7 @@ def get_wallet_balance(address: str):
         "params": [address],
     }
     data = json.dumps(payload).encode()
-    req = urllib.request.Request(rpc, data=data, headers={"Content-Type": "application/json", "User-Agent": "HermesOS/1.0"})
+    req = urllib.request.Request(rpc, data=data, headers={"Content-Type": "application/json", "User-Agent": "OceanOS/1.0"})
     with urllib.request.urlopen(req, timeout=20) as resp:
         result = json.loads(resp.read())
     lamports = result.get("result", {}).get("value", 0)

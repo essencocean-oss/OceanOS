@@ -2148,7 +2148,7 @@ function buildMenu(): void {
         {
           label: "Report an Issue",
           click: (): void => {
-            openExternalUrl("https://github.com/essencocean-oss/HermesOS/issues");
+            openExternalUrl("https://github.com/essencocean-oss/OceanOS/issues");
           },
         },
       ],

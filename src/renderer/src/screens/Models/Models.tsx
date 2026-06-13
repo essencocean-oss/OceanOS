@@ -496,7 +496,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
         {activeTab === "models" && (
           <div className="models-header-actions">
             <a
-              href="https://github.com/essencocean-oss/HermesOS-Registry"
+              href="https://github.com/essencocean-oss/OceanOS-Registry"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm"

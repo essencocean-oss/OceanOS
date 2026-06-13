@@ -5,7 +5,7 @@ import subprocess
 import json
 import os
 
-github = FastAPI(title='HermesOS GitHub')
+github = FastAPI(title='OceanOS GitHub')
 
 class IssueCreate(BaseModel):
     title: str

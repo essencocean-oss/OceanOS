@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import os, json, time, re
 from datetime import datetime
 
-mem = FastAPI(title='HermesOS Memory Store')
+mem = FastAPI(title='OceanOS Memory Store')
 STORE = 'memory_store.json'
 
 class MemoryEntry(BaseModel):

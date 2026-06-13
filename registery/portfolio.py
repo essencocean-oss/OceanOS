@@ -7,7 +7,7 @@ import hmac
 import hashlib
 import requests
 
-portfolio = FastAPI(title='HermesOS Portfolio')
+portfolio = FastAPI(title='OceanOS Portfolio')
 
 class PortfolioRequest(BaseModel):
     address: str

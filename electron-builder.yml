@@ -70,4 +70,4 @@ npmRebuild: false
 publish:
   provider: github
   owner: essencocean-oss
-  repo: HermesOS
+  repo: OceanOS

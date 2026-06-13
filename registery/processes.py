@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
-procs = FastAPI(title='HermesOS Process Manager')
+procs = FastAPI(title='OceanOS Process Manager')
 DB = 'processes.json'
 _running: dict = {}  # logical_pid -> Popen
 

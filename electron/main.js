@@ -8,7 +8,7 @@ function createWindow () {
   win = new BrowserWindow({
     width: 1280,
     height: 800,
-    title: 'HermesOS',
+    title: 'OceanOS',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -26,10 +26,10 @@ function createWindow () {
 function createTray () {
   tray = new Tray(path.join(__dirname, '..', 'ui', 'icon.png'));
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show HermesOS', click: function () { win.show(); } },
+    { label: 'Show OceanOS', click: function () { win.show(); } },
     { label: 'Quit', click: function () { app.isQuitting = true; app.quit(); } }
   ]);
-  tray.setToolTip('HermesOS');
+  tray.setToolTip('OceanOS');
   tray.setContextMenu(contextMenu);
   tray.on('double-click', function () { win.show(); });
 }

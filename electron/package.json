@@ -1,7 +1,7 @@
 {
-  "name": "hermesos-desktop",
+  "name": "oceanos-desktop",
   "version": "0.1.0-alpha",
-  "description": "HermesOS desktop client",
+  "description": "OceanOS desktop client",
   "author": "essencocean-oss",
   "main": "main.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "build": "electron-builder"
   },
   "build": {
-    "appId": "com.essencocean.hermesos",
-    "productName": "HermesOS",
+    "appId": "com.essencocean.oceanos",
+    "productName": "OceanOS",
     "win": {
       "target": "nsis"
     },

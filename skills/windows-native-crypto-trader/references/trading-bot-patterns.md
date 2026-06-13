@@ -7,4 +7,4 @@ Recommended starting patterns:
 
 All bots should be runnable as plain Python scripts under `skills/windows-native-crypto-trader/scripts/`.
 
-Use HermesOS skills registry for sharing new bot templates once validated.
+Use OceanOS skills registry for sharing new bot templates once validated.

@@ -1,4 +1,4 @@
-# HermesOS Launch Checklist
+# OceanOS Launch Checklist
 
 ## Pre-launch (done)
 - [x] GitHub repo created

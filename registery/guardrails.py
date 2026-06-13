@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
 import os
 
-guardrails = FastAPI(title='HermesOS Guardrails')
+guardrails = FastAPI(title='OceanOS Guardrails')
 
 # In-memory default config
 _config: Dict[str, Any] = {

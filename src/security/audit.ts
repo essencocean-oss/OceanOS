@@ -5,7 +5,7 @@ import type { AuditRecord } from "./types";
 export class AuditLog {
   private readonly file: string;
 
-  constructor(file = process.env.HERMESOS_AUDIT ?? "logs/sentinel.audit.jsonl") {
+  constructor(file = process.env.OCEANOS_AUDIT ?? "logs/sentinel.audit.jsonl") {
     this.file = path.resolve(file);
     this.ensure();
   }

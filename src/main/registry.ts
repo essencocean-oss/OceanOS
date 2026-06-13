@@ -28,7 +28,7 @@ export type {
  * (agent|mcp|skill|workflow) and a `path` to its folder in the repo. "Set up"
  * actions download the entry's files into the active profile.
  */
-const REGISTRY_REPO = "essencocean-oss/HermesOS-Registry";
+const REGISTRY_REPO = "essencocean-oss/OceanOS-Registry";
 const REGISTRY_BRANCH = "main";
 const REGISTRY_RAW_BASE = `https://raw.githubusercontent.com/${REGISTRY_REPO}/refs/heads/${REGISTRY_BRANCH}`;
 const REGISTRY_REPO_BASE = `https://github.com/${REGISTRY_REPO}/tree/${REGISTRY_BRANCH}`;

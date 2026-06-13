@@ -1,2 +1,2 @@
 import os
-print("hello from HermesOS skill — cwd:", os.getcwd())
+print("hello from OceanOS skill — cwd:", os.getcwd())

@@ -5,7 +5,7 @@ import os
 import glob
 from datetime import datetime
 
-browser = FastAPI(title='HermesOS Browser Automation')
+browser = FastAPI(title='OceanOS Browser Automation')
 
 MEDIA_DIR = os.path.join(os.getcwd(), "media", "screenshots")
 os.makedirs(MEDIA_DIR, exist_ok=True)

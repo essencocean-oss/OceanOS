@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-HermesOS task helper: commit, run, generate-image, generate-pdf, notify.
+OceanOS task helper: commit, run, generate-image, generate-pdf, notify.
 #>
 param(
     [Parameter(Mandatory=$true, Position=0)]
@@ -11,7 +11,7 @@ param(
 )
 
 $ErrorActionPreference='SilentlyContinue'
-$Root='C:\Users\anant\OneDrive\Desktop\NightlyBuilder\HermesOS'
+$Root='C:\Users\anant\OneDrive\Desktop\NightlyBuilder\OceanOS'
 $GitExe='C:\Program Files\Git\cmd\git.exe'
 Set-Location $Root
 
@@ -65,7 +65,7 @@ switch ($Action) {
         try {
             $short = & $GitExe rev-parse --short HEAD
             $list = ($has -join ', ')
-            powershell -ExecutionPolicy Bypass -File (Join-Path $Root 'Run-HermesTask.ps1') notify "HermesOS push: $short — $list"
+            powershell -ExecutionPolicy Bypass -File (Join-Path $Root 'Run-OceanTask.ps1') notify "OceanOS push: $short — $list"
         } catch {}
         $result
     }

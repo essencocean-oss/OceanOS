@@ -10,7 +10,7 @@ license_key_required: false
 
 # Windows Native Crypto Trader
 
-Windows-first crypto skill for HermesOS. No WSL. No Linux dependencies.
+Windows-first crypto skill for OceanOS. No WSL. No Linux dependencies.
 
 ## Supported chains
 

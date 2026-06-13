@@ -1,4 +1,4 @@
-# HermesOS Skill Manifest Spec
+# OceanOS Skill Manifest Spec
 
 Every installable skill MUST expose a `manifest.json` at `<skill>/manifest.json` or a `name`, `version`, and `description` in `SKILL.md` frontmatter.
 

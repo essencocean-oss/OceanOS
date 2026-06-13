@@ -1,7 +1,7 @@
 ---
 name: github-integration
 description: GitHub auth, repo lifecycle, PR flow, CI monitoring, and webhook sync.
-author: HermesOS
+author: OceanOS
 tags:
   - github
   - ci
