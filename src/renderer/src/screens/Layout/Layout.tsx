@@ -16,13 +16,12 @@ import Gateway from "../Gateway/Gateway";
 import Office from "../Office/Office";
 import Models from "../Models/Models";
 import Providers from "../Providers/Providers";
-import Marketplace from "../Marketplace/Marketplace";
-import Orchestrator from "../Orchestrator/Orchestrator";
-import Kanban from "../Kanban/Kanban";
 import Schedules from "../Schedules/Schedules";
+import Kanban from "../Kanban/Kanban";
+import Processes from "../Processes/Processes";
 import RemoteNotice from "../../components/RemoteNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
-import hermeslogo from "../../assets/hermes-one.svg";
+import oceanoslogo from "../../assets/oceanos-logo.svg";
 import {
   ChatBubble,
   Clock,
@@ -36,6 +35,7 @@ import {
   KeyRound,
   Timer,
   Kanban as KanbanIcon,
+  Monitor,
   Download,
   PanelLeftClose,
   PanelLeftOpen,
@@ -56,29 +56,31 @@ type View =
   | "tools"
   | "schedules"
   | "kanban"
+  | "processes"
   | "gateway"
-  | "marketplace"
-  | "orchestrator"
   | "settings";
 
 const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string }[] = [
   { view: "chat", icon: ChatBubble, labelKey: "navigation.chat" },
   { view: "sessions", icon: Clock, labelKey: "navigation.sessions" },
   { view: "discover", icon: Compass, labelKey: "navigation.discover" },
+  // "agents" (Profiles) is reached from the sidebar-footer ProfileSwitcher's
+  // "Manage profiles" action rather than a top-level nav item.
   { view: "office", icon: Building, labelKey: "navigation.office" },
   { view: "kanban", icon: KanbanIcon, labelKey: "navigation.kanban" },
   { view: "models", icon: Layers, labelKey: "navigation.models" },
   { view: "providers", icon: KeyRound, labelKey: "navigation.providers" },
+  // "skills" lives under the Discover tab (installed + community), so it's no
+  // longer a top-level nav item.
   { view: "memory", icon: Brain, labelKey: "navigation.memory" },
   { view: "tools", icon: Wrench, labelKey: "navigation.tools" },
   { view: "schedules", icon: Timer, labelKey: "navigation.schedules" },
   { view: "gateway", icon: Signal, labelKey: "navigation.gateway" },
-  { view: "marketplace", icon: Compass, labelKey: "Marketplace" },
-  { view: "orchestrator", icon: Wrench, labelKey: "Orchestrator" },
   { view: "settings", icon: SettingsIcon, labelKey: "navigation.settings" },
+  { view: "processes", icon: Monitor, labelKey: "navigation.processes" },
 ];
 
-const SIDEBAR_COLLAPSED_KEY = "hermes.sidebar.collapsed";
+const SIDEBAR_COLLAPSED_KEY = "oceanos.sidebar.collapsed";
 
 interface LayoutProps {
   verifyWarning?: boolean;
@@ -90,7 +92,7 @@ function Layout({
   verifyWarning,
   onReinstall,
   onDismissVerifyWarning,
-}: LayoutProps = {}): React.ReactElement {
+}: LayoutProps = {}): React.JSX.Element {
   const { t } = useI18n();
   const [view, setView] = useState<View>("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -103,10 +105,15 @@ function Layout({
       return false;
     }
   });
+  // Tabs lazy-mount on first visit, then stay mounted (display:none toggle).
+  // Keeps IPC refetch / DOM rebuild off the tab-switch hot path.
   const [visitedViews, setVisitedViews] = useState<Set<View>>(
     () => new Set<View>(["chat"]),
   );
+  // Remote-only mode — SSH tunnel has full access; only pure HTTP remote mode restricts screens
   const [remoteMode, setRemoteMode] = useState(false);
+  // Set by the Capabilities screen's "Browse" actions to focus a Discover tab
+  // (Skills → Community, or MCPs). The nonce re-fires Discover's effect.
   const [discoverFocus, setDiscoverFocus] = useState<{
     kind: "skills" | "mcps";
     nonce: number;
@@ -127,15 +134,19 @@ function Layout({
   const focusDiscover = useCallback(
     (kind: "skills" | "mcps") => {
       setDiscoverFocus((prev) => ({ kind, nonce: (prev?.nonce ?? 0) + 1 }));
-      goTo("discover" as View);
+      goTo("discover");
     },
     [goTo],
   );
 
+  // Re-check remote mode on tab switch (picks up Settings changes)
   useEffect(() => {
     window.hermesAPI.isRemoteOnlyMode().then(setRemoteMode);
   }, [view]);
 
+  // Restore the last-activated profile on launch. The main process persists it
+  // in ~/.hermes/active_profile (via `hermes profile use`), so the desktop
+  // should reopen on that profile rather than always resetting to "default".
   useEffect(() => {
     let cancelled = false;
     window.hermesAPI
@@ -153,6 +164,7 @@ function Layout({
     };
   }, []);
 
+  // Auto-update state
   const [updateVersion, setUpdateVersion] = useState<string | null>(null);
   const [updateState, setUpdateState] = useState<
     "available" | "downloading" | "ready" | "error" | null
@@ -219,12 +231,14 @@ function Layout({
             : undefined);
 
   const handleNewChat = useCallback(() => {
+    // Abort any in-flight chat before clearing
     window.hermesAPI.abortChat();
     setMessages([]);
     setCurrentSessionId(null);
     goTo("chat");
   }, [goTo]);
 
+  // Listen for menu IPC events (Cmd+N, Cmd+K from app menu)
   useEffect(() => {
     const cleanupNewChat = window.hermesAPI.onMenuNewChat(() => {
       handleNewChat();
@@ -279,10 +293,10 @@ function Layout({
           <span
             className="sidebar-logo"
             role="img"
-            aria-label="Hermes"
+            aria-label="OceanOS"
             style={{
-              maskImage: `url(${hermeslogo})`,
-              WebkitMaskImage: `url(${hermeslogo})`,
+              maskImage: `url(${oceanoslogo})`,
+              WebkitMaskImage: `url(${oceanoslogo})`,
             }}
           />
           <button
@@ -503,29 +517,15 @@ function Layout({
           </div>
         )}
 
-        {visitedViews.has("marketplace") && (
-          <div style={paneStyle("marketplace")}>
-            {remoteMode ? (
-              <RemoteNotice feature="Marketplace" />
-            ) : (
-              <Marketplace profile={activeProfile} />
-            )}
-          </div>
-        )}
-
-        {visitedViews.has("orchestrator") && (
-          <div style={paneStyle("orchestrator")}>
-            {remoteMode ? (
-              <RemoteNotice feature="Orchestrator" />
-            ) : (
-              <Orchestrator profile={activeProfile} />
-            )}
-          </div>
-        )}
-
         {visitedViews.has("settings") && (
           <div style={paneStyle("settings")}>
             <Settings profile={activeProfile} />
+          </div>
+        )}
+
+        {visitedViews.has("processes") && (
+          <div style={paneStyle("processes")}>
+            <Processes visible={view === "processes"} />
           </div>
         )}
       </main>
