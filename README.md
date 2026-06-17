@@ -1,4 +1,4 @@
-# HermesOS
+# OceanOS
 
 The local-first operating environment for AI agents — an Electron app that turns your desktop into a mission control for autonomous work.
 
