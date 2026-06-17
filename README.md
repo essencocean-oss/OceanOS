@@ -6,7 +6,7 @@ The local-first operating environment for AI agents — an Electron app that tur
 
 ## What it is
 
-HermesOS runs AI agents, skills, and workflows on your machine. Its default view is a research and execution cockpit, but it’s built to support many surfaces: chat, registry, marketplace, and autonomous builders.
+OceanOS runs AI agents, skills, and workflows on your machine. Its default view is a research and execution cockpit, but it’s built to support many surfaces: chat, registry, marketplace, and autonomous builders.
 
 ## Quick start
 
