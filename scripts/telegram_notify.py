@@ -25,7 +25,10 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: telegram_notify.py <message>")
         sys.exit(1)
-    text = " ".join(sys.argv[1:])
+    text = " ".join(sys.argv[1:]).strip()
+    if not text:
+        print("SKIP: empty message")
+        sys.exit(0)
     token = find_token()
     if not token:
         print("FAIL: TELEGRAM_BOT_TOKEN not found")

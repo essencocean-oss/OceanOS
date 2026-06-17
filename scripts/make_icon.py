@@ -15,7 +15,7 @@ def make_png(path, width=256, height=256, color=(255, 120, 0, 255)):
     with open(path, "wb") as f:
         f.write(sig + chunk(b"IHDR", ihdr) + chunk(b"IDAT", comp) + chunk(b"IEND", b""))
 
-out = r"C:\Users\anant\OneDrive\Desktop\NightlyBuilder\HermesOS\resources\icon.png"
+out = r"C:\Users\anant\OneDrive\Desktop\NightlyBuilder\OceanOS\resources\icon.png"
 os.makedirs(os.path.dirname(out), exist_ok=True)
 make_png(out)
 print(out)

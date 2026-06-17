@@ -1,12 +1,12 @@
-# HermesOS
+# OceanOS
 
 The local-first operating environment for AI agents — an Electron app that turns your desktop into a mission control for autonomous work.
 
-![HermesOS splash](docs/assets/hero.jpg)
+![OceanOS splash](docs/assets/hero.jpg)
 
 ## What it is
 
-HermesOS runs AI agents, skills, and workflows on your machine. Its default view is a research and execution cockpit, but it’s built to support many surfaces: chat, registry, marketplace, and autonomous builders.
+OceanOS runs AI agents, skills, and workflows on your machine. Its default view is a research and execution cockpit, but it’s built to support many surfaces: chat, registry, marketplace, and autonomous builders.
 
 ## Quick start
 
@@ -14,7 +14,6 @@ HermesOS runs AI agents, skills, and workflows on your machine. Its default view
 - Install deps: `pnpm install`
 - Dev: `pnpm dev`
 - Build: `pnpm build`
-- macOS release: `pnpm release:mac`
 - Windows release: `pnpm release:win`
 
 ## Repo layout
