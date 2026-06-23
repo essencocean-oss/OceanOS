@@ -8,7 +8,7 @@
  * Each issue carries an `autoFixable` flag and a fix description; the
  * renderer's Diagnose UI renders a per-issue "Fix" button for those.
  *
- * Audit log: every auto-fix appends to `~/.hermes/logs/config-fixes.log`
+ * Audit log: every auto-fix appends to `~/.oceanos/logs/config-fixes.log`
  * via `appendConfigFixLog` (capped at 1000 entries).
  */
 
@@ -32,7 +32,7 @@ import { safeWriteFile } from "./utils";
 import { OCEAN_HOME } from "./installer";
 import { expectedEnvKeyForModel } from "./installer";
 import { expectedEnvKeyForUrl, isLocalBaseUrl } from "../shared/url-key-map";
-import { findSiblingHermesHomes } from "./wsl-detection";
+import { findSiblingOceanOSHomes } from "./wsl-detection";
 
 export type Severity = "error" | "warning" | "info";
 
@@ -87,7 +87,7 @@ export function runConfigHealthCheck(profile?: string): ConfigHealthReport {
     checkActiveModelKeyPresence,
     checkRuntimeEnvKeyMismatch,
     checkNonAsciiCredentials,
-    checkSiblingHermesHomeDrift,
+    checkSiblingOceanOSHomeDrift,
     checkLegacyToolsetName,
   ];
 
@@ -129,7 +129,7 @@ export function autoFixIssue(
       case "NON_ASCII_CREDENTIAL":
         return fixNonAsciiCredential(profile, context);
       case "SIBLING_OCEAN_HOME_DRIFT":
-        return fixSiblingHermesHomeDrift(profile, context);
+        return fixSiblingOceanOSHomeDrift(profile, context);
       case "LEGACY_TOOLSET_NAME":
         return fixLegacyToolsetName(profile);
       default:
@@ -481,16 +481,16 @@ function fixNonAsciiCredential(
 // ───────────────────────────────────────────────────────
 //  Sibling-ocean-home drift check (Windows + WSL)
 //
-//  Ocean One reads its config from %LocalAppData%\hermes\. Users
-//  who also run the `hermes` CLI inside a WSL distro have a second,
-//  separate ~/.hermes/ at /home/<user>/.hermes/ on the WSL fs. The
+//  Ocean One reads its config from %LocalAppData%\oceanos\. Users
+//  who also run the `oceanos` CLI inside a WSL distro have a second,
+//  separate ~/.oceanos/ at /home/<user>/.oceanos/ on the WSL fs. The
 //  two are independent. When they drift (a key set on one side but
 //  not the other, two different keys, etc.), the user gets confusing
 //  errors like "Invalid token payload" because chat goes through the
 //  Windows-side config but they configured the WSL-side. Issue #384
 //  is a textbook case.
 //
-//  The check enumerates accessible WSL ~/.hermes/ directories
+//  The check enumerates accessible WSL ~/.oceanos/ directories
 //  (fail-soft — no WSL, no result), compares a curated set of
 //  fields, and emits one issue per drifting field. Auto-fix is
 //  offered ONLY when the direction is unambiguous (one side empty,
@@ -665,8 +665,8 @@ function readCurrentFields(profile: string | undefined): SiblingEnv {
   return readSiblingFields(profilePaths(profile).home);
 }
 
-function checkSiblingHermesHomeDrift(profile?: string): ConfigHealthIssue[] {
-  const siblings = findSiblingHermesHomes();
+function checkSiblingOceanOSHomeDrift(profile?: string): ConfigHealthIssue[] {
+  const siblings = findSiblingOceanOSHomes();
   if (siblings.length === 0) return [];
 
   const current = readCurrentFields(profile);
@@ -683,7 +683,7 @@ function checkSiblingHermesHomeDrift(profile?: string): ConfigHealthIssue[] {
       const isSecret = isSecretField(label);
       const winMasked = isSecret ? maskKey(winValue) : winValue;
       const wslMasked = isSecret ? maskKey(wslValue) : wslValue;
-      const where = `${sibling.distro}:/home/${sibling.user}/.hermes`;
+      const where = `${sibling.distro}:/home/${sibling.user}/.oceanos`;
 
       // Direction A: one side empty, the other has a value →
       // unambiguous, auto-fixable. Default direction WSL → Windows
@@ -761,7 +761,7 @@ function checkSiblingHermesHomeDrift(profile?: string): ConfigHealthIssue[] {
   return issues;
 }
 
-function fixSiblingHermesHomeDrift(
+function fixSiblingOceanOSHomeDrift(
   profile: string | undefined,
   context: Record<string, string> | undefined,
 ): { ok: boolean; message?: string } {
@@ -827,8 +827,8 @@ function fixSiblingHermesHomeDrift(
       from: `wsl:${wslHome}/${fieldDef.source === "env" ? ".env" : "config.yaml"}`,
       to:
         fieldDef.source === "env"
-          ? "%LocalAppData%/hermes/.env"
-          : "%LocalAppData%/hermes/config.yaml",
+          ? "%LocalAppData%/oceanos/.env"
+          : "%LocalAppData%/oceanos/config.yaml",
       profile: profile || "default",
       valueMasked: isSecretField(fieldDef.label) ? maskKey(value) : value,
       detail: field,
@@ -844,22 +844,22 @@ function fixSiblingHermesHomeDrift(
 
 // Re-export for tests that want to call the check directly without
 // going through `runConfigHealthCheck`.
-export { checkSiblingHermesHomeDrift, fixSiblingHermesHomeDrift };
+export { checkSiblingOceanOSHomeDrift, fixSiblingOceanOSHomeDrift };
 
 // ───────────────────────────────────────────────────────
-//  LEGACY_TOOLSET_NAME — `toolsets:` list still has "hermes"
+//  LEGACY_TOOLSET_NAME — `toolsets:` list still has "oceanos"
 // ───────────────────────────────────────────────────────
 
 /**
- * The bundled hermes-agent CLI renamed its default toolset alias from
- * "hermes" (legacy) to "hermes-cli". Configs written by older versions —
- * either an older bundled engine or a prior standalone hermes CLI install —
+ * The bundled oceanos-agent CLI renamed its default toolset alias from
+ * "oceanos" (legacy) to "oceanos-cli". Configs written by older versions —
+ * either an older bundled engine or a prior standalone oceanos CLI install —
  * still reference the legacy name in their top-level `toolsets:` block.
- * The current engine's validator no longer recognises `"hermes"` and
- * prints `Warning: Unknown toolsets: hermes` on every agent invocation
+ * The current engine's validator no longer recognises `"oceanos"` and
+ * prints `Warning: Unknown toolsets: oceanos` on every agent invocation
  * (issues #353, fresh #385/Telegram reports).
  *
- * The fix is a one-line YAML rewrite: `- hermes` → `- hermes-cli`. The
+ * The fix is a one-line YAML rewrite: `- oceanos` → `- oceanos-cli`. The
  * agent still functions today — it's a cosmetic warning — but it
  * clutters every chat session and looks broken to new users.
  */
@@ -881,28 +881,28 @@ function checkLegacyToolsetName(profile?: string): ConfigHealthIssue[] {
     code: "LEGACY_TOOLSET_NAME",
     severity: "warning",
     message:
-      'config.yaml references the legacy toolset name "hermes" — the current engine expects "hermes-cli".',
+      'config.yaml references the legacy toolset name "oceanos" — the current engine expects "oceanos-cli".',
     detail:
-      "The bundled hermes-agent CLI renamed the default toolset alias " +
-      'from "hermes" to "hermes-cli". The agent still runs, but every ' +
-      "invocation prints `Warning: Unknown toolsets: hermes` until the " +
+      "The bundled oceanos-agent CLI renamed the default toolset alias " +
+      'from "oceanos" to "oceanos-cli". The agent still runs, but every ' +
+      "invocation prints `Warning: Unknown toolsets: oceanos` until the " +
       "entry is updated. Auto-fix rewrites the line in place.",
     locations: [configFile],
     autoFixable: true,
-    fixDescription: "Rewrite `- hermes` → `- hermes-cli` in config.yaml.",
+    fixDescription: "Rewrite `- oceanos` → `- oceanos-cli` in config.yaml.",
     fixLocation: "config.yaml",
   });
   return issues;
 }
 
 /**
- * Scan the top-level `toolsets:` block for a literal `- hermes` entry
+ * Scan the top-level `toolsets:` block for a literal `- oceanos` entry
  * (the legacy alias). Returns true on the first match. Indentation-
  * aware: stops at the first top-level (non-indented) line after the
- * `toolsets:` header. Tolerates quoted forms (`- "hermes"`, `- 'hermes'`)
+ * `toolsets:` header. Tolerates quoted forms (`- "oceanos"`, `- 'oceanos'`)
  * and trailing comments.
  *
- * Does NOT match `hermes-cli` / `hermes-telegram` / `hermes-discord` /
+ * Does NOT match `oceanos-cli` / `oceanos-telegram` / `oceanos-discord` /
  * etc. — those are the current canonical names and must not be touched.
  */
 function findLegacyToolsetEntry(content: string): boolean {
@@ -916,7 +916,7 @@ function findLegacyToolsetEntry(content: string): boolean {
     if (!inToolsets) continue;
     // Exit the block on the next un-indented (top-level) non-empty line
     // that ISN'T a list item. YAML allows `- foo` at zero indent under
-    // a parent key (and that's what `hermes setup` actually writes), so
+    // a parent key (and that's what `oceanos setup` actually writes), so
     // a line starting with `-` is still part of the block.
     if (/^[^\s-]/.test(line) && line.trim() !== "") {
       inToolsets = false;
@@ -924,16 +924,16 @@ function findLegacyToolsetEntry(content: string): boolean {
     }
     // List item shape: optional whitespace, dash, whitespace, optional
     // quote, NAME, optional matching quote, optional trailing comment.
-    // NAME captured tightly so `hermes-cli` doesn't match `hermes`.
+    // NAME captured tightly so `oceanos-cli` doesn't match `oceanos`.
     const m = line.match(/^\s*-\s+(["']?)([\w-]+)\1\s*(#.*)?$/);
-    if (m && m[2] === "hermes") return true;
+    if (m && m[2] === "oceanos") return true;
   }
   return false;
 }
 
 /**
- * Rewrite every `- hermes` entry inside the top-level `toolsets:` block
- * to `- hermes-cli`, preserving indentation, quoting style, and any
+ * Rewrite every `- oceanos` entry inside the top-level `toolsets:` block
+ * to `- oceanos-cli`, preserving indentation, quoting style, and any
  * trailing comment. Re-runs `findLegacyToolsetEntry` on the result so
  * the function is a no-op if there's nothing to fix.
  */
@@ -968,14 +968,14 @@ function fixLegacyToolsetName(profile?: string): {
           out.push(line);
           continue;
         }
-        // Rewrite the legacy entry only — leave hermes-cli et al alone.
-        // Accept both zero-indent (`- hermes`) and indented (`  - hermes`).
-        const m = line.match(/^(\s*-\s+)(["']?)hermes\2(\s*(?:#.*)?)$/);
+        // Rewrite the legacy entry only — leave oceanos-cli et al alone.
+        // Accept both zero-indent (`- oceanos`) and indented (`  - oceanos`).
+        const m = line.match(/^(\s*-\s+)(["']?)oceanos\2(\s*(?:#.*)?)$/);
         if (m) {
           const prefix = m[1];
           const quote = m[2];
           const suffix = m[3];
-          out.push(`${prefix}${quote}hermes-cli${quote}${suffix}`);
+          out.push(`${prefix}${quote}oceanos-cli${quote}${suffix}`);
           changed = true;
           continue;
         }
@@ -995,14 +995,14 @@ function fixLegacyToolsetName(profile?: string): {
       ts: Date.now(),
       issueCode: "LEGACY_TOOLSET_NAME",
       action: "autofix",
-      from: "hermes",
-      to: "hermes-cli",
+      from: "oceanos",
+      to: "oceanos-cli",
       profile: profile || "default",
       detail: "toolsets[] entry",
     });
     return {
       ok: true,
-      message: "Rewrote `- hermes` → `- hermes-cli` in config.yaml.",
+      message: "Rewrote `- oceanos` → `- oceanos-cli` in config.yaml.",
     };
   } catch (err) {
     return { ok: false, message: (err as Error).message };

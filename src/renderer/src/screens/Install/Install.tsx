@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ArrowRight, Copy, Send } from "../../assets/icons";
 import { tauri } from "../../shared/tauri";
 
-const TELEGRAM_COMMUNITY_URL = "https://t.me/hermes_agent_desktop";
+const TELEGRAM_COMMUNITY_URL = "https://t.me/oceanos_agent_desktop";
 import { useI18n } from "../../components/useI18n";
 
 interface InstallProgress {
@@ -115,12 +115,12 @@ function Install({
     setUseExistingError(null);
     const dir = await tauri.selectFolder();
     if (!dir) return;
-    const ok = await tauri.validateHermesHome(dir);
+    const ok = await tauri.validateOceanHome(dir);
     if (!ok) {
       setUseExistingError(t("install.useExistingInvalid"));
       return;
     }
-    const saved = await tauri.adoptHermesHome(dir);
+    const saved = await tauri.adoptOceanHome(dir);
     if (saved) {
       setAdopted(true);
     } else {
@@ -220,7 +220,7 @@ function Install({
           ? t("install.installationComplete")
           : failed
             ? t("install.installationFailed")
-            : t("install.installingHermes")}
+            : t("install.installingOceanOS")}
       </h1>
 
       <div className="install-progress-container">

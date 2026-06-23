@@ -1,7 +1,7 @@
 export default {
   title: "Settings",
   sections: {
-    hermesAgent: "OceanOS",
+    oceanosAgent: "OceanOS",
     appearance: "Appearance",
     privacy: "Privacy",
     credentialPool: "Credential Pool",

@@ -1,6 +1,6 @@
 /**
  * Canonical inference base URLs for built-in providers — mirrors
- * hermes-agent's `PROVIDER_REGISTRY` defaults.
+ * oceanos-agent's `PROVIDER_REGISTRY` defaults.
  *
  * Lives in its own module (not in `model-discovery.ts` or `config.ts`)
  * to avoid a circular import: `model-discovery` already depends on

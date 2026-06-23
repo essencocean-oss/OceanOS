@@ -14,7 +14,7 @@ import { upsertLiveReasoningChunk } from "../liveReasoningEvents";
 
 interface UseChatIPCArgs {
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  setHermesSessionId: (id: string) => void;
+  setOceanOSSessionId: (id: string) => void;
   setToolProgress: (tool: string | null) => void;
   setIsLoading: (loading: boolean) => void;
   setUsage: React.Dispatch<React.SetStateAction<UsageState | null>>;
@@ -28,7 +28,7 @@ interface UseChatIPCArgs {
  */
 export function useChatIPC({
   setMessages,
-  setHermesSessionId,
+  setOceanOSSessionId,
   setToolProgress,
   setIsLoading,
   setUsage,
@@ -73,12 +73,12 @@ export function useChatIPC({
 
     const cleanupDone = tauri.onChatDone(async (sessionId) => {
       reasoningSegmentClosedRef.current = false;
-      if (sessionId) setHermesSessionId(sessionId);
+      if (sessionId) setOceanOSSessionId(sessionId);
       setToolProgress(null);
       setIsLoading(false);
       // End-of-stream merge from state.db. The gateway doesn't forward
       // streaming reasoning_content / tool deltas over the OpenAI-compatible
-      // SSE (NousResearch/hermes-agent#30449) — the agent writes them to
+      // SSE (NousResearch/oceanos-agent#30449) — the agent writes them to
       // state.db at finalisation instead. Without this merge, the
       // reasoning / tool bubbles only materialise when something else
       // triggers a re-sync (window focus change, tab switch). Doing it
@@ -183,7 +183,7 @@ export function useChatIPC({
     };
   }, [
     setMessages,
-    setHermesSessionId,
+    setOceanOSSessionId,
     setToolProgress,
     setIsLoading,
     setUsage,

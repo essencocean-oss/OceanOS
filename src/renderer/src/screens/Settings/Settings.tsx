@@ -48,7 +48,7 @@ function makeApiKeyMask(length: number): string {
 // Read cached values from localStorage for instant display
 function getCachedVersion(): string | null {
   try {
-    return localStorage.getItem("hermes-version-cache");
+    return localStorage.getItem("oceanos-version-cache");
   } catch {
     return null;
   }
@@ -56,7 +56,7 @@ function getCachedVersion(): string | null {
 
 function getCachedOpenClaw(): { found: boolean; path: string | null } | null {
   try {
-    const raw = localStorage.getItem("hermes-openclaw-cache");
+    const raw = localStorage.getItem("oceanos-openclaw-cache");
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -65,12 +65,12 @@ function getCachedOpenClaw(): { found: boolean; path: string | null } | null {
 
 function Settings({ profile }: { profile?: string }): React.JSX.Element {
   const { t, locale, setLocale } = useI18n();
-  const [oceanHome, setHermesHome] = useState("");
+  const [oceanHome, setOceanOSHome] = useState("");
   const { theme, setTheme, rounded, setRounded } = useTheme();
   const { font, setFont } = useFont();
 
   // Ocean engine info — initialize from localStorage cache for instant display
-  const [hermesVersion, setHermesVersion] = useState<string | null>(
+  const [oceanosVersion, setOceanOSVersion] = useState<string | null>(
     getCachedVersion,
   );
   const [appVersion, setAppVersion] = useState("");
@@ -91,7 +91,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     cachedClaw?.path ?? null,
   );
   const [migrationDismissed, setMigrationDismissed] = useState(
-    () => localStorage.getItem("hermes-openclaw-dismissed") === "true",
+    () => localStorage.getItem("oceanos-openclaw-dismissed") === "true",
   );
   const [migrating, setMigrating] = useState(false);
   const [migrationLog, setMigrationLog] = useState("");
@@ -151,12 +151,12 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   const loadConfig = useCallback(async (): Promise<void> => {
     // Load fast config first (cached in main process)
     const [home, aVersion, conn, keyStatus] = await Promise.all([
-      tauri.getHermesHome(profile),
+      tauri.getOceanHome(profile),
       tauri.getAppVersion(),
       tauri.getConnectionConfig(),
       tauri.getApiServerKeyStatus(profile),
     ]);
-    setHermesHome(home);
+    setOceanOSHome(home);
     setAppVersion(aVersion);
     setConnMode(conn.mode);
     setConnRemoteUrl(conn.remoteUrl);
@@ -184,23 +184,23 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     });
 
     // Defer slow calls — background refresh, cached values show instantly
-    tauri.getHermesVersion().then((v) => {
-      setHermesVersion(v);
+    tauri.getOceanOSVersion().then((v) => {
+      setOceanOSVersion(v);
       if (v) {
         try {
-          localStorage.setItem("hermes-version-cache", v);
+          localStorage.setItem("oceanos-version-cache", v);
         } catch {
           /* ignore */
         }
       }
     });
 
-    if (localStorage.getItem("hermes-openclaw-dismissed") !== "true") {
+    if (localStorage.getItem("oceanos-openclaw-dismissed") !== "true") {
       tauri.checkOpenClaw().then((claw) => {
         setOpenclawFound(claw.found);
         setOpenclawPath(claw.path);
         try {
-          localStorage.setItem("hermes-openclaw-cache", JSON.stringify(claw));
+          localStorage.setItem("oceanos-openclaw-cache", JSON.stringify(claw));
         } catch {
           /* ignore */
         }
@@ -269,7 +269,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   }
 
   function handleDismissMigration(): void {
-    localStorage.setItem("hermes-openclaw-dismissed", "true");
+    localStorage.setItem("oceanos-openclaw-dismissed", "true");
     setMigrationDismissed(true);
   }
 
@@ -367,7 +367,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleBackup(): Promise<void> {
     setBackingUp(true);
     setBackupResult(null);
-    const result = await tauri.runHermesBackup(profile);
+    const result = await tauri.runOceanBackup(profile);
     setBackingUp(false);
     if (result.success) {
       setBackupResult(`Backup created: ${result.path || "success"}`);
@@ -386,7 +386,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       setImporting(true);
       setImportResult(null);
       const filePath = tauri.getPathForFile(file);
-      const result = await tauri.runHermesImport(filePath, profile);
+      const result = await tauri.runOceanImport(filePath, profile);
       setImporting(false);
       if (result.success) {
         setImportResult(t("settings.migrationComplete"));
@@ -406,18 +406,18 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleDoctor(): Promise<void> {
     setDoctorRunning(true);
     setDoctorOutput(null);
-    const output = await tauri.runHermesDoctor();
+    const output = await tauri.runOceanDoctor();
     setDoctorOutput(output);
     setDoctorRunning(false);
   }
 
   // Helper to fetch fresh version, clear backend cache, and update localStorage
   function refreshVersion(): void {
-    tauri.refreshHermesVersion().then((v) => {
-      setHermesVersion(v);
+    tauri.refreshOceanOSVersion().then((v) => {
+      setOceanOSVersion(v);
       if (v) {
         try {
-          localStorage.setItem("hermes-version-cache", v);
+          localStorage.setItem("oceanos-version-cache", v);
         } catch {
           /* ignore */
         }
@@ -425,10 +425,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     });
   }
 
-  async function handleUpdateHermes(): Promise<void> {
+  async function handleUpdateOceanOS(): Promise<void> {
     setUpdating(true);
     setUpdateResult(null);
-    const result = await tauri.runHermesUpdate();
+    const result = await tauri.runOceanUpdate();
     setUpdating(false);
     if (result.success) {
       setUpdateResult(t("settings.updateSuccess"));
@@ -442,8 +442,8 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
   // Parse "Ocean Agent v0.7.0 (2026.4.3) Project: ... Python: 3.11.15 OpenAI SDK: 2.30.0 Update available: ..."
   const parsedVersion = (() => {
-    if (!hermesVersion) return null;
-    const v = hermesVersion;
+    if (!oceanosVersion) return null;
+    const v = oceanosVersion;
     const version = v.match(/v([\d.]+)/)?.[1] || "";
     const date = v.match(/\(([\d.]+)\)/)?.[1] || "";
     const python = v.match(/Python:\s*([\d.]+)/)?.[1] || "";
@@ -461,89 +461,89 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
       <div className="settings-section">
         <div className="settings-section-title">
-          {t("settings.sections.hermesAgent")}
+          {t("settings.sections.oceanosAgent")}
         </div>
-        <div className="settings-hermes-info">
-          <div className="settings-hermes-row">
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">
+        <div className="settings-oceanos-info">
+          <div className="settings-oceanos-row">
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">
                 {t("common.engine")}
               </span>
-              {hermesVersion === null ? (
+              {oceanosVersion === null ? (
                 <span className="skeleton skeleton-sm" />
               ) : (
-                <span className="settings-hermes-value">
+                <span className="settings-oceanos-value">
                   {parsedVersion
                     ? `v${parsedVersion.version}`
                     : t("settings.notDetected")}
                 </span>
               )}
             </div>
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">
                 {t("common.released")}
               </span>
-              {hermesVersion === null ? (
+              {oceanosVersion === null ? (
                 <span className="skeleton skeleton-sm" />
               ) : (
-                <span className="settings-hermes-value">
+                <span className="settings-oceanos-value">
                   {parsedVersion?.date || "—"}
                 </span>
               )}
             </div>
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">
                 {t("common.desktop")}
               </span>
               {!appVersion ? (
                 <span className="skeleton skeleton-sm" />
               ) : (
-                <span className="settings-hermes-value">
+                <span className="settings-oceanos-value">
                   {t("settings.version", { version: appVersion })}
                 </span>
               )}
             </div>
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">Python</span>
-              {hermesVersion === null ? (
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">Python</span>
+              {oceanosVersion === null ? (
                 <span className="skeleton skeleton-sm" />
               ) : (
-                <span className="settings-hermes-value">
+                <span className="settings-oceanos-value">
                   {parsedVersion?.python || "—"}
                 </span>
               )}
             </div>
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">OpenAI SDK</span>
-              {hermesVersion === null ? (
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">OpenAI SDK</span>
+              {oceanosVersion === null ? (
                 <span className="skeleton skeleton-sm" />
               ) : (
-                <span className="settings-hermes-value">
+                <span className="settings-oceanos-value">
                   {parsedVersion?.sdk || "—"}
                 </span>
               )}
             </div>
-            <div className="settings-hermes-detail">
-              <span className="settings-hermes-label">{t("common.home")}</span>
+            <div className="settings-oceanos-detail">
+              <span className="settings-oceanos-label">{t("common.home")}</span>
               {!oceanHome ? (
                 <span className="skeleton skeleton-md" />
               ) : (
-                <span className="settings-hermes-value settings-hermes-path">
+                <span className="settings-oceanos-value settings-oceanos-path">
                   {oceanHome}
                 </span>
               )}
             </div>
           </div>
           {parsedVersion?.updateInfo && (
-            <div className="settings-hermes-update-badge">
+            <div className="settings-oceanos-update-badge">
               {parsedVersion.updateInfo}
             </div>
           )}
-          <div className="settings-hermes-actions">
+          <div className="settings-oceanos-actions">
             {parsedVersion?.updateInfo ? (
               <button
                 className="btn btn-primary "
-                onClick={handleUpdateHermes}
+                onClick={handleUpdateOceanOS}
                 disabled={updating}
               >
                 {updating ? t("settings.updating") : t("settings.updateEngine")}
@@ -567,7 +567,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               onClick={async () => {
                 setDumpRunning(true);
                 setDumpOutput(null);
-                const output = await tauri.runHermesDump();
+                const output = await tauri.runOceanDump();
                 setDumpOutput(output);
                 setDumpRunning(false);
               }}
@@ -578,16 +578,16 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
           {updateResult && (
             <div
-              className={`settings-hermes-result ${updateResultType || "error"}`}
+              className={`settings-oceanos-result ${updateResultType || "error"}`}
             >
               {updateResult}
             </div>
           )}
           {doctorOutput && (
-            <pre className="settings-hermes-doctor">{doctorOutput}</pre>
+            <pre className="settings-oceanos-doctor">{doctorOutput}</pre>
           )}
           {dumpOutput && (
-            <pre className="settings-hermes-doctor">{dumpOutput}</pre>
+            <pre className="settings-oceanos-doctor">{dumpOutput}</pre>
           )}
         </div>
       </div>
@@ -598,7 +598,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           <div className="settings-field-hint" style={{ marginBottom: 10 }}>
             {t("settings.communityHint")}
           </div>
-          <div className="settings-hermes-actions">
+          <div className="settings-oceanos-actions">
             <button
               className="btn btn-secondary"
               onClick={() =>
@@ -734,7 +734,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                 {t("settings.remoteApiKeyHint")}
               </div>
             </div>
-            <div className="settings-hermes-actions">
+            <div className="settings-oceanos-actions">
               <button
                 className="btn btn-secondary"
                 onClick={handleTestConnection}
@@ -819,7 +819,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                 {t("settings.sshHint", { cmd: `${sshUser || "user"}@${sshHost || "host"}` })}
               </div>
             </div>
-            <div className="settings-hermes-actions">
+            <div className="settings-oceanos-actions">
               <button
                 className="btn btn-secondary"
                 onClick={handleTestConnection}
@@ -863,13 +863,13 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             </button>
           </div>
           {migrationLog && (
-            <pre className="settings-hermes-doctor" ref={migrationLogRef}>
+            <pre className="settings-oceanos-doctor" ref={migrationLogRef}>
               {migrationLog}
             </pre>
           )}
           {migrationResult && (
             <div
-              className={`settings-hermes-result ${migrationResultType || "error"}`}
+              className={`settings-oceanos-result ${migrationResultType || "error"}`}
             >
               {migrationResult}
             </div>
@@ -882,7 +882,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             >
               {migrating
                 ? t("settings.migrating")
-                : t("settings.migrateToHermes")}
+                : t("settings.migrateToOceanOS")}
             </button>
             <button
               className="btn btn-secondary "
@@ -1115,7 +1115,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           <div className="settings-field-hint" style={{ marginBottom: 10 }}>
             {t("settings.dataHint")}
           </div>
-          <div className="settings-hermes-actions">
+          <div className="settings-oceanos-actions">
             <button
               className="btn btn-secondary"
               onClick={handleBackup}
@@ -1135,7 +1135,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
           {backupResult && (
             <div
-              className={`settings-hermes-result ${backupResult.includes("created") || backupResult.includes("success") ? "success" : "error"}`}
+              className={`settings-oceanos-result ${backupResult.includes("created") || backupResult.includes("success") ? "success" : "error"}`}
               style={{ marginTop: 8 }}
             >
               {backupResult}
@@ -1143,7 +1143,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           )}
           {importResult && (
             <div
-              className={`settings-hermes-result ${importResult.includes("complete") ? "success" : "error"}`}
+              className={`settings-oceanos-result ${importResult.includes("complete") ? "success" : "error"}`}
               style={{ marginTop: 8 }}
             >
               {importResult}
@@ -1197,7 +1197,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               </div>
             )}
             <pre
-              className="settings-hermes-doctor"
+              className="settings-oceanos-doctor"
               style={{
                 maxHeight: 300,
                 overflow: "auto",

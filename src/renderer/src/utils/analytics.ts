@@ -4,7 +4,7 @@ const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || "";
 const POSTHOG_HOST =
   import.meta.env.VITE_POSTHOG_HOST || "https://eu.i.posthog.com";
 
-const ANALYTICS_CONSENT_KEY = "hermes-analytics-enabled";
+const ANALYTICS_CONSENT_KEY = "oceanos-analytics-enabled";
 
 function isAnalyticsEnabled(): boolean {
   // Default to true for official builds (key present), false otherwise
@@ -19,7 +19,7 @@ function isAnalyticsEnabled(): boolean {
 }
 
 function getOrCreateAnonymousId(): string {
-  const key = "hermes-anonymous-id";
+  const key = "oceanos-anonymous-id";
   try {
     let id = localStorage.getItem(key);
     if (!id) {

@@ -34,7 +34,7 @@ describe("Skills.tsx — Install button (issue #310 diagnosis)", () => {
     ]);
     const getSkillContent = vi.fn().mockResolvedValue("");
 
-    Object.defineProperty(window, "hermesAPI", {
+    Object.defineProperty(window, "oceanAPI", {
       configurable: true,
       value: {
         installSkill,
@@ -101,7 +101,7 @@ describe("Skills.tsx — Install button (issue #310 diagnosis)", () => {
     ]);
     const getSkillContent = vi.fn().mockResolvedValue("");
 
-    Object.defineProperty(window, "hermesAPI", {
+    Object.defineProperty(window, "oceanAPI", {
       configurable: true,
       value: {
         installSkill,

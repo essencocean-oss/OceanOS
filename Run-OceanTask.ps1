@@ -31,8 +31,8 @@ switch ($Action) {
         if (-not $Arg1) { throw "Arg1 required: message text" }
         try {
             $candidates = @(
-                "$env:USERPROFILE\.hermes\.env",
-                "$env:LOCALAPPDATA\hermes\.env"
+                "$env:USERPROFILE\.oceanos\.env",
+                "$env:LOCALAPPDATA\oceanos\.env"
             )
             $envFile = $null
             foreach ($path in $candidates) {

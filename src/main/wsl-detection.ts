@@ -1,13 +1,13 @@
 /**
- * WSL detection + sibling `~/.hermes/` discovery.
+ * WSL detection + sibling `~/.oceanos/` discovery.
  *
  * Ocean One on Windows reads its config from
- * `%LocalAppData%\hermes\`. Users who also run the `hermes` CLI inside
- * a WSL distro have a second, separate `~/.hermes/` at
- * `/home/<user>/.hermes/` on the WSL filesystem. The two are
+ * `%LocalAppData%\oceanos\`. Users who also run the `oceanos` CLI inside
+ * a WSL distro have a second, separate `~/.oceanos/` at
+ * `/home/<user>/.oceanos/` on the WSL filesystem. The two are
  * independent — settings configured in one don't appear in the other.
  *
- * This module enumerates accessible WSL `~/.hermes/` directories so
+ * This module enumerates accessible WSL `~/.oceanos/` directories so
  * the config-health audit can flag drift between the Windows-side
  * config and any sibling. Fail-soft throughout: any error, missing
  * tool, or unreachable distro returns an empty list — never throws.
@@ -25,17 +25,17 @@ const IS_WINDOWS = process.platform === "win32";
 const WSL_EXE = "C:\\Windows\\System32\\wsl.exe";
 
 /**
- * Information about one sibling `~/.hermes/` discovered on a WSL
+ * Information about one sibling `~/.oceanos/` discovered on a WSL
  * distro's filesystem. Paths are Windows UNC-style so they can be
  * passed straight to `fs.readFileSync` and friends.
  */
-export interface SiblingHermesHome {
+export interface SiblingOceanOSHome {
   /** WSL distro name, e.g. "Ubuntu". */
   distro: string;
   /** Linux user the home dir belongs to, e.g. "pmos6". */
   user: string;
-  /** UNC-style path to the .hermes directory on the WSL fs, e.g.
-   *  `\\wsl$\Ubuntu\home\pmos6\.hermes`. Always uses backslashes
+  /** UNC-style path to the .oceanos directory on the WSL fs, e.g.
+   *  `\\wsl$\Ubuntu\home\pmos6\.oceanos`. Always uses backslashes
    *  because that's what UNC + Node `fs` expect on Windows. */
   oceanHome: string;
 }
@@ -86,8 +86,8 @@ export function listWslDistros(): string[] {
 }
 
 /**
- * Find every accessible sibling `~/.hermes/` across all WSL distros.
- * Walks each distro's `/home/<user>/.hermes` and yields one entry per
+ * Find every accessible sibling `~/.oceanos/` across all WSL distros.
+ * Walks each distro's `/home/<user>/.oceanos` and yields one entry per
  * existing dir.
  *
  * Performance: filesystem-only, no subprocess. Each distro contributes
@@ -95,13 +95,13 @@ export function listWslDistros(): string[] {
  * audit doesn't re-walk on every panel render.
  */
 const CACHE_TTL_MS = 60 * 1000;
-let _cache: { ts: number; result: SiblingHermesHome[] } | null = null;
+let _cache: { ts: number; result: SiblingOceanOSHome[] } | null = null;
 
-export function findSiblingHermesHomes(): SiblingHermesHome[] {
+export function findSiblingOceanOSHomes(): SiblingOceanOSHome[] {
   if (_cache && Date.now() - _cache.ts < CACHE_TTL_MS) {
     return _cache.result;
   }
-  const result: SiblingHermesHome[] = [];
+  const result: SiblingOceanOSHome[] = [];
   try {
     for (const distro of listWslDistros()) {
       const homesRoot = `\\\\wsl$\\${distro}\\home`;
@@ -113,7 +113,7 @@ export function findSiblingHermesHomes(): SiblingHermesHome[] {
         continue;
       }
       for (const user of users) {
-        const oceanHome = `\\\\wsl$\\${distro}\\home\\${user}\\.hermes`;
+        const oceanHome = `\\\\wsl$\\${distro}\\home\\${user}\\.oceanos`;
         try {
           if (
             existsSync(oceanHome) &&
@@ -140,7 +140,7 @@ export function _clearWslCache(): void {
 
 /**
  * Best-effort `wsl --status` check. Used only for diagnostic display;
- * not on the hot path of `findSiblingHermesHomes`. Returns the raw
+ * not on the hot path of `findSiblingOceanOSHomes`. Returns the raw
  * output (trimmed) or null on any error.
  */
 export function wslStatus(): string | null {

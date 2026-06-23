@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { HermesAvatar, MessageRow } from "./MessageRow";
+import { OceanAvatar, MessageRow } from "./MessageRow";
 import { ReasoningRow, ToolActivityGroup } from "./HistoryRow";
 import { ClarifyCard } from "./ClarifyCard";
 import type {
@@ -31,7 +31,7 @@ function TypingIndicator({
 }): React.JSX.Element {
   return (
     <div className="chat-message chat-message-agent">
-      <HermesAvatar />
+      <OceanAvatar />
       <div className="chat-bubble chat-bubble-agent">
         {toolProgress ? (
           <div className="chat-tool-progress">{toolProgress}</div>

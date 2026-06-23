@@ -34,17 +34,17 @@ import {
   verifyInstall,
   runInstall,
   inspectInstallTarget,
-  validateHermesHome,
-  setHermesHomeOverride,
-  getHermesVersion,
+  validateOceanHome,
+  setOceanHomeOverride,
+  getOceanOSVersion,
   clearVersionCache,
-  runHermesDoctor,
-  runHermesUpdate,
+  runOceanDoctor,
+  runOceanUpdate,
   checkOpenClawExists,
   runClawMigrate,
-  runHermesBackup,
-  runHermesImport,
-  runHermesDump,
+  runOceanBackup,
+  runOceanImport,
+  runOceanDump,
   discoverMemoryProviders,
   readLogs,
   InstallProgress,
@@ -61,8 +61,8 @@ import {
 } from "./mcp-servers";
 import { updaterLogger } from "./updater-log";
 import {
-  runHermesAuthLogin,
-  cancelHermesAuthLogin,
+  runOceanOSAuthLogin,
+  cancelOceanOSAuthLogin,
   detectDeviceCode,
 } from "./ocean-auth";
 import {
@@ -114,7 +114,7 @@ import {
   setEnvValue,
   getConfigValue,
   setConfigValue,
-  getHermesHome,
+  getOceanHome,
   getModelConfig,
   setModelConfig,
   getCredentialPool,
@@ -258,7 +258,7 @@ import {
   sshSetEnvValue,
   sshGetConfigValue,
   sshSetConfigValue,
-  sshGetHermesHome,
+  sshGetOceanHome,
   sshGetModelConfig,
   sshSetModelConfig,
   sshListSessions,
@@ -271,7 +271,7 @@ import {
   sshStartGateway,
   sshStopGateway,
   sshReadRemoteApiKey,
-  sshGetHermesVersion,
+  sshGetOceanVersion,
   sshReadLogs,
   sshGetPlatformEnabled,
   sshSetPlatformEnabled,
@@ -483,37 +483,37 @@ function setupIPC(): void {
   // Pre-install inspection + "use an existing installation" (issue #272).
   ipcMain.handle("inspect-install-target", () => inspectInstallTarget());
   ipcMain.handle("validate-ocean-home", (_event, dir: string) =>
-    validateHermesHome(dir),
+    validateOceanHome(dir),
   );
   ipcMain.handle("adopt-ocean-home", (_event, dir: string) => {
-    if (!validateHermesHome(dir)) return false;
+    if (!validateOceanHome(dir)) return false;
     // Persist the choice only. OCEAN_HOME is resolved once at module
     // load, so the override takes effect on the next launch — the renderer
     // asks the user to restart. (An app-driven relaunch is unreliable
     // under the dev server, which is torn down with the process.)
-    setHermesHomeOverride(dir);
+    setOceanHomeOverride(dir);
     return true;
   });
   ipcMain.handle("quit-app", () => app.quit());
 
   // Ocean engine info
-  ipcMain.handle("get-hermes-version", async () => {
+  ipcMain.handle("get-oceanos-version", async () => {
     const conn = getConnectionConfig();
-    if (conn.mode === "ssh" && conn.ssh) return sshGetHermesVersion(conn.ssh);
-    return getHermesVersion();
+    if (conn.mode === "ssh" && conn.ssh) return sshGetOceanVersion(conn.ssh);
+    return getOceanOSVersion();
   });
-  ipcMain.handle("refresh-hermes-version", async () => {
+  ipcMain.handle("refresh-oceanos-version", async () => {
     const conn = getConnectionConfig();
-    if (conn.mode === "ssh" && conn.ssh) return sshGetHermesVersion(conn.ssh);
+    if (conn.mode === "ssh" && conn.ssh) return sshGetOceanVersion(conn.ssh);
     clearVersionCache();
-    return getHermesVersion();
+    return getOceanOSVersion();
   });
-  ipcMain.handle("run-hermes-doctor", () => {
+  ipcMain.handle("run-oceanos-doctor", () => {
     const conn = getConnectionConfig();
     if (conn.mode === "ssh" && conn.ssh) return sshRunDoctor(conn.ssh);
-    return runHermesDoctor();
+    return runOceanDoctor();
   });
-  ipcMain.handle("run-hermes-update", async (event) => {
+  ipcMain.handle("run-oceanos-update", async (event) => {
     try {
       const conn = getConnectionConfig();
       if (conn.mode === "ssh" && conn.ssh) {
@@ -521,8 +521,8 @@ function setupIPC(): void {
           step: 1,
           totalSteps: 1,
           title: "Updating remote Ocean Agent",
-          detail: "Running hermes update over SSH...",
-          log: "Running hermes update over SSH...\n",
+          detail: "Running oceanos update over SSH...",
+          log: "Running oceanos update over SSH...\n",
         });
         await sshRunUpdate(conn.ssh);
         await sshStartGateway(conn.ssh);
@@ -531,7 +531,7 @@ function setupIPC(): void {
         setSshRemoteApiKey(key);
         return { success: true };
       }
-      await runHermesUpdate((progress: InstallProgress) => {
+      await runOceanUpdate((progress: InstallProgress) => {
         event.sender.send("install-progress", progress);
       });
       return { success: true };
@@ -553,7 +553,7 @@ function setupIPC(): void {
     }
   });
 
-  // OAuth provider sign-in — spawns `hermes auth add <provider> --type
+  // OAuth provider sign-in — spawns `oceanos auth add <provider> --type
   // oauth`, streaming the CLI's output to the renderer's sign-in modal.
   ipcMain.handle("oauth-login", (event, provider: string, profile?: string) => {
     // Codex uses a device-code flow: it prints a URL + code instead
@@ -561,10 +561,10 @@ function setupIPC(): void {
     // open the page and pre-copy the code so the user just pastes.
     let buffer = "";
     let deviceHandled = false;
-    return runHermesAuthLogin(
+    return runOceanOSAuthLogin(
       provider,
       (chunk) => {
-        // The user can close the modal mid-flow before cancelHermesAuthLogin
+        // The user can close the modal mid-flow before cancelOceanOSAuthLogin
         // tears down the subprocess; any send on a destroyed sender throws.
         if (event.sender.isDestroyed()) return;
         event.sender.send("oauth-login-progress", chunk);
@@ -584,7 +584,7 @@ function setupIPC(): void {
       profile,
     );
   });
-  ipcMain.handle("oauth-login-cancel", () => cancelHermesAuthLogin());
+  ipcMain.handle("oauth-login-cancel", () => cancelOceanOSAuthLogin());
 
   // Configuration (profile-aware)
   ipcMain.handle("get-locale", () => getAppLocale());
@@ -608,7 +608,7 @@ function setupIPC(): void {
   // Config-health audit + per-issue auto-fix. The renderer renders a
   // dismissible banner above the chat input and a full report in the
   // Settings → Diagnose section. Auto-fixes are additive only — never
-  // delete; always log to ~/.hermes/logs/config-fixes.log.
+  // delete; always log to ~/.oceanos/logs/config-fixes.log.
   ipcMain.handle("get-config-health", (_event, profile?: string) => {
     return runConfigHealthCheck(profile);
   });
@@ -684,8 +684,8 @@ function setupIPC(): void {
   ipcMain.handle("get-ocean-home", (_event, profile?: string) => {
     const conn = getConnectionConfig();
     if (conn.mode === "ssh" && conn.ssh)
-      return sshGetHermesHome(conn.ssh, profile);
-    return getHermesHome(profile);
+      return sshGetOceanHome(conn.ssh, profile);
+    return getOceanHome(profile);
   });
 
   ipcMain.handle("get-model-config", (_event, profile?: string) => {
@@ -1205,7 +1205,7 @@ function setupIPC(): void {
     if (conn.mode === "remote") {
       // The remote server runs its own gateway; nothing to start locally.
       // Without this guard we'd fall through to `startGateway()` and
-      // spawn a non-existent local hermes-agent (issue #266).
+      // spawn a non-existent local oceanos-agent (issue #266).
       return {
         success: false,
         running: false,
@@ -1972,20 +1972,20 @@ function setupIPC(): void {
   });
 
   // Backup / Import
-  ipcMain.handle("run-hermes-backup", (_event, profile?: string) =>
-    runHermesBackup(profile),
+  ipcMain.handle("run-oceanos-backup", (_event, profile?: string) =>
+    runOceanBackup(profile),
   );
   ipcMain.handle(
-    "run-hermes-import",
+    "run-oceanos-import",
     (_event, archivePath: string, profile?: string) =>
-      runHermesImport(archivePath, profile),
+      runOceanImport(archivePath, profile),
   );
 
   // Debug dump
-  ipcMain.handle("run-hermes-dump", () => {
+  ipcMain.handle("run-oceanos-dump", () => {
     const conn = getConnectionConfig();
     if (conn.mode === "ssh" && conn.ssh) return sshRunDump(conn.ssh);
-    return runHermesDump();
+    return runOceanDump();
   });
 
   // MCP servers
@@ -2143,7 +2143,7 @@ function buildMenu(): void {
         {
           label: "Ocean Agent on GitHub",
           click: (): void => {
-            openExternalUrl("https://github.com/NousResearch/hermes-agent/");
+            openExternalUrl("https://github.com/NousResearch/oceanos-agent/");
           },
         },
         {
@@ -2261,7 +2261,7 @@ if (process.env.ENABLE_CDP === "1") {
 
 app.whenReady().then(() => {
   app.setName("Ocean One");
-  electronApp.setAppUserModelId("com.nousresearch.hermes");
+  electronApp.setAppUserModelId("com.nousresearch.oceanos");
   cleanupTempMediaFiles();
 
   // Allow microphone access for the app's own renderer (voice input). Without

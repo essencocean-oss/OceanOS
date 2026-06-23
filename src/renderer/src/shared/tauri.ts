@@ -144,14 +144,14 @@ export const tauri = {
   // Misc runtime
   getAppVersion: () => cmd<string>("get_app_version").catch(() => Promise.resolve("0.1.0")),
   openExternal: (url: string) => open(url),
-  getHermesVersion: () => cmd<string>("get_version"),
-  refreshHermesVersion: () => cmd<string>("get_version"),
-  runHermesDoctor: () => cmd("gateway_status"),
+  getOceanOSVersion: () => cmd<string>("get_version"),
+  refreshOceanOSVersion: () => cmd<string>("get_version"),
+  runOceanDoctor: () => cmd("gateway_status"),
   checkOpenClaw: () => Promise.resolve({ found: false, path: null }),
-  runHermesUpdate: () => Promise.resolve({ success: true }),
+  runOceanUpdate: () => Promise.resolve({ success: true }),
   runClawMigrate: () => Promise.resolve({ success: true }),
-  // Hermes home / config
-  getHermesHome: (profile?: string) => cmd("get_ocean_home", { profile }),
+  // OceanOS home / config
+  getOceanHome: (profile?: string) => cmd("get_ocean_home", { profile }),
   getModelConfig: (profile?: string) => cmd("get_model_config", { profile }),
   setModelConfig: (provider: string, model: string, baseUrl: string, profile?: string) =>
     cmd("set_model_config", { provider, model, baseUrl, profile }),
@@ -160,11 +160,11 @@ export const tauri = {
   resetAuxiliaryConfig: () => cmd("reset_auxiliary_config"),
   isRemoteMode: () => cmd("is_remote_mode"),
   isRemoteOnlyMode: () => cmd("is_remote_only_mode"),
-  validateHermesHome: (dir: string) => cmd("validate_ocean_home", { dir }),
-  adoptHermesHome: (dir: string) => cmd("adopt_ocean_home", { dir }),
-  runHermesBackup: () => cmd("run_hermes_backup"),
-  runHermesDump: () => cmd("run_hermes_dump"),
-  runHermesImport: () => cmd("run_hermes_import"),
+  validateOceanHome: (dir: string) => cmd("validate_ocean_home", { dir }),
+  adoptOceanHome: (dir: string) => cmd("adopt_ocean_home", { dir }),
+  runOceanBackup: () => cmd("run_oceanos_backup"),
+  runOceanDump: () => cmd("run_oceanos_dump"),
+  runOceanImport: () => cmd("run_oceanos_import"),
   // Auth
   oauthLogin: () => Promise.resolve({ success: true }),
   cancelOAuthLogin: () => Promise.resolve(true),

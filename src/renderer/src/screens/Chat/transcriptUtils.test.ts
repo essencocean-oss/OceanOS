@@ -17,7 +17,7 @@ describe("buildChatTranscript (issue #298)", () => {
       [msg("user", "hi"), msg("agent", "hello there")],
       "text",
     );
-    expect(out).toBe("You: hi\n\nHermes: hello there");
+    expect(out).toBe("You: hi\n\nOceanOS: hello there");
   });
 
   it("formats markdown with bold speaker headers", () => {

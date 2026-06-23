@@ -25,7 +25,7 @@ const baseProps = {
   currentSessionId: null,
 };
 
-function installHermesAPI(initialSessions: unknown[] = []): {
+function installOceanOSAPI(initialSessions: unknown[] = []): {
   listCachedSessions: ReturnType<typeof vi.fn>;
   syncSessionCache: ReturnType<typeof vi.fn>;
   searchSessions: ReturnType<typeof vi.fn>;
@@ -39,7 +39,7 @@ function installHermesAPI(initialSessions: unknown[] = []): {
     deleteSession: vi.fn().mockResolvedValue(undefined),
     deleteSessions: vi.fn().mockResolvedValue({ requested: 0, deleted: 0 }),
   };
-  Object.defineProperty(window, "hermesAPI", {
+  Object.defineProperty(window, "oceanAPI", {
     configurable: true,
     value: api,
   });
@@ -86,7 +86,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("re-syncs from state.db on an interval while the tab is visible", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
 
@@ -105,7 +105,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("runs no timer while the tab is hidden", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     render(<Sessions {...baseProps} visible={false} />);
     await act(async () => {});
 
@@ -117,7 +117,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("stops the timer once the tab becomes hidden", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     const view = render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
 
@@ -133,7 +133,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("refreshes when the window regains focus", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
 
@@ -146,7 +146,7 @@ describe("Sessions tab live refresh (#322)", () => {
 
   it("renders sessions recovered by sync when the fast cache starts empty", async () => {
     vi.useRealTimers();
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     api.syncSessionCache.mockResolvedValue([
       {
         id: "recovered-session",
@@ -168,7 +168,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("ignores stale search results from earlier keystrokes", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     let resolveBroadSearch:
       | ((value: ReturnType<typeof sessionSearchResult>[]) => void)
       | undefined;
@@ -204,7 +204,7 @@ describe("Sessions tab live refresh (#322)", () => {
 
     await act(async () => {
       resolveBroadSearch?.([
-        sessionSearchResult("Broad h match", "<<hermes>>"),
+        sessionSearchResult("Broad h match", "<<oceanos>>"),
       ]);
     });
 
@@ -214,7 +214,7 @@ describe("Sessions tab live refresh (#322)", () => {
 
   it("uses matched text as the visible title for untitled search results", async () => {
     vi.useRealTimers();
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     api.searchSessions.mockResolvedValue([
       sessionSearchResult(
         null,
@@ -236,7 +236,7 @@ describe("Sessions tab live refresh (#322)", () => {
   });
 
   it("does not repopulate search results after clearing the input", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     let resolveSearch:
       | ((value: ReturnType<typeof sessionSearchResult>[]) => void)
       | undefined;
@@ -283,7 +283,7 @@ describe("Sessions tab — delete affordance (#408)", () => {
         model: "gpt-4",
       },
     ];
-    const api = installHermesAPI(sessions);
+    const api = installOceanOSAPI(sessions);
 
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
@@ -320,7 +320,7 @@ describe("Sessions tab — delete affordance (#408)", () => {
         model: "gpt-4",
       },
     ];
-    const api = installHermesAPI(sessions);
+    const api = installOceanOSAPI(sessions);
 
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
@@ -357,7 +357,7 @@ describe("Sessions tab — delete affordance (#408)", () => {
         model: "gpt-4",
       },
     ];
-    installHermesAPI(sessions);
+    installOceanOSAPI(sessions);
     const onResume = vi.fn();
 
     render(
@@ -413,7 +413,7 @@ describe("Sessions tab — bulk delete selection (#490)", () => {
         model: "gpt-4",
       },
     ];
-    const api = installHermesAPI(sessions);
+    const api = installOceanOSAPI(sessions);
 
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});
@@ -454,7 +454,7 @@ describe("Sessions tab — bulk delete selection (#490)", () => {
   });
 
   it("selects only visible search results", async () => {
-    const api = installHermesAPI([
+    const api = installOceanOSAPI([
       {
         id: "main-session",
         title: "Main chat",
@@ -521,7 +521,7 @@ describe("Sessions tab — bulk delete selection (#490)", () => {
         model: "gpt-4",
       },
     ];
-    const api = installHermesAPI(sessions);
+    const api = installOceanOSAPI(sessions);
 
     render(<Sessions {...baseProps} visible={true} />);
     await act(async () => {});

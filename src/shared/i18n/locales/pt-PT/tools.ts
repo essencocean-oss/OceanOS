@@ -65,7 +65,7 @@ export default {
   },
   mcpServers: "Servidores MCP",
   mcpDescription:
-    "Servidores Model Context Protocol configurados no config.yaml. Faça a gestão via <code>hermes mcp add/remove</code> no terminal.",
+    "Servidores Model Context Protocol configurados no config.yaml. Faça a gestão via <code>oceanos mcp add/remove</code> no terminal.",
   http: "HTTP",
   stdio: "stdio",
   disabled: "desactivado",

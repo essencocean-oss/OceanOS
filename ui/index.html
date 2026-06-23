@@ -355,7 +355,7 @@ setTimeout(function() {
   refreshInstalled();
 }, 700);
 window.addEventListener('storage', function(e) {
-  if (e.key === 'hermes.installed' && e.newValue) {
+  if (e.key === 'oceanos.installed' && e.newValue) {
     try { window.__installed = JSON.parse(e.newValue); } catch (e){}
     refreshInstalled();
   }

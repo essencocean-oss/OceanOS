@@ -14,7 +14,7 @@ type Status = "running" | "success" | "error";
 
 /**
  * Drives an interactive OAuth sign-in for a subscription provider.
- * Spawns `hermes auth add <provider> --type oauth` in the main process,
+ * Spawns `oceanos auth add <provider> --type oauth` in the main process,
  * streams the CLI output here, and reports success/failure. The CLI
  * opens the system browser for the consent step.
  */
@@ -105,7 +105,7 @@ function OAuthLoginModal({
             </div>
           )}
           {log && (
-            <pre className="settings-hermes-doctor" ref={logRef}>
+            <pre className="settings-oceanos-doctor" ref={logRef}>
               {log}
             </pre>
           )}

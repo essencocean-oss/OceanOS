@@ -22,4 +22,4 @@ Every installable skill MUST expose a `manifest.json` at `<skill>/manifest.json`
 
 - No secrets in manifest
 - No absolute paths
-- No auto-exec on install; explicit `hermes skills run <name>` only
+- No auto-exec on install; explicit `oceanos skills run <name>` only

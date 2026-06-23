@@ -48,7 +48,7 @@ export interface ChatReadiness {
 const OK: ChatReadiness = { ok: true };
 
 // Provider ids that authenticate ONLY via interactive OAuth login —
-// no API-key variant exists for these in hermes-agent's registry.
+// no API-key variant exists for these in oceanos-agent's registry.
 // For these, fail open after a negative auth.json probe (the upstream
 // "not signed in" error path is still the source of truth).
 //
@@ -65,7 +65,7 @@ const OAUTH_PROVIDERS = new Set([
 ]);
 
 // Provider ids that don't need an API key at all. `auto` lets
-// hermes-agent pick at runtime; the others are local self-hosted
+// oceanos-agent pick at runtime; the others are local self-hosted
 // gateways that don't enforce auth.
 //
 // `nous` used to be in this set (back when the registry only knew the
@@ -88,7 +88,7 @@ export function validateChatReadiness(profile?: string): ChatReadiness {
     const model = (mc.model || "").trim();
     const baseUrl = (mc.baseUrl || "").trim();
 
-    // Provider="auto" lets hermes-agent pick a model at runtime based
+    // Provider="auto" lets oceanos-agent pick a model at runtime based
     // on whatever keys are present in .env. No key-presence check
     // makes sense for it — fail open.
     if (!provider || provider === "auto") return OK;

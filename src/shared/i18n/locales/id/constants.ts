@@ -138,7 +138,7 @@ export default {
   matrixHomeserver: "Matrix Homeserver",
   matrixHomeHint: "mis. https://matrix.org",
   matrixUserId: "Matrix User ID",
-  matrixUserHint: "mis. @hermes:matrix.org",
+  matrixUserHint: "mis. @oceanos:matrix.org",
   matrixAccessToken: "Matrix Access Token",
   matrixTokenHint: "Access token untuk login Matrix",
   mattermostUrl: "Mattermost URL",

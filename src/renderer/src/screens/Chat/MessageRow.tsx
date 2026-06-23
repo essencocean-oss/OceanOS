@@ -18,7 +18,7 @@ function isChatBubbleMessage(msg: ChatMessage): msg is ChatBubbleMessage {
   );
 }
 
-export const HermesAvatar = memo(function HermesAvatar({
+export const OceanAvatar = memo(function OceanAvatar({
   size = 30,
 }: {
   size?: number;
@@ -85,7 +85,7 @@ export const MessageRow = memo(function MessageRow({
   if (!isChatBubbleMessage(msg)) {
     return (
       <div className={`chat-message chat-message-${msg.role}`}>
-        {showAvatar ? <HermesAvatar /> : <AvatarSpacer />}
+        {showAvatar ? <OceanAvatar /> : <AvatarSpacer />}
         <div className={`chat-bubble chat-bubble-${msg.role}`}>
           {/* Reasoning/tool messages handled separately */}
         </div>
@@ -111,7 +111,7 @@ export const MessageRow = memo(function MessageRow({
       ) : msg.role === "user" ? (
         <div className="chat-avatar chat-avatar-user">U</div>
       ) : (
-        <HermesAvatar />
+        <OceanAvatar />
       )}
       <div className={`chat-bubble chat-bubble-${msg.role}`}>
         {hasAttachments && (

@@ -1,5 +1,5 @@
 /**
- * SSH-proxied implementations of all hermes operations.
+ * SSH-proxied implementations of all oceanos operations.
  * Used when connection mode is "ssh" — every feature that normally reads/writes
  * local files is instead executed on the remote host via SSH.
  */
@@ -174,7 +174,7 @@ export async function sshListInstalledSkills(
 import os, json, sys
 payload = json.load(sys.stdin)
 profile = payload.get("profile")
-skills_dir = os.path.expanduser(f"~/.hermes/profiles/{profile}/skills" if profile and profile != "default" else "~/.hermes/skills")
+skills_dir = os.path.expanduser(f"~/.oceanos/profiles/{profile}/skills" if profile and profile != "default" else "~/.oceanos/skills")
 skills = []
 
 def read_meta(skill_path):
@@ -244,7 +244,7 @@ export async function sshInstallSkill(
   try {
     const stdout = await sshExec(
       config,
-      `hermes skills install ${shellQuote(identifier)} --yes 2>&1`,
+      `oceanos skills install ${shellQuote(identifier)} --yes 2>&1`,
       undefined,
       120000,
     );
@@ -261,13 +261,13 @@ export async function sshUninstallSkill(
   try {
     const stdout = await sshExec(
       config,
-      `hermes skills uninstall ${shellQuote(name)} --yes 2>&1`,
+      `oceanos skills uninstall ${shellQuote(name)} --yes 2>&1`,
     );
     const result = classifySkillCliOutput(stdout ?? "");
     if (result.success) return result;
 
     // CLI didn't find it — try direct filesystem removal on the remote.
-    // Walk ~/.hermes/skills/*/ to find a directory whose SKILL.md frontmatter
+    // Walk ~/.oceanos/skills/*/ to find a directory whose SKILL.md frontmatter
     // name or directory basename matches `name`.
     await sshExec(
       config,
@@ -275,7 +275,7 @@ export async function sshUninstallSkill(
 import os, sys
 name = ${shellQuote(name)}
 home = os.path.expanduser("~")
-skills_dir = os.path.join(home, ".hermes", "skills")
+skills_dir = os.path.join(home, ".oceanos", "skills")
 if not os.path.isdir(skills_dir):
     sys.exit(0)
 for cat in os.listdir(skills_dir):
@@ -325,7 +325,7 @@ export async function sshSearchSkills(
   try {
     const out = await sshExec(
       config,
-      `hermes skills browse --query ${shellQuote(query)} --json 2>/dev/null || echo "[]"`,
+      `oceanos skills browse --query ${shellQuote(query)} --json 2>/dev/null || echo "[]"`,
     );
     const parsed = JSON.parse(out.trim() || "[]");
     if (Array.isArray(parsed)) {
@@ -373,16 +373,16 @@ function serializeEntries(
 
 function remoteMemoryPath(profile?: string): string {
   if (profile && profile !== "default") {
-    return `~/.hermes/profiles/${profile}/memories/MEMORY.md`;
+    return `~/.oceanos/profiles/${profile}/memories/MEMORY.md`;
   }
-  return "~/.hermes/memories/MEMORY.md";
+  return "~/.oceanos/memories/MEMORY.md";
 }
 
 function remoteUserPath(profile?: string): string {
   if (profile && profile !== "default") {
-    return `~/.hermes/profiles/${profile}/memories/USER.md`;
+    return `~/.oceanos/profiles/${profile}/memories/USER.md`;
   }
-  return "~/.hermes/memories/USER.md";
+  return "~/.oceanos/memories/USER.md";
 }
 
 async function sshGetSessionStats(
@@ -393,7 +393,7 @@ async function sshGetSessionStats(
 import sqlite3, json, os, sys
 payload = json.load(sys.stdin)
 profile = payload.get("profile")
-db = os.path.expanduser(f"~/.hermes/profiles/{profile}/state.db" if profile and profile != "default" else "~/.hermes/state.db")
+db = os.path.expanduser(f"~/.oceanos/profiles/{profile}/state.db" if profile and profile != "default" else "~/.oceanos/state.db")
 if not os.path.exists(db):
     print(json.dumps({"totalSessions": 0, "totalMessages": 0}))
     sys.exit(0)
@@ -529,8 +529,8 @@ You strive to be helpful while being safe and responsible. You respect the user'
 
 function remoteSoulPath(profile?: string): string {
   if (profile && profile !== "default")
-    return `~/.hermes/profiles/${profile}/SOUL.md`;
-  return "~/.hermes/SOUL.md";
+    return `~/.oceanos/profiles/${profile}/SOUL.md`;
+  return "~/.oceanos/SOUL.md";
 }
 
 export async function sshReadSoul(
@@ -689,8 +689,8 @@ function localizeToolDefs(
 
 function remoteConfigPath(profile?: string): string {
   if (profile && profile !== "default")
-    return `$HOME/.hermes/profiles/${profile}/config.yaml`;
-  return `$HOME/.hermes/config.yaml`;
+    return `$HOME/.oceanos/profiles/${profile}/config.yaml`;
+  return `$HOME/.oceanos/config.yaml`;
 }
 
 export async function sshGetToolsets(
@@ -835,8 +835,8 @@ async function sshSetPlatformToolsetEnabled(
 
 function remoteEnvPath(profile?: string): string {
   if (profile && profile !== "default")
-    return `~/.hermes/profiles/${profile}/.env`;
-  return "~/.hermes/.env";
+    return `~/.oceanos/profiles/${profile}/.env`;
+  return "~/.oceanos/.env";
 }
 
 export async function sshReadEnv(
@@ -858,7 +858,7 @@ export async function sshReadEnv(
       v = v.slice(1, -1);
     if (v) result[k] = v;
   }
-  // Home Assistant has accumulated three naming conventions across hermes
+  // Home Assistant has accumulated three naming conventions across oceanos
   // versions: HASS_* (what gateway/config.py currently reads), HOMEASSISTANT_*
   // (legacy), and HA_* (older desktop builds). Mirror all three so the UI
   // can display the value regardless of which one the remote server uses.
@@ -1131,9 +1131,9 @@ export async function sshSetConfigValue(
   await sshWriteFile(config, configPath, updated);
 }
 
-export function sshGetHermesHome(_config: SshConfig, profile?: string): string {
-  if (profile && profile !== "default") return `~/.hermes/profiles/${profile}`;
-  return "~/.hermes";
+export function sshGetOceanHome(_config: SshConfig, profile?: string): string {
+  if (profile && profile !== "default") return `~/.oceanos/profiles/${profile}`;
+  return "~/.oceanos";
 }
 
 export async function sshGetModelConfig(
@@ -1197,7 +1197,7 @@ payload = json.load(sys.stdin)
 profile = payload.get("profile")
 limit = max(1, min(200, int(payload.get("limit") or 30)))
 offset = max(0, int(payload.get("offset") or 0))
-db = os.path.expanduser(f"~/.hermes/profiles/{profile}/state.db" if profile and profile != "default" else "~/.hermes/state.db")
+db = os.path.expanduser(f"~/.oceanos/profiles/{profile}/state.db" if profile and profile != "default" else "~/.oceanos/state.db")
 if not os.path.exists(db):
     print("[]"); sys.exit(0)
 conn = sqlite3.connect(db)
@@ -1245,7 +1245,7 @@ import sqlite3, json, os, sys
 payload = json.load(sys.stdin)
 profile = payload.get("profile")
 session_id = payload.get("sessionId") or ""
-db = os.path.expanduser(f"~/.hermes/profiles/{profile}/state.db" if profile and profile != "default" else "~/.hermes/state.db")
+db = os.path.expanduser(f"~/.oceanos/profiles/{profile}/state.db" if profile and profile != "default" else "~/.oceanos/state.db")
 if not os.path.exists(db):
     print("[]"); sys.exit(0)
 conn = sqlite3.connect(db)
@@ -1378,7 +1378,7 @@ payload = json.load(sys.stdin)
 profile = payload.get("profile")
 query = payload.get("query") or ""
 limit = max(1, min(200, int(payload.get("limit") or 20)))
-db = os.path.expanduser(f"~/.hermes/profiles/{profile}/state.db" if profile and profile != "default" else "~/.hermes/state.db")
+db = os.path.expanduser(f"~/.oceanos/profiles/{profile}/state.db" if profile and profile != "default" else "~/.oceanos/state.db")
 if not os.path.exists(db):
     print("[]"); sys.exit(0)
 conn = sqlite3.connect(db)
@@ -1427,8 +1427,8 @@ export async function sshListProfiles(
 ): Promise<SshProfileInfo[]> {
   const script = `
 import os, json
-hermes_home = os.path.expanduser("~/.hermes")
-profiles_dir = os.path.join(hermes_home, "profiles")
+oceanos_home = os.path.expanduser("~/.oceanos")
+profiles_dir = os.path.join(oceanos_home, "profiles")
 profiles = []
 
 def read_config(path):
@@ -1466,14 +1466,14 @@ def gw_running(path):
         return False
 
 # Default profile
-model, provider = read_config(hermes_home)
+model, provider = read_config(oceanos_home)
 profiles.append({
-    "name": "default", "path": hermes_home, "isDefault": True, "isActive": True,
+    "name": "default", "path": oceanos_home, "isDefault": True, "isActive": True,
     "model": model, "provider": provider,
-    "hasEnv": os.path.exists(os.path.join(hermes_home, ".env")),
-    "hasSoul": os.path.exists(os.path.join(hermes_home, "SOUL.md")),
-    "skillCount": count_skills(hermes_home),
-    "gatewayRunning": gw_running(hermes_home)
+    "hasEnv": os.path.exists(os.path.join(oceanos_home, ".env")),
+    "hasSoul": os.path.exists(os.path.join(oceanos_home, "SOUL.md")),
+    "skillCount": count_skills(oceanos_home),
+    "gatewayRunning": gw_running(oceanos_home)
 })
 
 if os.path.isdir(profiles_dir):
@@ -1499,7 +1499,7 @@ print(json.dumps(profiles))
     return [
       {
         name: "default",
-        path: "~/.hermes",
+        path: "~/.oceanos",
         isDefault: true,
         isActive: true,
         model: "",
@@ -1525,12 +1525,12 @@ export async function sshCreateProfile(
     if (clone) {
       await sshExec(
         config,
-        `hermes profiles create ${quoted} --clone-from default 2>&1 || mkdir -p ~/.hermes/profiles/${quoted}`,
+        `oceanos profiles create ${quoted} --clone-from default 2>&1 || mkdir -p ~/.oceanos/profiles/${quoted}`,
       );
     } else {
       await sshExec(
         config,
-        `hermes profiles create ${quoted} 2>&1 || mkdir -p ~/.hermes/profiles/${quoted}`,
+        `oceanos profiles create ${quoted} 2>&1 || mkdir -p ~/.oceanos/profiles/${quoted}`,
       );
     }
     return true;
@@ -1549,7 +1549,7 @@ export async function sshDeleteProfile(
     const quoted = shellQuote(safe);
     await sshExec(
       config,
-      `hermes profiles delete ${quoted} --yes 2>&1 || rm -rf ~/.hermes/profiles/${quoted}`,
+      `oceanos profiles delete ${quoted} --yes 2>&1 || rm -rf ~/.oceanos/profiles/${quoted}`,
     );
     return true;
   } catch {
@@ -1559,7 +1559,7 @@ export async function sshDeleteProfile(
 
 // ── Gateway ───────────────────────────────────────────────────────────────────
 //
-// In SSH mode the remote gateway may be owned by a systemd `hermes.service`
+// In SSH mode the remote gateway may be owned by a systemd `oceanos.service`
 // unit — the standard VPS installer sets this up. Starting our own detached
 // `nohup` gateway then strands that unit in a restart crash-loop (issue
 // #285). Each operation below therefore asks the remote, in a single shell
@@ -1569,19 +1569,19 @@ export async function sshDeleteProfile(
 // tested without a live host.
 
 /**
- * Shell test that succeeds when a systemd `hermes.service` unit file is
+ * Shell test that succeeds when a systemd `oceanos.service` unit file is
  * installed on the remote. Safe on hosts without systemd: a missing
  * `systemctl` yields empty output, so the test simply fails and callers
  * fall back to the plain (`nohup` / pidfile) path.
  */
-const SYSTEMD_HERMES_UNIT_TEST =
-  "systemctl list-unit-files hermes.service 2>/dev/null | " +
-  "grep -q '^hermes\\.service'";
+const SYSTEMD_OCEANOS_UNIT_TEST =
+  "systemctl list-unit-files oceanos.service 2>/dev/null | " +
+  "grep -q '^oceanos\\.service'";
 
 /**
  * Command to start the remote gateway (issue #285). When a systemd
- * `hermes.service` exists it owns the lifecycle, so the request is handed
- * to systemd — `hermes.service` is a system unit, so `sudo` is tried first,
+ * `oceanos.service` exists it owns the lifecycle, so the request is handed
+ * to systemd — `oceanos.service` is a system unit, so `sudo` is tried first,
  * then a direct call for when the SSH user is root. If neither works the
  * command does nothing on purpose: an unmanaged `nohup` orphan that
  * crash-loops the systemd unit is worse than a gateway that simply did not
@@ -1590,31 +1590,31 @@ const SYSTEMD_HERMES_UNIT_TEST =
  */
 export function buildGatewayStartCommand(): string {
   return (
-    `if ${SYSTEMD_HERMES_UNIT_TEST}; then ` +
-    `sudo -n systemctl start hermes.service 2>/dev/null || ` +
-    `systemctl start hermes.service 2>/dev/null || true; ` +
+    `if ${SYSTEMD_OCEANOS_UNIT_TEST}; then ` +
+    `sudo -n systemctl start oceanos.service 2>/dev/null || ` +
+    `systemctl start oceanos.service 2>/dev/null || true; ` +
     `else ` +
-    `(nohup hermes gateway start > $HOME/.hermes/gateway.log 2>&1 &); ` +
+    `(nohup oceanos gateway start > $HOME/.oceanos/gateway.log 2>&1 &); ` +
     `fi`
   );
 }
 
 /**
  * Command to stop the remote gateway (issue #285). Routed through systemd
- * when a `hermes.service` unit exists, so the unit is left cleanly inactive
+ * when a `oceanos.service` unit exists, so the unit is left cleanly inactive
  * rather than the desktop killing a process systemd would just restart;
- * otherwise it falls back to `hermes gateway stop` and, last resort, the
+ * otherwise it falls back to `oceanos gateway stop` and, last resort, the
  * recorded pid.
  */
 export function buildGatewayStopCommand(): string {
   return (
-    `if ${SYSTEMD_HERMES_UNIT_TEST}; then ` +
-    `sudo -n systemctl stop hermes.service 2>/dev/null || ` +
-    `systemctl stop hermes.service 2>/dev/null || true; ` +
+    `if ${SYSTEMD_OCEANOS_UNIT_TEST}; then ` +
+    `sudo -n systemctl stop oceanos.service 2>/dev/null || ` +
+    `systemctl stop oceanos.service 2>/dev/null || true; ` +
     `else ` +
-    `hermes gateway stop 2>/dev/null || ` +
-    `(if [ -f $HOME/.hermes/gateway.pid ]; then ` +
-    `pid=$(python3 -c "import json; d=json.load(open('$HOME/.hermes/gateway.pid')); print(d['pid'] if isinstance(d,dict) else d)" 2>/dev/null); ` +
+    `oceanos gateway stop 2>/dev/null || ` +
+    `(if [ -f $HOME/.oceanos/gateway.pid ]; then ` +
+    `pid=$(python3 -c "import json; d=json.load(open('$HOME/.oceanos/gateway.pid')); print(d['pid'] if isinstance(d,dict) else d)" 2>/dev/null); ` +
     `[ -n "$pid" ] && kill $pid 2>/dev/null; fi); true; ` +
     `fi`
   );
@@ -1628,11 +1628,11 @@ export function buildGatewayStopCommand(): string {
  */
 export function buildGatewayStatusCommand(): string {
   return (
-    `if ${SYSTEMD_HERMES_UNIT_TEST}; then ` +
-    `systemctl is-active hermes.service 2>/dev/null || true; ` +
+    `if ${SYSTEMD_OCEANOS_UNIT_TEST}; then ` +
+    `systemctl is-active oceanos.service 2>/dev/null || true; ` +
     `else ` +
-    `if [ -f $HOME/.hermes/gateway.pid ]; then ` +
-    `pid=$(python3 -c "import json,sys; d=json.load(open('$HOME/.hermes/gateway.pid')); print(d.get('pid',d) if isinstance(d,dict) else d)" 2>/dev/null || cat $HOME/.hermes/gateway.pid); ` +
+    `if [ -f $HOME/.oceanos/gateway.pid ]; then ` +
+    `pid=$(python3 -c "import json,sys; d=json.load(open('$HOME/.oceanos/gateway.pid')); print(d.get('pid',d) if isinstance(d,dict) else d)" 2>/dev/null || cat $HOME/.oceanos/gateway.pid); ` +
     `kill -0 $pid 2>/dev/null && echo "running" || echo "stopped"; ` +
     `else echo "stopped"; fi; ` +
     `fi`
@@ -1678,17 +1678,17 @@ export async function sshReadRemoteApiKey(config: SshConfig): Promise<string> {
 
 // ── Versions ──────────────────────────────────────────────────────────────────
 
-export async function sshGetHermesVersion(
+export async function sshGetOceanVersion(
   config: SshConfig,
 ): Promise<string | null> {
   try {
     // Use the venv-probe path so the version string is the real multi-line
     // output (Engine / Released / Python / OpenAI SDK) the Settings UI
-    // parses, not an empty string when the /usr/local/bin/hermes wrapper
-    // refuses to run as the hermes user. See buildRemoteHermesCmd notes.
+    // parses, not an empty string when the /usr/local/bin/oceanos wrapper
+    // refuses to run as the oceanos user. See buildRemoteOceanOSCmd notes.
     const out = await sshExec(
       config,
-      buildRemoteHermesCmd(["--version"], " 2>/dev/null"),
+      buildRemoteOceanOSCmd(["--version"], " 2>/dev/null"),
     );
     return out.trim() || null;
   } catch {
@@ -1714,7 +1714,7 @@ export async function sshRunKanban<T = unknown>(
     cliArgs.push("-p", opts.profile);
   }
   cliArgs.push("kanban", ...args);
-  const cmd = buildRemoteHermesCmd(cliArgs);
+  const cmd = buildRemoteOceanOSCmd(cliArgs);
   try {
     const stdout = await sshExec(
       config,
@@ -1728,7 +1728,7 @@ export async function sshRunKanban<T = unknown>(
       } catch (err) {
         return {
           success: false,
-          error: `Failed to parse JSON from remote 'hermes kanban': ${(err as Error).message}`,
+          error: `Failed to parse JSON from remote 'oceanos kanban': ${(err as Error).message}`,
           stdout,
         };
       }
@@ -1744,11 +1744,11 @@ export async function sshRunKanban<T = unknown>(
 
 // ── Claw3D HQ board (read-only) ───────────────────────────────────────────────
 //
-// Claw3D ("hermes-office") maintains its own headquarters task board independent
-// of `hermes kanban`. It stores tasks at
+// Claw3D ("oceanos-office") maintains its own headquarters task board independent
+// of `oceanos kanban`. It stores tasks at
 // `<state-dir>/claw3d/task-manager/tasks.json`, where <state-dir> resolves to
 // `~/.openclaw` (new) or `~/.clawdbot` / `~/.moltbot` (legacy) — see
-// hermes-office/src/lib/clawdbot/paths.ts. We surface it as a virtual,
+// oceanos-office/src/lib/clawdbot/paths.ts. We surface it as a virtual,
 // read-only second board in the desktop's Kanban tab so the Claw3D HQ cards
 // are visible alongside the agent dispatcher's own board.
 
@@ -1807,7 +1807,7 @@ function mapClaw3dTaskToKanbanTask(raw: Claw3dSharedTaskRecord): KanbanTask {
   };
 }
 
-// Candidate state dirs mirror hermes-office's resolveStateDir() precedence:
+// Candidate state dirs mirror oceanos-office's resolveStateDir() precedence:
 // new `.openclaw` first, then legacy `.clawdbot` / `.moltbot`.
 const CLAW3D_TASKS_PATHS = [
   "~/.openclaw/claw3d/task-manager/tasks.json",
@@ -1869,7 +1869,7 @@ export async function sshReadLogs(
 ): Promise<{ content: string; path: string }> {
   const allowed = ["agent.log", "errors.log", "gateway.log"];
   const file = logFile && allowed.includes(logFile) ? logFile : "agent.log";
-  const remotePath = `$HOME/.hermes/logs/${file}`;
+  const remotePath = `$HOME/.oceanos/logs/${file}`;
   try {
     const safeLines = Math.max(
       1,
@@ -1879,9 +1879,9 @@ export async function sshReadLogs(
       config,
       `bash -c 'case "$2" in "~/"*) p="$HOME/\${2#~/}" ;; "\\$HOME/"*) p="$HOME/\${2#\\$HOME/}" ;; *) p="$2" ;; esac; tail -n "$1" -- "$p" 2>/dev/null || echo ""' -- ${shellQuote(String(safeLines))} ${shellQuote(remotePath)}`,
     );
-    return { content: content.trim(), path: `~/.hermes/logs/${file}` };
+    return { content: content.trim(), path: `~/.oceanos/logs/${file}` };
   } catch {
-    return { content: "", path: `~/.hermes/logs/${file}` };
+    return { content: "", path: `~/.oceanos/logs/${file}` };
   }
 }
 
@@ -1924,7 +1924,7 @@ export async function sshGetPlatformEnabled(
 ): Promise<Record<string, boolean>> {
   void profile;
   try {
-    const raw = await sshReadFile(config, "$HOME/.hermes/gateway_state.json");
+    const raw = await sshReadFile(config, "$HOME/.oceanos/gateway_state.json");
     if (raw.trim()) {
       const state = JSON.parse(raw);
       const platforms = state.platforms || {};
@@ -2009,53 +2009,53 @@ export async function sshListCachedSessions(
 // ── Doctor / diagnostics ──────────────────────────────────────────────────────
 
 // Build a remote shell command that invokes the Ocean CLI, bypassing the
-// common `/usr/local/bin/hermes` sudo-wrapper that production installs ship.
-// That wrapper does `sudo -u hermes <venv>/bin/hermes "$@"`, and the sudoers
-// policy refuses to let the hermes service user run it as itself ("Sorry,
-// user hermes is not allowed to execute … as hermes"). The wrapper writes the
-// refusal to stderr and exits non-zero, breaking `hermes doctor`,
-// `hermes update`, `hermes dump`, and `hermes --version` when called over
-// SSH as the hermes user.
+// common `/usr/local/bin/oceanos` sudo-wrapper that production installs ship.
+// That wrapper does `sudo -u oceanos <venv>/bin/oceanos "$@"`, and the sudoers
+// policy refuses to let the oceanos service user run it as itself ("Sorry,
+// user oceanos is not allowed to execute … as oceanos"). The wrapper writes the
+// refusal to stderr and exits non-zero, breaking `oceanos doctor`,
+// `oceanos update`, `oceanos dump`, and `oceanos --version` when called over
+// SSH as the oceanos user.
 //
-// Probe the well-known venv install paths first; fall back to bare `hermes`
+// Probe the well-known venv install paths first; fall back to bare `oceanos`
 // on PATH only if none of those exist, preserving the old behavior for
 // non-installer deployments.
 //
 // Each install base is probed with both `.venv` and `venv` — the venv
 // directory name is not fixed, and an install that uses the un-dotted
 // `venv` was otherwise invisible even when fully working (issue #284).
-// `~/.local/bin/hermes` is also probed, where `pip install --user` flows
-// place a wrapper. `command -v hermes` alone is not enough: the desktop's
+// `~/.local/bin/oceanos` is also probed, where `pip install --user` flows
+// place a wrapper. `command -v oceanos` alone is not enough: the desktop's
 // non-interactive SSH does not source `~/.profile`/`~/.bashrc`, so any
 // PATH additions made there are not visible.
 //
 // Exported for unit testing the probe list without a live remote host.
-export function buildRemoteHermesCmd(args: string[], extraShell = ""): string {
+export function buildRemoteOceanOSCmd(args: string[], extraShell = ""): string {
   const candidates = [
-    "$HOME/hermes-agent/.venv/bin/hermes",
-    "$HOME/hermes-agent/venv/bin/hermes",
-    "$HOME/.hermes/hermes-agent/.venv/bin/hermes",
-    "$HOME/.hermes/hermes-agent/venv/bin/hermes",
-    "/opt/hermes/hermes-agent/.venv/bin/hermes",
-    "/opt/hermes/hermes-agent/venv/bin/hermes",
-    "$HOME/.local/bin/hermes",
+    "$HOME/oceanos-agent/.venv/bin/oceanos",
+    "$HOME/oceanos-agent/venv/bin/oceanos",
+    "$HOME/.oceanos/oceanos-agent/.venv/bin/oceanos",
+    "$HOME/.oceanos/oceanos-agent/venv/bin/oceanos",
+    "/opt/oceanos/oceanos-agent/.venv/bin/oceanos",
+    "/opt/oceanos/oceanos-agent/venv/bin/oceanos",
+    "$HOME/.local/bin/oceanos",
   ];
   const quotedArgs = args.map((a) => shellQuote(a)).join(" ");
   const probe = candidates
     .map((p) => `[ -x ${p} ] && exec ${p} ${quotedArgs}${extraShell}`)
     .join("; ");
-  const script = `${probe}; command -v hermes >/dev/null && exec hermes ${quotedArgs}${extraShell}; echo "ERR: hermes CLI not found on remote PATH or in any known venv location" >&2; exit 1`;
+  const script = `${probe}; command -v oceanos >/dev/null && exec oceanos ${quotedArgs}${extraShell}; echo "ERR: oceanos CLI not found on remote PATH or in any known venv location" >&2; exit 1`;
   return `bash -c ${shellQuote(script)}`;
 }
 
 export async function sshRunDoctor(config: SshConfig): Promise<string> {
   try {
-    // `hermes doctor` writes diagnostics to stdout; redirect stderr too so
+    // `oceanos doctor` writes diagnostics to stdout; redirect stderr too so
     // any wrapper-refusal output is visible to the user rather than silently
     // dropped.
     const out = await sshExec(
       config,
-      buildRemoteHermesCmd(["doctor"], " 2>&1"),
+      buildRemoteOceanOSCmd(["doctor"], " 2>&1"),
     );
     return out.trim() || "No output from doctor.";
   } catch (err) {
@@ -2066,7 +2066,7 @@ export async function sshRunDoctor(config: SshConfig): Promise<string> {
 export async function sshRunUpdate(config: SshConfig): Promise<void> {
   await sshExec(
     config,
-    buildRemoteHermesCmd(["update"], " 2>&1"),
+    buildRemoteOceanOSCmd(["update"], " 2>&1"),
     undefined,
     120000,
   );
@@ -2076,7 +2076,7 @@ export async function sshRunDump(config: SshConfig): Promise<string> {
   try {
     const out = await sshExec(
       config,
-      buildRemoteHermesCmd(["dump"], " 2>&1"),
+      buildRemoteOceanOSCmd(["dump"], " 2>&1"),
       undefined,
       60000,
     );
@@ -2105,9 +2105,9 @@ known = {
     "byterover": {"description": "memory.providers.byterover", "envVars": ["BRV_API_KEY"]},
 }
 roots = [
-    os.path.expanduser("~/.hermes/plugins/memory"),
-    os.path.expanduser("~/hermes/plugins/memory"),
-    os.path.expanduser("~/hermes-agent/plugins/memory"),
+    os.path.expanduser("~/.oceanos/plugins/memory"),
+    os.path.expanduser("~/oceanos/plugins/memory"),
+    os.path.expanduser("~/oceanos-agent/plugins/memory"),
 ]
 names = set(known)
 for root in roots:
@@ -2139,7 +2139,7 @@ print(json.dumps(result))
 
 export async function sshListModels(config: SshConfig): Promise<SavedModel[]> {
   try {
-    const raw = await sshReadFile(config, "$HOME/.hermes/models.json");
+    const raw = await sshReadFile(config, "$HOME/.oceanos/models.json");
     if (raw.trim()) return JSON.parse(raw);
   } catch {
     // no models.json on remote yet
@@ -2153,13 +2153,13 @@ export async function sshSaveModels(
 ): Promise<void> {
   await sshWriteFile(
     config,
-    "$HOME/.hermes/models.json",
+    "$HOME/.oceanos/models.json",
     JSON.stringify(models, null, 2),
   );
 }
 
 // Mirror the local CRUD helpers in models.ts against the remote
-// ~/.hermes/models.json. Each operation does a full read/mutate/write so the
+// ~/.oceanos/models.json. Each operation does a full read/mutate/write so the
 // SSH cost is the same as a manual edit — there is no remote API to call
 // instead, and the file is small (a few KB at most).
 

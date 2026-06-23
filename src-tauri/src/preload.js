@@ -23,19 +23,19 @@ function toPromise(fn) {
 
 function noopSend(..._args) {}
 
-window.hermesAPI = {
+window.oceanAPI = {
   checkInstall: toPromise(() => invoke("check_install")),
   verifyInstall: toPromise(() => invoke("verify_install")),
   startInstall: toPromise(() => invoke("start_install")),
   inspectInstallTarget: toPromise(() => invoke("inspect_install_target")),
-  validateHermesHome: toPromise((dir) => invoke("validate_ocean_home", { dir })),
-  adoptHermesHome: toPromise((dir) => invoke("adopt_ocean_home", { dir })),
+  validateOceanHome: toPromise((dir) => invoke("validate_ocean_home", { dir })),
+  adoptOceanHome: toPromise((dir) => invoke("adopt_ocean_home", { dir })),
   quitApp: toPromise(() => invoke("quit_app")),
   onInstallProgress: (_callback) => () => {},
-  getHermesVersion: toPromise(() => invoke("get_version")),
-  refreshHermesVersion: toPromise(() => invoke("get_version")),
-  runHermesDoctor: toPromise(() => invoke("gateway_status")),
-  runHermesUpdate: toPromise(() => Promise.resolve({ success: true })),
+  getOceanOSVersion: toPromise(() => invoke("get_version")),
+  refreshOceanOSVersion: toPromise(() => invoke("get_version")),
+  runOceanDoctor: toPromise(() => invoke("gateway_status")),
+  runOceanUpdate: toPromise(() => Promise.resolve({ success: true })),
   checkOpenClaw: toPromise(() => Promise.resolve({ found: false, path: null })),
   runClawMigrate: toPromise(() => Promise.resolve({ success: true })),
   oauthLogin: toPromise((_provider, _profile) => Promise.resolve({ success: true })),
@@ -54,7 +54,7 @@ window.hermesAPI = {
   getConfigFixLog: toPromise((_maxEntries) => Promise.resolve([])),
   getConfig: toPromise((_key, _profile) => Promise.resolve(null)),
   setConfig: toPromise((_key, _value, _profile) => Promise.resolve(true)),
-  getHermesHome: toPromise((_profile) => Promise.resolve("")),
+  getOceanHome: toPromise((_profile) => Promise.resolve("")),
   getModelConfig: toPromise((_profile) =>
     Promise.resolve({ provider: "auto", model: "", baseUrl: "" }),
   ),
@@ -106,4 +106,4 @@ window.hermesAPI = {
   onDisplayOptions: () => ({}),
 };
 
-window.hermesAPI.openExternal = (url) => open(url);
+window.oceanAPI.openExternal = (url) => open(url);

@@ -11,9 +11,9 @@ import {
   stripTrailingImagePlaceholders,
 } from "./session-attachment-store";
 
-// Sentinel prefix used by hermes-agent's hermes_state.py to mark
+// Sentinel prefix used by oceanos-agent's oceanos_state.py to mark
 // JSON-encoded multimodal content in the messages.content column.
-// See agent source: hermes_state._CONTENT_JSON_PREFIX = "\x00json:".
+// See agent source: oceanos_state._CONTENT_JSON_PREFIX = "\x00json:".
 const CONTENT_JSON_PREFIX = "\x00json:";
 
 export interface SessionSummary {
@@ -233,7 +233,7 @@ function highlightSessionMatch(
 
 function getDb(readonly = true): Database.Database | null {
   // Open the active profile's session DB — named profiles keep their
-  // sessions under ~/.hermes/profiles/<name>/state.db (issue #311).
+  // sessions under ~/.oceanos/profiles/<name>/state.db (issue #311).
   const dbPath = activeStateDbPath();
   if (!existsSync(dbPath)) return null;
   return new Database(dbPath, readonly ? { readonly: true } : {});

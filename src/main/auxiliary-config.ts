@@ -1,4 +1,4 @@
-// Auxiliary-model (side-task) routing config. Mirrors hermes-agent's
+// Auxiliary-model (side-task) routing config. Mirrors oceanos-agent's
 // `auxiliary.<task>` block in config.yaml (see DEFAULT_CONFIG["auxiliary"]
 // and the dashboard `/api/model/auxiliary` contract). Each task defaults to
 // `provider: "auto"` (= use the main chat model); users can pin a cheap/fast

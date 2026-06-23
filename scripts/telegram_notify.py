@@ -6,8 +6,8 @@ import os
 
 def find_token():
     search_paths = [
-        os.path.join(os.path.expanduser("~"), ".hermes", ".env"),
-        os.path.join(os.environ.get("LOCALAPPDATA", ""), "hermes", ".env"),
+        os.path.join(os.path.expanduser("~"), ".oceanos", ".env"),
+        os.path.join(os.environ.get("LOCALAPPDATA", ""), "oceanos", ".env"),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
     ]
     for p in search_paths:

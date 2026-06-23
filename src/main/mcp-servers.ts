@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "fs";
 import { profilePaths, safeWriteFile } from "./utils";
 import { getApiUrl, getRemoteAuthHeader, isRemoteMode } from "./ocean";
 import { getApiServerKey } from "./config";
-import { getEnhancedPath, HERMES_PYTHON, hermesCliArgs } from "./installer";
+import { getEnhancedPath, OCEANOS_PYTHON, oceanCliArgs } from "./installer";
 
 export type McpTransport = "http" | "stdio" | "unknown";
 
@@ -57,7 +57,7 @@ interface McpBlock {
   lines: string[];
 }
 
-interface HermesCliResult {
+interface OceanOSCliResult {
   stdout: string;
   stderr: string;
 }
@@ -80,14 +80,14 @@ function writeConfig(content: string, profile?: string): void {
   safeWriteFile(file, content.endsWith("\n") ? content : `${content}\n`);
 }
 
-function runHermesMcpCli(
+function runOceanOSMcpCli(
   args: string[],
   profile?: string,
-): Promise<HermesCliResult> {
+): Promise<OceanOSCliResult> {
   return new Promise((resolve, reject) => {
     const child = execFile(
-      HERMES_PYTHON,
-      hermesCliArgs(["mcp", ...args]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["mcp", ...args]),
       {
         cwd: profilePaths(profile).home,
         env: {
@@ -553,7 +553,7 @@ export function parseCatalogOutput(output: string): McpCatalogEntry[] {
     entries.push({
       name,
       description: descriptionParts.join(" "),
-      source: "hermes-agent",
+      source: "oceanos-agent",
       transport: "unknown",
       authType: "",
       requiredEnv: [],
@@ -735,7 +735,7 @@ export async function testMcpServer(
 ): Promise<McpOperationResult> {
   try {
     if (!isRemoteMode()) {
-      const result = await runHermesMcpCli(["test", name], profile);
+      const result = await runOceanOSMcpCli(["test", name], profile);
       return {
         success: true,
         tools: parseMcpTestTools(result.stdout),
@@ -765,7 +765,7 @@ export async function listMcpCatalog(
 ): Promise<{ entries: McpCatalogEntry[]; diagnostics: unknown[]; error?: string }> {
   try {
     if (!isRemoteMode()) {
-      const result = await runHermesMcpCli(["catalog"], profile);
+      const result = await runOceanOSMcpCli(["catalog"], profile);
       return {
         entries: parseCatalogOutput(result.stdout),
         diagnostics: result.stderr.trim() ? [result.stderr.trim()] : [],
@@ -825,7 +825,7 @@ export async function installMcpCatalogEntry(
 ): Promise<McpOperationResult> {
   try {
     if (!isRemoteMode()) {
-      await runHermesMcpCli(["install", name], profile);
+      await runOceanOSMcpCli(["install", name], profile);
       return { success: true };
     }
 

@@ -146,7 +146,7 @@ function Layout({
   }, [view]);
 
   // Restore the last-activated profile on launch. The main process persists it
-  // in ~/.hermes/active_profile (via `hermes profile use`), so the desktop
+  // in ~/.oceanos/active_profile (via `oceanos profile use`), so the desktop
   // should reopen on that profile rather than always resetting to "default".
   useEffect(() => {
     let cancelled = false;

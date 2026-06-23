@@ -16,7 +16,7 @@ export const PROFILE_NAME_ERROR =
 
 /**
  * Strip ANSI escape codes from terminal output.
- * Used by hermes.ts, claw3d.ts, and installer.ts when processing
+ * Used by oceanos.ts, claw3d.ts, and installer.ts when processing
  * child process output for display in the renderer.
  */
 // eslint-disable-next-line no-control-regex
@@ -48,8 +48,8 @@ export function normalizeProfileName(profile?: unknown): string | undefined {
 
 /**
  * Resolve the home directory for a given profile.
- * 'default' or undefined maps to ~/.hermes; named profiles
- * live under ~/.hermes/profiles/<name>.
+ * 'default' or undefined maps to ~/.oceanos; named profiles
+ * live under ~/.oceanos/profiles/<name>.
  */
 export function profileHome(profile?: unknown): string {
   const normalized = normalizeProfileName(profile);
@@ -78,7 +78,7 @@ export function profilePaths(profile?: unknown): {
  * we can't open it". `process.kill(pid, 0)` is the POSIX-idiomatic check,
  * but on Windows libuv requests PROCESS_TERMINATE access to issue the kill
  * call — and a detached subprocess started by a different console (e.g. the
- * Python hermes CLI launching the gateway as `pythonw` with `--replace`)
+ * Python oceanos CLI launching the gateway as `pythonw` with `--replace`)
  * commonly refuses that handle, raising EPERM. EPERM means the process
  * exists; only ESRCH means it doesn't. The previous catch-all `try/catch
  * return false` conflated those, so the desktop reported the gateway as
@@ -172,7 +172,7 @@ export function pidIsAliveAs(
 }
 
 /**
- * Read the active profile name from ~/.hermes/active_profile. Returns "default"
+ * Read the active profile name from ~/.oceanos/active_profile. Returns "default"
  * when the file is missing, empty, or unreadable. Shared sync helper used by
  * installer.ts and config.ts; profiles.ts's async wrapper delegates here.
  */
@@ -189,8 +189,8 @@ export function getActiveProfileNameSync(): string {
 
 /**
  * Resolve the session database for the currently active profile. The
- * default profile uses ~/.hermes/state.db; named profiles use
- * ~/.hermes/profiles/<name>/state.db. The desktop's Sessions feature
+ * default profile uses ~/.oceanos/state.db; named profiles use
+ * ~/.oceanos/profiles/<name>/state.db. The desktop's Sessions feature
  * used to read the root state.db unconditionally, so named-profile users
  * saw an empty or wrong session list (issue #311).
  */
@@ -208,7 +208,7 @@ export function escapeRegex(str: string): string {
 
 /**
  * Write a file, creating parent directories if they don't exist.
- * Prevents ENOENT crashes when ~/.hermes has been deleted or doesn't exist yet.
+ * Prevents ENOENT crashes when ~/.oceanos has been deleted or doesn't exist yet.
  */
 export function safeWriteFile(filePath: string, content: string): void {
   const dir = dirname(filePath);

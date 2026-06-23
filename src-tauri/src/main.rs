@@ -56,7 +56,7 @@ fn run_agent(req: AgentRequest) -> Result<OkResponse<String>, ErrorResponse> {
         error: "No home dir".to_string(),
     })?;
 
-    let cli_path = home.join(".hermes").join("hermes");
+    let cli_path = home.join(".oceanos").join("oceanos");
     if !cli_path.exists() {
         return Err(ErrorResponse {
             ok: false,
@@ -104,7 +104,7 @@ fn run_skill(req: SkillRequest) -> Result<OkResponse<String>, ErrorResponse> {
         error: "No home dir".to_string(),
     })?;
 
-    let cli_path = home.join(".hermes").join("hermes");
+    let cli_path = home.join(".oceanos").join("oceanos");
     if !cli_path.exists() {
         return Err(ErrorResponse {
             ok: false,
@@ -147,7 +147,7 @@ fn load_registry() -> Result<OkResponse<serde_json::Value>, ErrorResponse> {
         error: "No home dir".to_string(),
     })?;
 
-    let registry_dir = home.join(".hermes").join("skills");
+    let registry_dir = home.join(".oceanos").join("skills");
     let entries = std::fs::read_dir(&registry_dir)
         .map_err(|e| ErrorResponse {
             ok: false,

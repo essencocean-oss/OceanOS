@@ -25,7 +25,7 @@ export default {
   confirmInstallBtn: "Instalar OceanOS",
   useExistingBtn: "Usar una instalación existente",
   useExistingHint:
-    "Selecciona la carpeta que contiene tu instalación de OceanOS existente (la que contiene la carpeta hermes-agent).",
+    "Selecciona la carpeta que contiene tu instalación de OceanOS existente (la que contiene la carpeta oceanos-agent).",
   useExistingInvalid:
     "No se encontró una instalación de OceanOS utilizable en esa carpeta.",
   useExistingDone:

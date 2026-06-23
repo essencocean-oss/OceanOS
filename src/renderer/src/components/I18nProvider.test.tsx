@@ -24,10 +24,10 @@ function LocaleSwitcherProbe(): React.JSX.Element {
   );
 }
 
-function installHermesAPI(
-  api: Pick<Window["hermesAPI"], "getLocale" | "setLocale">,
+function installOceanOSAPI(
+  api: Pick<Window["oceanAPI"], "getLocale" | "setLocale">,
 ): void {
-  Object.defineProperty(window, "hermesAPI", {
+  Object.defineProperty(window, "oceanAPI", {
     configurable: true,
     value: api,
   });
@@ -38,7 +38,7 @@ describe("I18nProvider", () => {
   const setLocale = vi.fn().mockResolvedValue(DEFAULT_ACTIVE_LOCALE);
 
   beforeEach(() => {
-    installHermesAPI({
+    installOceanOSAPI({
       getLocale,
       setLocale,
     });
@@ -51,7 +51,7 @@ describe("I18nProvider", () => {
   afterEach(() => {
     setSharedLocale(DEFAULT_ACTIVE_LOCALE);
     try {
-      localStorage.removeItem("hermes-locale");
+      localStorage.removeItem("oceanos-locale");
     } catch {
       /* ignore */
     }

@@ -45,7 +45,7 @@ interface SavedModel {
   createdAt: number;
 }
 
-// Provider ids hermes-agent recognises directly (from PROVIDERS.options).
+// Provider ids oceanos-agent recognises directly (from PROVIDERS.options).
 // A registry provider whose id matches is saved with that provider id;
 // otherwise it falls back to "custom" routing with the provider's apiBase.
 const SUPPORTED_PROVIDER_IDS = new Set(PROVIDERS.options.map((p) => p.value));
@@ -85,7 +85,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  // Registry browser (curated models.json from hermes-registry)
+  // Registry browser (curated models.json from oceanos-registry)
   const [showRegistry, setShowRegistry] = useState(false);
   const [registry, setRegistry] = useState<ModelRegistry | null>(null);
   const [registryLoading, setRegistryLoading] = useState(false);
@@ -496,7 +496,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
         {activeTab === "models" && (
           <div className="models-header-actions">
             <a
-              href="https://github.com/fathah/hermes-registry"
+              href="https://github.com/fathah/oceanos-registry"
               target="_blank"
               rel="noreferrer"
               className="btn btn-secondary btn-sm"

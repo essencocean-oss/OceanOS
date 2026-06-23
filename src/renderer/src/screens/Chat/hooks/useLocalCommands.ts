@@ -126,12 +126,12 @@ export function useLocalCommands({
         }
 
         case "/version": {
-          const [hermesVer, appVer] = await Promise.all([
-            tauri.getHermesVersion(),
+          const [oceanosVer, appVer] = await Promise.all([
+            tauri.getOceanOSVersion(),
             tauri.getAppVersion(),
           ]);
           addAgentMessage(
-            `**Ocean Agent:** ${hermesVer || "unknown"}\n**Ocean One:** v${appVer}`,
+            `**Ocean Agent:** ${oceanosVer || "unknown"}\n**Ocean One:** v${appVer}`,
           );
           return true;
         }

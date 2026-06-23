@@ -46,7 +46,7 @@ const electronAPI = {
   },
 };
 
-const hermesAPI = {
+const oceanAPI = {
   // Installation
   checkInstall: (): Promise<{
     installed: boolean;
@@ -66,10 +66,10 @@ const hermesAPI = {
     state: "fresh" | "update" | "replace";
   }> => ipcRenderer.invoke("inspect-install-target"),
 
-  validateHermesHome: (dir: string): Promise<boolean> =>
+  validateOceanHome: (dir: string): Promise<boolean> =>
     ipcRenderer.invoke("validate-ocean-home", dir),
 
-  adoptHermesHome: (dir: string): Promise<boolean> =>
+  adoptOceanHome: (dir: string): Promise<boolean> =>
     ipcRenderer.invoke("adopt-ocean-home", dir),
 
   quitApp: (): Promise<void> => ipcRenderer.invoke("quit-app"),
@@ -101,14 +101,14 @@ const hermesAPI = {
   },
 
   // Ocean engine info
-  getHermesVersion: (): Promise<string | null> =>
-    ipcRenderer.invoke("get-hermes-version"),
-  refreshHermesVersion: (): Promise<string | null> =>
-    ipcRenderer.invoke("refresh-hermes-version"),
-  runHermesDoctor: (): Promise<string> =>
-    ipcRenderer.invoke("run-hermes-doctor"),
-  runHermesUpdate: (): Promise<{ success: boolean; error?: string }> =>
-    ipcRenderer.invoke("run-hermes-update"),
+  getOceanOSVersion: (): Promise<string | null> =>
+    ipcRenderer.invoke("get-oceanos-version"),
+  refreshOceanOSVersion: (): Promise<string | null> =>
+    ipcRenderer.invoke("refresh-oceanos-version"),
+  runOceanDoctor: (): Promise<string> =>
+    ipcRenderer.invoke("run-oceanos-doctor"),
+  runOceanUpdate: (): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke("run-oceanos-update"),
 
   // OpenClaw migration
   checkOpenClaw: (): Promise<{ found: boolean; path: string | null }> =>
@@ -176,7 +176,7 @@ const hermesAPI = {
   setConfig: (key: string, value: string, profile?: string): Promise<boolean> =>
     ipcRenderer.invoke("set-config", key, value, profile),
 
-  getHermesHome: (profile?: string): Promise<string> =>
+  getOceanHome: (profile?: string): Promise<string> =>
     ipcRenderer.invoke("get-ocean-home", profile),
 
   getModelConfig: (
@@ -1064,19 +1064,19 @@ const hermesAPI = {
     ipcRenderer.invoke("open-external", url),
 
   // Backup / Import
-  runHermesBackup: (
+  runOceanBackup: (
     profile?: string,
   ): Promise<{ success: boolean; path?: string; error?: string }> =>
-    ipcRenderer.invoke("run-hermes-backup", profile),
+    ipcRenderer.invoke("run-oceanos-backup", profile),
 
-  runHermesImport: (
+  runOceanImport: (
     archivePath: string,
     profile?: string,
   ): Promise<{ success: boolean; error?: string }> =>
-    ipcRenderer.invoke("run-hermes-import", archivePath, profile),
+    ipcRenderer.invoke("run-oceanos-import", archivePath, profile),
 
   // Debug dump
-  runHermesDump: (): Promise<string> => ipcRenderer.invoke("run-hermes-dump"),
+  runOceanDump: (): Promise<string> => ipcRenderer.invoke("run-oceanos-dump"),
 
   // Memory providers
   discoverMemoryProviders: (
@@ -1243,7 +1243,7 @@ const hermesAPI = {
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld("electron", electronAPI);
-    contextBridge.exposeInMainWorld("hermesAPI", hermesAPI);
+    contextBridge.exposeInMainWorld("oceanAPI", oceanAPI);
   } catch (error) {
     console.error(error);
   }
@@ -1251,5 +1251,5 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.electron = electronAPI;
   // @ts-ignore (define in dts)
-  window.hermesAPI = hermesAPI;
+  window.oceanAPI = oceanAPI;
 }

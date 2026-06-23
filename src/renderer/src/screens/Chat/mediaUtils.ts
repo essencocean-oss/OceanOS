@@ -3,7 +3,7 @@
  *
  * Three signals are recognised in agent responses:
  *
- *  1. Explicit `MEDIA:<path-or-url>` tokens — hermes-agent's delivery
+ *  1. Explicit `MEDIA:<path-or-url>` tokens — oceanos-agent's delivery
  *     protocol. Trusted: rendered eagerly.
  *  2. An inline absolute file path with a known extension, anywhere in the
  *     text. Treated as a *candidate* — the renderer verifies the file

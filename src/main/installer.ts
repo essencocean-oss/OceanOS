@@ -28,21 +28,21 @@ const IS_WINDOWS = process.platform === "win32";
 //   1. OCEAN_HOME env var if set (install.ps1 sets it User-scope on
 //      Windows; users may also override manually for WSL/custom setups).
 //   2. On Windows, probe both candidates and pick whichever already has
-//      data. install.ps1's default is %LOCALAPPDATA%\hermes, but some
-//      setups put data at ~/.hermes (e.g. a junction into WSL, or a
-//      custom -HermesHome flag on install). Without probing we'd silently
+//      data. install.ps1's default is %LOCALAPPDATA%\oceanos, but some
+//      setups put data at ~/.oceanos (e.g. a junction into WSL, or a
+//      custom -OceanOSHome flag on install). Without probing we'd silently
 //      switch directories on users who had it working before.
-//   3. Fresh install fallback: %LOCALAPPDATA%\hermes on Windows (matches
-//      install.ps1's default), ~/.hermes elsewhere.
+//   3. Fresh install fallback: %LOCALAPPDATA%\oceanos on Windows (matches
+//      install.ps1's default), ~/.oceanos elsewhere.
 //
 // Motivating bug: Electron launched from the Start Menu doesn't always
 // inherit shell-set env vars, so relying on OCEAN_HOME alone left
-// Windows users staring at an empty ~/.hermes while their real data
-// sat in %LOCALAPPDATA%\hermes.
-function looksLikeHermesHome(dir: string): boolean {
+// Windows users staring at an empty ~/.oceanos while their real data
+// sat in %LOCALAPPDATA%\oceanos.
+function looksLikeOceanHome(dir: string): boolean {
   if (!existsSync(dir)) return false;
   return (
-    existsSync(join(dir, "hermes-agent")) ||
+    existsSync(join(dir, "oceanos-agent")) ||
     existsSync(join(dir, "gateway.pid")) ||
     existsSync(join(dir, "config.yaml")) ||
     existsSync(join(dir, "active_profile")) ||
@@ -50,17 +50,17 @@ function looksLikeHermesHome(dir: string): boolean {
   );
 }
 
-function defaultHermesHome(): string {
-  const homeDot = join(homedir(), ".hermes");
+function defaultOceanHome(): string {
+  const homeDot = join(homedir(), ".oceanos");
   if (!IS_WINDOWS) return homeDot;
 
   const localApp = process.env.LOCALAPPDATA
-    ? join(process.env.LOCALAPPDATA, "hermes")
+    ? join(process.env.LOCALAPPDATA, "oceanos")
     : null;
 
-  // Prefer whichever location already has hermes data.
-  if (localApp && looksLikeHermesHome(localApp)) return localApp;
-  if (looksLikeHermesHome(homeDot)) return homeDot;
+  // Prefer whichever location already has oceanos data.
+  if (localApp && looksLikeOceanHome(localApp)) return localApp;
+  if (looksLikeOceanHome(homeDot)) return homeDot;
 
   // Neither populated yet — fall back to install.ps1's default so a
   // fresh install lines up with where the installer will write.
@@ -80,7 +80,7 @@ function oceanHomeOverrideFile(): string {
   return userData ? join(userData, "ocean-home.json") : "";
 }
 
-function readHermesHomeOverride(): string {
+function readOceanHomeOverride(): string {
   try {
     const file = oceanHomeOverrideFile();
     if (!file || !existsSync(file)) return "";
@@ -97,7 +97,7 @@ function readHermesHomeOverride(): string {
 }
 
 /** Persist (when `home` is set) or clear (when "") the Ocean home override. */
-export function setHermesHomeOverride(home: string): void {
+export function setOceanHomeOverride(home: string): void {
   try {
     const file = oceanHomeOverrideFile();
     if (!file) return;
@@ -117,10 +117,10 @@ export function setHermesHomeOverride(home: string): void {
 
 export const OCEAN_HOME =
   process.env.OCEAN_HOME?.trim() ||
-  readHermesHomeOverride() ||
-  defaultHermesHome();
-export const HERMES_REPO = join(OCEAN_HOME, "hermes-agent");
-export const HERMES_VENV = join(HERMES_REPO, "venv");
+  readOceanHomeOverride() ||
+  defaultOceanHome();
+export const OCEANOS_REPO = join(OCEAN_HOME, "oceanos-agent");
+export const OCEANOS_VENV = join(OCEANOS_REPO, "venv");
 // On Windows, use `pythonw.exe` (the GUI-subsystem interpreter that ships in
 // every venv) instead of `python.exe` so that subprocess spawns don't flash
 // a blank console window before `windowsHide: true` / CREATE_NO_WINDOW takes
@@ -132,34 +132,34 @@ export const HERMES_VENV = join(HERMES_REPO, "venv");
 // for it regardless of creation flags. It's a bit-identical interpreter
 // otherwise — same modules, same stdout/stderr behaviour over piped stdio
 // (which is what every call site here uses).
-export const HERMES_PYTHON = IS_WINDOWS
-  ? join(HERMES_VENV, "Scripts", "pythonw.exe")
-  : join(HERMES_VENV, "bin", "python");
-export const HERMES_SCRIPT = IS_WINDOWS
-  ? join(HERMES_VENV, "Scripts", "hermes.exe")
-  : join(HERMES_REPO, "hermes");
-export const HERMES_ENV_FILE = join(OCEAN_HOME, ".env");
-export const HERMES_CONFIG_FILE = join(OCEAN_HOME, "config.yaml");
-export const HERMES_AUTH_FILE = join(OCEAN_HOME, "auth.json");
+export const OCEANOS_PYTHON = IS_WINDOWS
+  ? join(OCEANOS_VENV, "Scripts", "pythonw.exe")
+  : join(OCEANOS_VENV, "bin", "python");
+export const OCEANOS_SCRIPT = IS_WINDOWS
+  ? join(OCEANOS_VENV, "Scripts", "oceanos.exe")
+  : join(OCEANOS_REPO, "oceanos");
+export const OCEANOS_ENV_FILE = join(OCEAN_HOME, ".env");
+export const OCEANOS_CONFIG_FILE = join(OCEAN_HOME, "config.yaml");
+export const OCEANOS_AUTH_FILE = join(OCEAN_HOME, "auth.json");
 
-/** The Python + hermes-script paths for a Ocean install rooted at `home`,
+/** The Python + oceanos-script paths for a Ocean install rooted at `home`,
  *  in the layout the desktop's own installer produces. */
 function installBinariesFor(home: string): { python: string; script: string } {
-  const repo = join(home, "hermes-agent");
+  const repo = join(home, "oceanos-agent");
   const venv = join(repo, "venv");
   return IS_WINDOWS
     ? {
         python: join(venv, "Scripts", "python.exe"),
-        script: join(venv, "Scripts", "hermes.exe"),
+        script: join(venv, "Scripts", "oceanos.exe"),
       }
-    : { python: join(venv, "bin", "python"), script: join(repo, "hermes") };
+    : { python: join(venv, "bin", "python"), script: join(repo, "oceanos") };
 }
 
-export function hermesCliArgs(args: string[] = []): string[] {
+export function oceanCliArgs(args: string[] = []): string[] {
   if (process.platform === "win32") {
-    return ["-m", "hermes_cli.main", ...args];
+    return ["-m", "oceanos_cli.main", ...args];
   }
-  return [HERMES_SCRIPT, ...args];
+  return [OCEANOS_SCRIPT, ...args];
 }
 
 export interface InstallStatus {
@@ -189,7 +189,7 @@ export function getEnhancedPath(): string {
           join(OCEAN_HOME, "git", "cmd"),
           join(OCEAN_HOME, "git", "usr", "bin"),
           join(OCEAN_HOME, "node"),
-          join(HERMES_VENV, "Scripts"),
+          join(OCEANOS_VENV, "Scripts"),
           // Common user/system installs used when Claw3D setup runs before or
           // outside the bundled installer.
           process.env.NVM_SYMLINK,
@@ -213,7 +213,7 @@ export function getEnhancedPath(): string {
       : [
           join(home, ".local", "bin"),
           join(home, ".cargo", "bin"),
-          join(HERMES_VENV, "bin"),
+          join(OCEANOS_VENV, "bin"),
           // Node version manager shim directories
           join(home, ".volta", "bin"),
           join(home, ".asdf", "shims"),
@@ -260,13 +260,13 @@ function resolveNvmBin(home: string): string[] {
 
 function activeEnvFile(profile: string): string {
   return profile === "default"
-    ? HERMES_ENV_FILE
+    ? OCEANOS_ENV_FILE
     : join(OCEAN_HOME, "profiles", profile, ".env");
 }
 
 function activeAuthFile(profile: string): string {
   return profile === "default"
-    ? HERMES_AUTH_FILE
+    ? OCEANOS_AUTH_FILE
     : join(OCEAN_HOME, "profiles", profile, "auth.json");
 }
 
@@ -274,7 +274,7 @@ function activeAuthFile(profile: string): string {
 // the user might see in `model.provider` in config.yaml; values are the
 // env vars the gateway expects to read from .env. Names that don't
 // appear here either don't need a key (local providers, nous) or have
-// OAuth-style credentials (covered separately via hasHermesAuthCredential).
+// OAuth-style credentials (covered separately via hasOceanOSAuthCredential).
 //
 // Used by the install-gate check below. Previously that check
 // hard-coded only OPENROUTER_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY,
@@ -315,7 +315,7 @@ const PROVIDER_ENV_KEYS: Record<string, string> = {
 };
 
 // When provider is "custom" or "auto", the desktop's setup flow falls
-// back to recognizing the endpoint by base URL. Same patterns hermes.ts
+// back to recognizing the endpoint by base URL. Same patterns oceanos.ts
 // uses for runtime header injection.
 const URL_TO_ENV_KEY: Array<[RegExp, string]> = [
   [/openrouter\.ai/i, "OPENROUTER_API_KEY"],
@@ -418,20 +418,20 @@ export function classifyInstallTarget(
 
 /** Inspect the install target so the renderer can warn before installing. */
 export function inspectInstallTarget(): InstallTargetInfo {
-  const repoExists = existsSync(HERMES_REPO);
-  const repoIsGitRepo = repoExists && existsSync(join(HERMES_REPO, ".git"));
+  const repoExists = existsSync(OCEANOS_REPO);
+  const repoIsGitRepo = repoExists && existsSync(join(OCEANOS_REPO, ".git"));
   return {
     oceanHome: OCEAN_HOME,
-    repoPath: HERMES_REPO,
+    repoPath: OCEANOS_REPO,
     state: classifyInstallTarget(repoExists, repoIsGitRepo),
   };
 }
 
 /** True when `dir` is a Ocean home the desktop can drive as-is — it must
- *  contain a `hermes-agent` install with the venv binaries in the layout the
+ *  contain a `oceanos-agent` install with the venv binaries in the layout the
  *  desktop expects. A hand-rolled install with a different layout fails here
  *  rather than being silently adopted into a broken state (issue #272). */
-export function validateHermesHome(dir: string): boolean {
+export function validateOceanHome(dir: string): boolean {
   const home = dir?.trim();
   if (!home || !existsSync(home)) return false;
   const { python, script } = installBinariesFor(home);
@@ -457,7 +457,7 @@ export function checkInstallStatus(): InstallStatus {
   // `python --version` check used to run here adds 1–10s of cold-start
   // latency, so it now lives in `verifyInstall()` and is invoked lazily
   // by the renderer after the main UI is mounted.
-  const installed = existsSync(HERMES_PYTHON) && existsSync(HERMES_SCRIPT);
+  const installed = existsSync(OCEANOS_PYTHON) && existsSync(OCEANOS_SCRIPT);
   const envFile = activeEnvFile(activeProfile);
   const authFile = activeAuthFile(activeProfile);
   const configured = existsSync(envFile) || existsSync(authFile);
@@ -501,16 +501,16 @@ let _verifyCache: { ok: boolean; ts: number } | null = null;
 const VERIFY_TTL_MS = 5 * 60 * 1000;
 
 export async function verifyInstall(): Promise<boolean> {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) return false;
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) return false;
   if (_verifyCache && Date.now() - _verifyCache.ts < VERIFY_TTL_MS) {
     return _verifyCache.ok;
   }
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
-      hermesCliArgs(["--version"]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["--version"]),
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -533,9 +533,9 @@ export async function verifyInstall(): Promise<boolean> {
 let _cachedVersion: string | null = null;
 let _versionFetching = false;
 
-export async function getHermesVersion(): Promise<string | null> {
+export async function getOceanOSVersion(): Promise<string | null> {
   if (_cachedVersion !== null) return _cachedVersion;
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) return null;
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) return null;
   if (_versionFetching) {
     // Wait for the in-flight fetch but cap the wait. The execFile below
     // has a 15s timeout and its callback unconditionally clears
@@ -559,10 +559,10 @@ export async function getHermesVersion(): Promise<string | null> {
   _versionFetching = true;
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
-      hermesCliArgs(["--version"]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["--version"]),
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -589,13 +589,13 @@ export function clearVersionCache(): void {
   _cachedVersion = null;
 }
 
-export function runHermesDoctor(): string {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+export function runOceanDoctor(): string {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     return "Ocean is not installed.";
   }
   try {
-    const output = execFileSync(HERMES_PYTHON, hermesCliArgs(["doctor"]), {
-      cwd: HERMES_REPO,
+    const output = execFileSync(OCEANOS_PYTHON, oceanCliArgs(["doctor"]), {
+      cwd: OCEANOS_REPO,
       env: {
         ...process.env,
         PATH: getEnhancedPath(),
@@ -653,7 +653,7 @@ export function checkOpenClawExists(home: string = homedir()): {
 export async function runClawMigrate(
   onProgress: (progress: InstallProgress) => void,
 ): Promise<void> {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     throw new Error("Ocean is not installed.");
   }
 
@@ -677,10 +677,10 @@ export async function runClawMigrate(
   emit(`Migrating from ${openclaw.path}...\n`);
 
   return new Promise((resolve, reject) => {
-    const args = hermesCliArgs(["claw", "migrate", "--preset", "full"]);
+    const args = oceanCliArgs(["claw", "migrate", "--preset", "full"]);
 
-    const proc = spawn(HERMES_PYTHON, args, {
-      cwd: HERMES_REPO,
+    const proc = spawn(OCEANOS_PYTHON, args, {
+      cwd: OCEANOS_REPO,
       env: {
         ...process.env,
         PATH: getEnhancedPath(),
@@ -715,10 +715,10 @@ export async function runClawMigrate(
   });
 }
 
-export async function runHermesUpdate(
+export async function runOceanUpdate(
   onProgress: (progress: InstallProgress) => void,
 ): Promise<void> {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     throw new Error("Ocean is not installed. Please install it first.");
   }
 
@@ -734,11 +734,11 @@ export async function runHermesUpdate(
     });
   }
 
-  emit("Running hermes update...\n");
+  emit("Running oceanos update...\n");
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(HERMES_PYTHON, hermesCliArgs(["update"]), {
-      cwd: HERMES_REPO,
+    const proc = spawn(OCEANOS_PYTHON, oceanCliArgs(["update"]), {
+      cwd: OCEANOS_REPO,
       env: {
         ...process.env,
         PATH: getEnhancedPath(),
@@ -807,7 +807,7 @@ const STAGE_MARKERS: { pattern: RegExp; step: number; title: string }[] = [
   },
   {
     pattern:
-      /Cloning|cloning|Updating.*repository|Repository|Installing to .*hermes-agent|Downloading PortableGit/i,
+      /Cloning|cloning|Updating.*repository|Repository|Installing to .*oceanos-agent|Downloading PortableGit/i,
     step: 4,
     title: "Downloading Ocean Agent",
   },
@@ -828,7 +828,7 @@ const STAGE_MARKERS: { pattern: RegExp; step: number; title: string }[] = [
     // used to match here and pinned the progress bar at 100% while Playwright
     // and TUI deps were still running — see issue #104.
     pattern:
-      /Installation complete|hermes command ready|Configuration directory ready|Ocean (installation )?(finished|is ready)/i,
+      /Installation complete|oceanos command ready|Configuration directory ready|Ocean (installation )?(finished|is ready)/i,
     step: 7,
     title: "Finishing setup",
   },
@@ -911,7 +911,7 @@ export async function runInstall(
       const shellProfile = getShellProfile(home);
       const installCmd = [
         shellProfile ? `source "${shellProfile}" 2>/dev/null;` : "",
-        "curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash -s -- --skip-setup",
+        "curl -fsSL https://raw.githubusercontent.com/NousResearch/oceanos-agent/main/scripts/install.sh | bash -s -- --skip-setup",
       ].join(" ");
 
       const basePath = getEnhancedPath();
@@ -944,7 +944,7 @@ export async function runInstall(
           // The install script can exit non-zero due to benign issues
           // (e.g. git stash pop failure on already-clean repo).
           // If Ocean is actually installed and working, treat as success.
-          if (existsSync(HERMES_PYTHON) && existsSync(HERMES_SCRIPT)) {
+          if (existsSync(OCEANOS_PYTHON) && existsSync(OCEANOS_SCRIPT)) {
             emit(
               "\nInstall script exited with warnings, but Ocean is installed successfully.\n",
             );
@@ -995,16 +995,16 @@ function resolvePowerShellExe(): string {
 
 async function runInstallWindows(emit: (t: string) => void): Promise<void> {
   // We can't `irm | iex` and pass parameters, and we want to override the
-  // upstream defaults (which install to %LOCALAPPDATA%\hermes) so the
-  // desktop app's OCEAN_HOME == ~\.hermes convention keeps working.
+  // upstream defaults (which install to %LOCALAPPDATA%\oceanos) so the
+  // desktop app's OCEAN_HOME == ~\.oceanos convention keeps working.
   // Strategy: write a small wrapper .ps1 to %TEMP%, run it with -File.
   const home = homedir();
   const oceanHome = OCEAN_HOME;
-  const installDir = HERMES_REPO;
+  const installDir = OCEANOS_REPO;
 
   const wrapperPath = join(
     tmpdir(),
-    `hermes-install-${randomBytes(6).toString("hex")}.ps1`,
+    `oceanos-install-${randomBytes(6).toString("hex")}.ps1`,
   );
 
   // The wrapper downloads install.ps1 to a sibling temp file and invokes it
@@ -1014,8 +1014,8 @@ async function runInstallWindows(emit: (t: string) => void): Promise<void> {
     // Force TLS 1.2 for older Windows PowerShell 5.1 hosts that still default
     // to TLS 1.0 — github raw refuses TLS < 1.2.
     "try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch {}",
-    "$url = 'https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1'",
-    `$installer = Join-Path $env:TEMP ("hermes-install-script-" + [guid]::NewGuid().ToString() + ".ps1")`,
+    "$url = 'https://raw.githubusercontent.com/NousResearch/oceanos-agent/main/scripts/install.ps1'",
+    `$installer = Join-Path $env:TEMP ("oceanos-install-script-" + [guid]::NewGuid().ToString() + ".ps1")`,
     // Windows PowerShell 5.1 parses BOM-less files as the legacy ANSI codepage,
     // which mangles the non-ASCII glyphs in install.ps1 and produces parse
     // errors (see issue #149). Re-save with a UTF-8 BOM so PS 5.1 reads it as
@@ -1024,7 +1024,7 @@ async function runInstallWindows(emit: (t: string) => void): Promise<void> {
     "$text = if ($resp.Content -is [byte[]]) { [System.Text.Encoding]::UTF8.GetString($resp.Content) } else { [string]$resp.Content }",
     "if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) { $text = $text.Substring(1) }",
     "[System.IO.File]::WriteAllText($installer, $text, (New-Object System.Text.UTF8Encoding $true))",
-    `& $installer -SkipSetup -HermesHome ${psQuote(oceanHome)} -InstallDir ${psQuote(installDir)}`,
+    `& $installer -SkipSetup -OceanOSHome ${psQuote(oceanHome)} -InstallDir ${psQuote(installDir)}`,
     "$exit = $LASTEXITCODE",
     "Remove-Item -Force -ErrorAction SilentlyContinue $installer",
     "exit $exit",
@@ -1088,7 +1088,7 @@ async function runInstallWindows(emit: (t: string) => void): Promise<void> {
         return;
       }
       // Same tolerance as the bash path: if the binary tree exists, count it.
-      if (existsSync(HERMES_PYTHON) && existsSync(HERMES_SCRIPT)) {
+      if (existsSync(OCEANOS_PYTHON) && existsSync(OCEANOS_SCRIPT)) {
         emit(
           "\nInstall script exited with warnings, but Ocean is installed successfully.\n",
         );
@@ -1096,7 +1096,7 @@ async function runInstallWindows(emit: (t: string) => void): Promise<void> {
       } else {
         reject(
           new Error(
-            `Installation failed (exit code ${code}). Open PowerShell and try: irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex`,
+            `Installation failed (exit code ${code}). Open PowerShell and try: irm https://raw.githubusercontent.com/NousResearch/oceanos-agent/main/scripts/install.ps1 | iex`,
           ),
         );
       }
@@ -1122,22 +1122,22 @@ async function runInstallWindows(emit: (t: string) => void): Promise<void> {
 //  Backup & Import
 // ────────────────────────────────────────────────────
 
-export async function runHermesBackup(
+export async function runOceanBackup(
   profile?: string,
 ): Promise<{ success: boolean; path?: string; error?: string }> {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     return { success: false, error: "Ocean is not installed." };
   }
-  const args = hermesCliArgs();
+  const args = oceanCliArgs();
   if (profile && profile !== "default") args.push("-p", profile);
   args.push("backup");
 
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
+      OCEANOS_PYTHON,
       args,
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -1170,7 +1170,7 @@ export async function runHermesBackup(
   });
 }
 
-export async function runHermesImport(
+export async function runOceanImport(
   archivePath: string,
   profile?: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -1179,19 +1179,19 @@ export async function runHermesImport(
     return { success: false, error: archive.error };
   }
 
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     return { success: false, error: "Ocean is not installed." };
   }
-  const args = hermesCliArgs();
+  const args = oceanCliArgs();
   if (profile && profile !== "default") args.push("-p", profile);
   args.push("import", archive.path);
 
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
+      OCEANOS_PYTHON,
       args,
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -1243,16 +1243,16 @@ export function validateImportArchivePath(
 //  Debug dump
 // ────────────────────────────────────────────────────
 
-export function runHermesDump(): Promise<string> {
-  if (!existsSync(HERMES_PYTHON) || !existsSync(HERMES_SCRIPT)) {
+export function runOceanDump(): Promise<string> {
+  if (!existsSync(OCEANOS_PYTHON) || !existsSync(OCEANOS_SCRIPT)) {
     return Promise.resolve("Ocean is not installed.");
   }
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
-      hermesCliArgs(["dump"]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["dump"]),
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -1293,7 +1293,7 @@ export interface MemoryProviderInfo {
 export function discoverMemoryProviders(
   profile?: string,
 ): MemoryProviderInfo[] {
-  const pluginsDir = join(HERMES_REPO, "plugins", "memory");
+  const pluginsDir = join(OCEANOS_REPO, "plugins", "memory");
   if (!existsSync(pluginsDir)) return [];
 
   const activeProvider = getActiveMemoryProvider(profile);

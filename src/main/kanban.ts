@@ -2,8 +2,8 @@ import { execFile, ExecFileOptions } from "child_process";
 import { join } from "path";
 import {
   OCEAN_HOME,
-  HERMES_PYTHON,
-  hermesCliArgs,
+  OCEANOS_PYTHON,
+  oceanCliArgs,
   getEnhancedPath,
 } from "./installer";
 import { isRemoteOnlyMode } from "./ocean";
@@ -119,21 +119,21 @@ async function runKanban(
     });
   }
 
-  const cliArgs = hermesCliArgs();
+  const cliArgs = oceanCliArgs();
   if (opts.profile && opts.profile !== "default") {
     cliArgs.push("-p", opts.profile);
   }
   cliArgs.push("kanban", ...args);
 
   const execOpts: ExecFileOptions = {
-    cwd: join(OCEAN_HOME, "hermes-agent"),
+    cwd: join(OCEAN_HOME, "oceanos-agent"),
     timeout: opts.timeoutMs ?? KANBAN_TIMEOUT_MS,
     env: { ...process.env, PATH: getEnhancedPath() },
     maxBuffer: 16 * 1024 * 1024,
   };
 
   return new Promise((resolve) => {
-    execFile(HERMES_PYTHON, cliArgs, execOpts, (err, stdout, stderr) => {
+    execFile(OCEANOS_PYTHON, cliArgs, execOpts, (err, stdout, stderr) => {
       const out = (stdout || "").toString();
       if (err) {
         resolve({
@@ -149,7 +149,7 @@ async function runKanban(
         } catch (parseErr) {
           resolve({
             success: false,
-            error: `Failed to parse JSON from 'hermes kanban': ${(parseErr as Error).message}`,
+            error: `Failed to parse JSON from 'oceanos kanban': ${(parseErr as Error).message}`,
             stdout: out,
           });
         }
@@ -395,7 +395,7 @@ export async function commentTask(
 // Read-only virtual board: Claw3D's headquarters task board, stored at
 // ~/.openclaw/claw3d/task-manager/tasks.json on the remote. The renderer
 // surfaces this as a second board in the Kanban picker alongside the real
-// hermes-agent boards. Only available in SSH tunnel mode — there is no
+// oceanos-agent boards. Only available in SSH tunnel mode — there is no
 // equivalent local store for the Claw3D HQ list.
 export async function listClaw3dHqTasks(): Promise<KanbanResult<KanbanTask[]>> {
   const conn = getConnectionConfig();

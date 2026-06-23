@@ -1,7 +1,7 @@
 export default {
   title: "Ustawienia",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "Wygląd",
     privacy: "Prywatność",
     credentialPool: "Pula poświadczeń",
@@ -116,7 +116,7 @@ export default {
   save: "Zapisz",
   serverConfigTitle: "Konfiguracja serwera",
   serverConfigHint:
-    "Jesteś połączony ze zdalnym serwerem OceanOS. Wybór modelu, klucze API dostawców i poświadczenia są zarządzane na serwerze w <code>~/.hermes/.env</code> oraz <code>config.yaml</code>. Edytuj je na hoście (np. <code>docker exec -it hermes vi /opt/data/.env</code>) i zrestartuj kontener.",
+    "Jesteś połączony ze zdalnym serwerem OceanOS. Wybór modelu, klucze API dostawców i poświadczenia są zarządzane na serwerze w <code>~/.oceanos/.env</code> oraz <code>config.yaml</code>. Edytuj je na hoście (np. <code>docker exec -it oceanos vi /opt/data/.env</code>) i zrestartuj kontener.",
   connectionMode: "Tryb",
   switchedToLocal: "Przełączono na tryb lokalny",
 } as const;

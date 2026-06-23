@@ -22,13 +22,13 @@ export type {
 
 /**
  * The "Discover" marketplace reads its catalog from a public GitHub repo:
- *   https://github.com/fathah/hermes-registry
+ *   https://github.com/fathah/oceanos-registry
  *
  * `index.json` is a flat list of entries, each with a `type`
  * (agent|mcp|skill|workflow) and a `path` to its folder in the repo. "Set up"
  * actions download the entry's files into the active profile.
  */
-const REGISTRY_REPO = "fathah/hermes-registry";
+const REGISTRY_REPO = "fathah/oceanos-registry";
 const REGISTRY_BRANCH = "main";
 const REGISTRY_RAW_BASE = `https://raw.githubusercontent.com/${REGISTRY_REPO}/refs/heads/${REGISTRY_BRANCH}`;
 const REGISTRY_REPO_BASE = `https://github.com/${REGISTRY_REPO}/tree/${REGISTRY_BRANCH}`;
@@ -68,7 +68,7 @@ interface EntryManifest {
   model?: string;
   tools?: string[];
   license?: string;
-  compatibility?: { hermes?: string; desktop?: string } | null;
+  compatibility?: { oceanos?: string; desktop?: string } | null;
 }
 
 const TYPE_TO_KIND: Record<IndexEntry["type"], RegistryKind> = {
@@ -281,8 +281,8 @@ function buildSpec(
   if (item.author) rows.push({ label: "Author", value: item.author });
   if (item.version) rows.push({ label: "Version", value: item.version });
   const compat = m?.compatibility;
-  if (compat?.hermes) {
-    rows.push({ label: "Requires Ocean", value: compat.hermes, mono: true });
+  if (compat?.oceanos) {
+    rows.push({ label: "Requires Ocean", value: compat.oceanos, mono: true });
   }
 
   return { description: m?.description || item.description || "", rows };
@@ -377,7 +377,7 @@ function yamlScalar(value: string): string {
 
 /**
  * Render one MCP server (from its manifest) as an indented YAML block, in the
- * exact shape the engine's config loader expects (see hermes-agent
+ * exact shape the engine's config loader expects (see oceanos-agent
  * `tools/mcp_tool.py`): a remote server is keyed by `url` (+ optional
  * `transport: sse` and `headers`); a local server by `command` (+ `args`,
  * `env`). The engine discriminates purely on the presence of `url`.
@@ -482,7 +482,7 @@ async function installWorkflow(
  * Install/"set up" a catalog item into the active profile.
  *   - skill    → download the entry folder into <profile>/skills/<category>/<id>/
  *                (bundled skills, which carry `source` and no `path`, install
- *                via `hermes skills install <source>`)
+ *                via `oceanos skills install <source>`)
  *   - mcp      → append the manifest's server to config.yaml `mcp_servers:`
  *   - agent    → create a cloned profile named after the agent
  *   - workflow → download the entry folder into <profile>/workflows/<id>/

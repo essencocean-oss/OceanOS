@@ -73,7 +73,7 @@ export default function Discover({
     setTab(focusKind.kind);
   }, [focusKind]);
   const [catalog, setCatalog] = useState<RegistryCatalog>(EMPTY);
-  // Skills shipped with the hermes-agent repo, folded into the skills list
+  // Skills shipped with the oceanos-agent repo, folded into the skills list
   // alongside registry skills (deduped).
   const [bundledSkills, setBundledSkills] = useState<RegistryItem[]>([]);
   const [installed, setInstalled] = useState<{
@@ -132,7 +132,7 @@ export default function Discover({
           workflows: data.workflows ?? [],
         });
         // `source: name` so the existing install path runs
-        // `hermes skills install <name>`.
+        // `oceanos skills install <name>`.
         setBundledSkills(
           bundled.map((b) => ({
             id: b.name,
@@ -513,7 +513,7 @@ export default function Discover({
           <p className="discover-subtitle">{t("discover.subtitle")}</p>
         </div>
         <a
-          href="https://github.com/fathah/hermes-registry"
+          href="https://github.com/fathah/oceanos-registry"
           target="_blank"
           rel="noreferrer"
           className="btn btn-secondary btn-sm"

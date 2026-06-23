@@ -6,12 +6,12 @@ import { join } from "path";
 // the relaunched process start with GPU disabled even when the flag file could
 // not be written (read-only FS, permissions) — which is what breaks the
 // otherwise-infinite crash → relaunch cycle (PR #605 review).
-const GPU_DISABLE_ARG = "--hermes-gpu-disabled";
+const GPU_DISABLE_ARG = "--oceanos-gpu-disabled";
 
-/** Normalised HERMES_DISABLE_GPU: "on" to force-disable, "off" to force-enable
+/** Normalised OCEANOS_DISABLE_GPU: "on" to force-disable, "off" to force-enable
  *  (overriding a persisted flag), or null when unset/unrecognised. */
 function gpuEnvOverride(): "on" | "off" | null {
-  const v = (process.env.HERMES_DISABLE_GPU || "").trim().toLowerCase();
+  const v = (process.env.OCEANOS_DISABLE_GPU || "").trim().toLowerCase();
   if (v === "1" || v === "true") return "on";
   if (v === "0" || v === "false") return "off";
   return null;
@@ -43,8 +43,8 @@ function flagPath(): string {
 
 /**
  * True when hardware acceleration should be disabled. Precedence:
- *   1. HERMES_DISABLE_GPU=0/false — force-enable, overrides everything else.
- *   2. HERMES_DISABLE_GPU=1/true  — force-disable.
+ *   1. OCEANOS_DISABLE_GPU=0/false — force-enable, overrides everything else.
+ *   2. OCEANOS_DISABLE_GPU=1/true  — force-disable.
  *   3. the relaunch sentinel arg  — a prior crash relaunched us GPU-off.
  *   4. the persisted disable-gpu.flag from a previous crash.
  */
@@ -66,7 +66,7 @@ function clearGpuFlag(): void {
     if (existsSync(flagPath())) {
       rmSync(flagPath(), { force: true });
       console.warn(
-        "[GPU] HERMES_DISABLE_GPU override — cleared persisted disable-gpu.flag; " +
+        "[GPU] OCEANOS_DISABLE_GPU override — cleared persisted disable-gpu.flag; " +
           "hardware acceleration re-enabled.",
       );
     }
@@ -87,7 +87,7 @@ export function applyGpuPreferences(): void {
   if (!isGpuDisabled()) return;
   console.warn(
     "[GPU] Hardware acceleration disabled (software rendering). " +
-      "Set HERMES_DISABLE_GPU=0 or delete the disable-gpu.flag file to re-enable.",
+      "Set OCEANOS_DISABLE_GPU=0 or delete the disable-gpu.flag file to re-enable.",
   );
   app.disableHardwareAcceleration();
   app.commandLine.appendSwitch("disable-gpu");
@@ -138,7 +138,7 @@ export function installGpuCrashGuard(): void {
       console.error(
         "[GPU] Could not persist disable-gpu.flag (read-only/locked filesystem?). " +
           "Relaunching with a one-shot switch; hardware acceleration may need to be " +
-          "disabled manually via HERMES_DISABLE_GPU=1 if this recurs.",
+          "disabled manually via OCEANOS_DISABLE_GPU=1 if this recurs.",
       );
     }
     // Carry the sentinel arg so the relaunched process starts GPU-off even if

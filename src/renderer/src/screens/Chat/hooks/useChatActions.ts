@@ -18,7 +18,7 @@ interface LocalCommands {
 
 interface UseChatActionsArgs {
   profile?: string;
-  hermesSessionId: string | null;
+  oceanosSessionId: string | null;
   messages: ChatMessage[];
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -50,7 +50,7 @@ interface UseChatActionsResult {
  */
 export function useChatActions({
   profile,
-  hermesSessionId,
+  oceanosSessionId,
   messages,
   isLoading,
   setIsLoading,
@@ -88,7 +88,7 @@ export function useChatActions({
         await tauri.sendMessage(
           text,
           profile,
-          hermesSessionId || undefined,
+          oceanosSessionId || undefined,
           messagesRef.current.filter(hasContent).map((m) => ({
             role: m.role,
             content: m.content,
@@ -100,7 +100,7 @@ export function useChatActions({
         // onChatError IPC already surfaces this to the user
       }
     },
-    [profile, hermesSessionId, contextFolder],
+    [profile, oceanosSessionId, contextFolder],
   );
 
   const handleSend = useCallback(

@@ -54,7 +54,7 @@ function Chat({
 }: ChatProps): React.JSX.Element {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
-  const [hermesSessionId, setHermesSessionId] = useState<string | null>(null);
+  const [oceanosSessionId, setOceanOSSessionId] = useState<string | null>(null);
   const [toolProgress, setToolProgress] = useState<string | null>(null);
   const [usage, setUsage] = useState<UsageState | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -158,18 +158,18 @@ function Chat({
 
   useChatIPC({
     setMessages,
-    setHermesSessionId,
+    setOceanOSSessionId,
     setToolProgress,
     setIsLoading,
     setUsage,
   });
 
-  // Reset hermes session when the parent clears messages (new chat).
+  // Reset oceanos session when the parent clears messages (new chat).
   // Effect-driven sync because `messages` is owned by the parent; a key-based
   // remount would discard unrelated local state (model picker, etc.).
   useEffect(() => {
     if (messages.length === 0) {
-      setHermesSessionId(null);
+      setOceanOSSessionId(null);
       setContextFolder(null);
       queueRef.current = [];
       setQueuedMessages([]);
@@ -181,7 +181,7 @@ function Chat({
   // issue #276) and the per-conversation context folder (issue #27). Chat is
   // not remounted on session switch, so this must be done explicitly.
   useEffect(() => {
-    setHermesSessionId(sessionId);
+    setOceanOSSessionId(sessionId);
     setContextFolder(null);
     queueRef.current = [];
     setQueuedMessages([]);
@@ -274,19 +274,19 @@ function Chat({
       tauri.abortChat();
       setIsLoading(false);
     }
-    const idToDelete = hermesSessionId ?? sessionId;
+    const idToDelete = oceanosSessionId ?? sessionId;
     if (idToDelete) {
       void tauri.deleteSession(idToDelete);
       void tauri.clearStagedAttachments(idToDelete);
     }
     setMessages([]);
-    setHermesSessionId(null);
+    setOceanOSSessionId(null);
     setContextFolder(null);
     setUsage(null);
     setToolProgress(null);
     queueRef.current = [];
     setQueuedMessages([]);
-  }, [isLoading, hermesSessionId, sessionId, setMessages]);
+  }, [isLoading, oceanosSessionId, sessionId, setMessages]);
 
   const localCommands = useLocalCommands({
     profile,
@@ -299,7 +299,7 @@ function Chat({
 
   const actions = useChatActions({
     profile,
-    hermesSessionId,
+    oceanosSessionId,
     messages,
     isLoading,
     setIsLoading,
@@ -463,8 +463,8 @@ function Chat({
         <ChatInput
           ref={chatInputRef}
           isLoading={isLoading}
-          hasSession={!!hermesSessionId}
-          sessionId={hermesSessionId}
+          hasSession={!!oceanosSessionId}
+          sessionId={oceanosSessionId}
           remoteMode={remoteMode}
           profile={profile}
           contextUsage={contextUsage}

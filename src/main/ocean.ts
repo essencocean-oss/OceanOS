@@ -18,9 +18,9 @@ import net from "net";
 import WebSocket from "ws";
 import {
   OCEAN_HOME,
-  HERMES_REPO,
-  HERMES_PYTHON,
-  hermesCliArgs,
+  OCEANOS_REPO,
+  OCEANOS_PYTHON,
+  oceanCliArgs,
   getEnhancedPath,
 } from "./installer";
 import {
@@ -59,8 +59,8 @@ import {
   parseRunSseBlock,
   runCompletedUsage,
   runEventReasoningText,
-  supportsHermesRunsTransport,
-  type HermesApiCapabilities,
+  supportsOceanOSRunsTransport,
+  type OceanOSApiCapabilities,
 } from "./run-stream";
 import {
   gatewayCompletionSuffix,
@@ -194,7 +194,7 @@ function capabilityCacheKey(profile?: string): string {
 
 async function getApiCapabilities(
   profile?: string,
-): Promise<HermesApiCapabilities | null> {
+): Promise<OceanOSApiCapabilities | null> {
   let key: string;
   try {
     key = capabilityCacheKey(profile);
@@ -206,10 +206,10 @@ async function getApiCapabilities(
 
   const url = `${getApiUrl(profile)}/v1/capabilities`;
   const requester = url.startsWith("https") ? https : http;
-  const value = await new Promise<HermesApiCapabilities | null>((resolve) => {
+  const value = await new Promise<OceanOSApiCapabilities | null>((resolve) => {
     let done = false;
     let timeout: NodeJS.Timeout | null = null;
-    const finish = (result: HermesApiCapabilities | null): void => {
+    const finish = (result: OceanOSApiCapabilities | null): void => {
       if (done) return;
       done = true;
       if (timeout) clearTimeout(timeout);
@@ -233,7 +233,7 @@ async function getApiCapabilities(
             return;
           }
           try {
-            finish(JSON.parse(raw) as HermesApiCapabilities);
+            finish(JSON.parse(raw) as OceanOSApiCapabilities);
           } catch {
             finish(null);
           }
@@ -529,24 +529,24 @@ class TuiGatewayClient {
     if (!existsSync(tuiGatewayPython())) {
       throw new Error(`Python interpreter not found at ${tuiGatewayPython()}`);
     }
-    if (!existsSync(HERMES_REPO)) {
-      throw new Error(`hermes-agent repo not found at ${HERMES_REPO}`);
+    if (!existsSync(OCEANOS_REPO)) {
+      throw new Error(`oceanos-agent repo not found at ${OCEANOS_REPO}`);
     }
 
     this.port = await pickDashboardPort();
     this.token = randomUUID();
     const dashboardEnv = {
       ...this.env,
-      HERMES_DASHBOARD_SESSION_TOKEN: this.token,
-      HERMES_DASHBOARD_TUI: "1",
+      OCEANOS_DASHBOARD_SESSION_TOKEN: this.token,
+      OCEANOS_DASHBOARD_TUI: "1",
     };
-    // NB: no `--tui` flag here. It's a *global* hermes option (valid only
+    // NB: no `--tui` flag here. It's a *global* oceanos option (valid only
     // before a subcommand), not a `dashboard` subcommand option, so passing
     // `dashboard --tui` makes argparse exit 2 ("unrecognized arguments:
     // --tui") and the warmup fails. The JSON-RPC gateway this client talks to
-    // (`/api/ws`) is always served by a plain `hermes dashboard` and is gated
-    // only by HERMES_DASHBOARD_SESSION_TOKEN (set in `dashboardEnv`).
-    const args = hermesCliArgs([
+    // (`/api/ws`) is always served by a plain `oceanos dashboard` and is gated
+    // only by OCEANOS_DASHBOARD_SESSION_TOKEN (set in `dashboardEnv`).
+    const args = oceanCliArgs([
       "dashboard",
       "--no-open",
       "--host",
@@ -555,7 +555,7 @@ class TuiGatewayClient {
       String(this.port),
     ]);
     const proc = spawn(tuiGatewayPython(), args, {
-      cwd: HERMES_REPO,
+      cwd: OCEANOS_REPO,
       env: dashboardEnv,
       stdio: ["ignore", "pipe", "pipe"],
       ...HIDDEN_SUBPROCESS_OPTIONS,
@@ -735,10 +735,10 @@ function wsDataToString(
 const tuiGatewayClients = new Map<string, TuiGatewayClient>();
 
 function tuiGatewayPython(): string {
-  if (process.platform === "win32" && /pythonw\.exe$/i.test(HERMES_PYTHON)) {
-    return HERMES_PYTHON.replace(/pythonw\.exe$/i, "python.exe");
+  if (process.platform === "win32" && /pythonw\.exe$/i.test(OCEANOS_PYTHON)) {
+    return OCEANOS_PYTHON.replace(/pythonw\.exe$/i, "python.exe");
   }
-  return HERMES_PYTHON;
+  return OCEANOS_PYTHON;
 }
 
 function tuiGatewayEnv(profile?: string): Record<string, string> {
@@ -749,14 +749,14 @@ function tuiGatewayEnv(profile?: string): Record<string, string> {
     PATH: getEnhancedPath(),
     HOME: homedir(),
     OCEAN_HOME: profileHome(resolved),
-    HERMES_PYTHON_SRC_ROOT: HERMES_REPO,
+    OCEANOS_PYTHON_SRC_ROOT: OCEANOS_REPO,
     PYTHONUNBUFFERED: "1",
   };
   const existingPythonPath = env.PYTHONPATH?.trim();
   env.PYTHONPATH = existingPythonPath
-    ? `${HERMES_REPO}${envPathDelimiter}${existingPythonPath}`
-    : HERMES_REPO;
-  if (resolved) env.HERMES_PROFILE = resolved;
+    ? `${OCEANOS_REPO}${envPathDelimiter}${existingPythonPath}`
+    : OCEANOS_REPO;
+  if (resolved) env.OCEANOS_PROFILE = resolved;
   for (const [key, value] of Object.entries(readEnv(profile))) {
     if (value) env[key] = value;
   }
@@ -807,7 +807,7 @@ const CAPABILITIES_CACHE_MS = 60_000;
 
 const capabilitiesCache = new Map<
   string,
-  { expiresAt: number; value: HermesApiCapabilities | null }
+  { expiresAt: number; value: OceanOSApiCapabilities | null }
 >();
 
 // ────────────────────────────────────────────────────
@@ -1121,7 +1121,7 @@ function sendMessageViaApi(
 
   const reasoningEffort = reasoningEffortForProfile(profile);
   const bodyObj: Record<string, unknown> = {
-    model: mc.model || "hermes-agent",
+    model: mc.model || "oceanos-agent",
     messages,
     stream: true,
     ...(_resumeSessionId ? { session_id: _resumeSessionId } : {}),
@@ -1152,7 +1152,7 @@ function sendMessageViaApi(
   // conversations and, post-#352, surfaces as old-session content
   // bleeding into new chats when our end-of-stream merge reads
   // getSessionMessages(). Filed upstream as
-  // NousResearch/hermes-agent#7484 (security framing — same root cause).
+  // NousResearch/oceanos-agent#7484 (security framing — same root cause).
   //
   // Format: `desk-<ms>-<uuidv4>`. UUIDv4 alone is collision-safe
   // probabilistically (~10⁻³⁶ for any pair); the timestamp prefix makes
@@ -1184,7 +1184,7 @@ function sendMessageViaApi(
     if (finished) return;
     finished = true;
     console.log(
-      "[hermes] finish called:",
+      "[oceanos] finish called:",
       error ? `error=${error}` : "done",
       "sessionId=",
       sessionId,
@@ -1199,7 +1199,7 @@ function sendMessageViaApi(
   function probeRealError(): void {
     // When streaming returns empty, make a non-streaming request to surface the real error
     const probeBodyObj: Record<string, unknown> = {
-      model: mc.model || "hermes-agent",
+      model: mc.model || "oceanos-agent",
       messages: [{ role: "user", content: userContent }],
       stream: false,
     };
@@ -1253,7 +1253,7 @@ function sendMessageViaApi(
 
   /** Handle a custom SSE event (non-data lines with `event:` prefix). */
   function processCustomEvent(eventType: string, data: string): void {
-    if (eventType === "hermes.tool.progress") {
+    if (eventType === "oceanos.tool.progress") {
       try {
         const payload = JSON.parse(data) as Record<string, unknown>;
         const toolEvent = chatToolEventFromPayload(payload);
@@ -1350,7 +1350,7 @@ function sendMessageViaApi(
       timeout: 120000,
     },
     (res) => {
-      const sid = res.headers["x-hermes-session-id"];
+      const sid = res.headers["x-oceanos-session-id"];
       if (sid && typeof sid === "string") sessionId = sid;
 
       if (res.statusCode !== 200) {
@@ -1386,7 +1386,7 @@ function sendMessageViaApi(
         }
         if (!dataLine) return false;
         if (eventType) {
-          // Custom event (e.g. hermes.tool.progress) — never signals [DONE]
+          // Custom event (e.g. oceanos.tool.progress) — never signals [DONE]
           processCustomEvent(eventType, dataLine);
           return false;
         }
@@ -1495,7 +1495,7 @@ function sendMessageViaRuns(
       : "");
   const ctxSystem = contextFolderSystemMessage(contextFolder);
   const bodyObj: Record<string, unknown> = {
-    model: mc.model || "hermes-agent",
+    model: mc.model || "oceanos-agent",
     input: message,
     conversation_history: apiHistory(history),
   };
@@ -2069,7 +2069,7 @@ function sendMessageViaCli(
   const mc = getModelConfig(profile);
   const profileEnv = readEnv(profile);
 
-  const args = hermesCliArgs();
+  const args = oceanCliArgs();
   if (profile && profile !== "default") {
     args.push("-p", profile);
   }
@@ -2154,10 +2154,10 @@ function sendMessageViaCli(
     }
     const isAnthropicProtocol = modelApiMode === "anthropic_messages";
     if (isAnthropicProtocol) {
-      env.HERMES_INFERENCE_PROVIDER = "anthropic";
+      env.OCEANOS_INFERENCE_PROVIDER = "anthropic";
       env.ANTHROPIC_BASE_URL = mc.baseUrl.replace(/\/+$/, "");
     } else {
-      env.HERMES_INFERENCE_PROVIDER = "custom";
+      env.OCEANOS_INFERENCE_PROVIDER = "custom";
       env.OPENAI_BASE_URL = mc.baseUrl.replace(/\/+$/, "");
       if (cliProvider === "custom") {
         env.CUSTOM_BASE_URL = mc.baseUrl.replace(/\/+$/, "");
@@ -2171,7 +2171,7 @@ function sendMessageViaCli(
     //  - Old engine (≤ v0.14.0) routes via OPENAI_API_KEY + OPENAI_BASE_URL.
     //  - Current upstream main refuses to forward OPENAI_API_KEY to a
     //    non-openai host and instead derives <VENDOR>_API_KEY from the
-    //    URL host (see hermes_cli/runtime_provider.py::_host_derived_api_key).
+    //    URL host (see oceanos_cli/runtime_provider.py::_host_derived_api_key).
     //    Without the host-derived var in the child env, chat against a
     //    custom provider on api.deepseek.com / api.groq.com / etc. falls
     //    through to "no-key-required" and 401s.
@@ -2244,8 +2244,8 @@ function sendMessageViaCli(
     delete env.OPENROUTER_BASE_URL;
   }
 
-  const proc = spawn(HERMES_PYTHON, args, {
-    cwd: HERMES_REPO,
+  const proc = spawn(OCEANOS_PYTHON, args, {
+    cwd: OCEANOS_REPO,
     env,
     stdio: ["ignore", "pipe", "pipe"],
     ...HIDDEN_SUBPROCESS_OPTIONS,
@@ -2369,7 +2369,7 @@ async function sendMessageViaNonGatewayApi(
   const approvalCommand = /^\/(?:approve|deny)\b/i.test(message.trim());
   if (!attachments?.length && !approvalCommand) {
     const capabilities = await getApiCapabilities(profile);
-    if (supportsHermesRunsTransport(capabilities)) {
+    if (supportsOceanOSRunsTransport(capabilities)) {
       return sendMessageViaRuns(
         message,
         cb,
@@ -2611,7 +2611,7 @@ export async function sendMessage(
   // Check API server availability when the cache is cold or known-bad. Once
   // the API is known healthy, keep the normal send path fast and let the API
   // transport error wrapper handle a stale cache caused by external lifecycle
-  // events such as `hermes update` or Windows sleep/resume.
+  // events such as `oceanos update` or Windows sleep/resume.
   if (apiServerAvailable === null || apiServerAvailable === false) {
     apiServerAvailable = await isApiServerReady(profile);
     if (!apiServerAvailable) {
@@ -2676,7 +2676,7 @@ export function stopHealthPolling(): void {
 // default profile, the profile name otherwise). Tracking them in maps —
 // rather than a single global — lets several profiles' gateways run at once
 // (e.g. each keeping its own Telegram bot online), which is the documented
-// hermes model: one gateway per profile, bound to that profile's own port.
+// oceanos model: one gateway per profile, bound to that profile's own port.
 const gatewayProcesses = new Map<string, ChildProcess>();
 const appStartedProfiles = new Set<string>();
 
@@ -2701,15 +2701,15 @@ function invalidateApiCacheFor(profile?: string): void {
 }
 
 function getGatewaySpawnError(): string | null {
-  if (!existsSync(HERMES_PYTHON)) {
+  if (!existsSync(OCEANOS_PYTHON)) {
     return (
-      `Cannot start the gateway because the Ocean Python interpreter was not found at ${HERMES_PYTHON}. ` +
+      `Cannot start the gateway because the Ocean Python interpreter was not found at ${OCEANOS_PYTHON}. ` +
       "Install or repair Ocean Agent, then try again."
     );
   }
-  if (!existsSync(HERMES_REPO)) {
+  if (!existsSync(OCEANOS_REPO)) {
     return (
-      `Cannot start the gateway because the hermes-agent repository was not found at ${HERMES_REPO}. ` +
+      `Cannot start the gateway because the oceanos-agent repository was not found at ${OCEANOS_REPO}. ` +
       "Install or repair Ocean Agent, then try again."
     );
   }
@@ -2809,8 +2809,8 @@ export function startGatewayDetailed(profile?: string): GatewayStartResult {
   // Defensive: the local gateway is never the right thing to spawn in
   // remote/SSH mode — the user is pointing at an off-machine server.
   // Callers should already gate, but several IPC handlers historically
-  // forgot to (issue #266), and reaching `spawn(HERMES_PYTHON, …)` when
-  // there's no local hermes-agent install produces an uncaught ENOENT
+  // forgot to (issue #266), and reaching `spawn(OCEANOS_PYTHON, …)` when
+  // there's no local oceanos-agent install produces an uncaught ENOENT
   // that pops a generic error dialog.  Refuse cleanly here.
   if (isRemoteMode()) {
     const error =
@@ -2863,8 +2863,8 @@ export function startGatewayDetailed(profile?: string): GatewayStartResult {
   const cliArgs = gatewayCliCommandArgs(profile, ["gateway"]);
   let proc: ChildProcess;
   try {
-    proc = spawn(HERMES_PYTHON, hermesCliArgs(cliArgs), {
-      cwd: HERMES_REPO,
+    proc = spawn(OCEANOS_PYTHON, oceanCliArgs(cliArgs), {
+      cwd: OCEANOS_REPO,
       env: gatewayEnv,
       stdio: ["ignore", "ignore", stderrFd >= 0 ? stderrFd : "ignore"],
       detached: true,
@@ -2953,9 +2953,9 @@ function parsePidFromFile(pidFile: string): number | null {
 }
 
 /**
- * The gateway.pid path for a profile. The hermes CLI writes it into the
- * profile's home directory (~/.hermes/gateway.pid for default,
- * ~/.hermes/profiles/<name>/gateway.pid for a named profile), so each
+ * The gateway.pid path for a profile. The oceanos CLI writes it into the
+ * profile's home directory (~/.oceanos/gateway.pid for default,
+ * ~/.oceanos/profiles/<name>/gateway.pid for a named profile), so each
  * profile's gateway has its own PID file — that's what lets them coexist.
  */
 function gatewayPidPath(profile?: string): string {
@@ -3350,7 +3350,7 @@ async function restartGatewayViaCliOnce(
     const wasHealthyBeforeRestart = await isApiServerReady(profile);
     appendFileSync(
       logPath,
-      `\n[gateway:${key}] Desktop requested hermes gateway restart at ${new Date().toISOString()}\n`,
+      `\n[gateway:${key}] Desktop requested oceanos gateway restart at ${new Date().toISOString()}\n`,
     );
 
     return await new Promise<boolean>((resolve) => {
@@ -3359,10 +3359,10 @@ async function restartGatewayViaCliOnce(
       try {
         stderrFd = openSync(logPath, "a");
         proc = spawn(
-          HERMES_PYTHON,
-          hermesCliArgs(gatewayCliCommandArgs(profile, ["gateway", "restart"])),
+          OCEANOS_PYTHON,
+          oceanCliArgs(gatewayCliCommandArgs(profile, ["gateway", "restart"])),
           {
-            cwd: HERMES_REPO,
+            cwd: OCEANOS_REPO,
             env: buildGatewayEnv(profile),
             stdio: ["ignore", "ignore", stderrFd >= 0 ? stderrFd : "ignore"],
             detached: true,

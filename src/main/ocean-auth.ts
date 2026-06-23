@@ -1,10 +1,10 @@
 import { spawn, type ChildProcess } from "child_process";
 import { homedir } from "os";
 import {
-  HERMES_PYTHON,
-  HERMES_REPO,
+  OCEANOS_PYTHON,
+  OCEANOS_REPO,
   OCEAN_HOME,
-  hermesCliArgs,
+  oceanCliArgs,
   getEnhancedPath,
 } from "./installer";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
@@ -12,8 +12,8 @@ import { stripAnsi } from "./utils";
 
 /**
  * Provider identifiers that authenticate via an interactive OAuth flow
- * (`hermes auth add <provider> --type oauth`) rather than a static API
- * key. Mirrors hermes-agent's `_OAUTH_CAPABLE_PROVIDERS` set.
+ * (`oceanos auth add <provider> --type oauth`) rather than a static API
+ * key. Mirrors oceanos-agent's `_OAUTH_CAPABLE_PROVIDERS` set.
  *
  * `nous` is included even though it also has an API-key variant — the
  * Providers UI now offers both surfaces (an API Key card and an
@@ -75,7 +75,7 @@ export function detectDeviceCode(
 let activeProc: ChildProcess | null = null;
 
 /**
- * Run `hermes auth add <provider> --type oauth`, streaming the CLI's
+ * Run `oceanos auth add <provider> --type oauth`, streaming the CLI's
  * stdout/stderr line-by-line to `emit`. The CLI opens the system browser
  * for the OAuth consent step and runs a localhost loopback server to
  * catch the redirect; this function just supervises that subprocess.
@@ -83,7 +83,7 @@ let activeProc: ChildProcess | null = null;
  * Resolves `{ success: true }` on exit code 0, `{ success: false, error }`
  * otherwise (non-zero exit, spawn failure, or cancellation).
  */
-export function runHermesAuthLogin(
+export function runOceanOSAuthLogin(
   provider: string,
   emit: (chunk: string) => void,
   profile?: string,
@@ -113,8 +113,8 @@ export function runHermesAuthLogin(
 
     let proc: ChildProcess;
     try {
-      proc = spawn(HERMES_PYTHON, hermesCliArgs(subArgs), {
-        cwd: HERMES_REPO,
+      proc = spawn(OCEANOS_PYTHON, oceanCliArgs(subArgs), {
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -166,7 +166,7 @@ export function runHermesAuthLogin(
  * Kill the in-flight login subprocess, if any. Used when the user closes
  * the sign-in modal before the OAuth flow completes.
  */
-export function cancelHermesAuthLogin(): boolean {
+export function cancelOceanOSAuthLogin(): boolean {
   if (!activeProc) return false;
   activeProc.kill();
   return true;

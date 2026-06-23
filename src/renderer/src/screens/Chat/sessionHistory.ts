@@ -26,7 +26,7 @@ export interface DbHistoryItem {
  * the same mapping.
  *
  * The end-of-stream refresh is the desktop's user-side mitigation for
- * NousResearch/hermes-agent#30449 ("API server: reasoning_content and
+ * NousResearch/oceanos-agent#30449 ("API server: reasoning_content and
  * reasoning_effort never reach OpenAI-compatible SSE stream"). Until
  * the gateway forwards reasoning chunks during the stream, the agent
  * still writes them to state.db at finalisation — refreshing here
@@ -286,7 +286,7 @@ function mergeDbMetadataIntoStreamed(
  * transcript at end-of-stream.
  *
  * The desktop streams `user` + `agent content` in real time (and, once
- * `NousResearch/hermes-agent#30449` lands, `reasoning` too). `tool_call`
+ * `NousResearch/oceanos-agent#30449` lands, `reasoning` too). `tool_call`
  * and `tool_result` rows never stream — they only exist in `state.db`
  * after the agent finalises the message. So at end-of-stream we need
  * to surface the DB rows the streaming pass didn't deliver.

@@ -484,7 +484,7 @@ export function setConfigValue(
 ): void {
   // Invalidate the apiServerKey cache when either of the two canonical
   // gateway-secret locations is written: the legacy top-level
-  // `API_SERVER_KEY` *or* the hermes-agent canonical `api_server.token`
+  // `API_SERVER_KEY` *or* the oceanos-agent canonical `api_server.token`
   // path. Without the second check, editing `api_server.token` via the
   // desktop would leave the cached value stale for up to the 5s TTL.
   if (
@@ -668,7 +668,7 @@ export function getModelConfig(profile?: string): {
 
 /**
  * Mirror of the runtime key-resolution fallback for OpenAI-compatible /
- * custom endpoints (see `sendMessageViaCli` in hermes.ts): the gateway tries
+ * custom endpoints (see `sendMessageViaCli` in oceanos.ts): the gateway tries
  * the URL-specific key, then `CUSTOM_API_KEY`, then `OPENAI_API_KEY`. Returns
  * true when any link in that chain is populated for `profile`.
  *
@@ -755,8 +755,8 @@ export function upsertBlockChild(
  * provider="custom" entry pointing at a known commercial host (DeepSeek,
  * Groq, Mistral, etc.).
  *
- * Workaround for an upstream hermes-agent bug
- * (NousResearch/hermes-agent #?? — see fathah/ocean-desktop#260): the
+ * Workaround for an upstream oceanos-agent bug
+ * (NousResearch/oceanos-agent #?? — see fathah/ocean-desktop#260): the
  * gateway's ``_resolve_openrouter_runtime`` fallback chain reaches
  * ``OPENAI_API_KEY``/``OPENROUTER_API_KEY`` when a bare ``custom``
  * provider's credential pool is empty, which leaks unrelated keys to
@@ -926,12 +926,12 @@ export function setModelConfig(
   safeWriteFile(configFile, content);
 }
 
-export function getHermesHome(profile?: string): string {
+export function getOceanHome(profile?: string): string {
   return profilePaths(profile).home;
 }
 
 /**
- * Resolve the API server's shared secret. Honoured by the local hermes
+ * Resolve the API server's shared secret. Honoured by the local oceanos
  * gateway (`api_server.token` in `config.yaml` / `API_SERVER_KEY` in
  * `.env`) when present; the desktop must include it as
  * `Authorization: Bearer …` on every chat request, otherwise the gateway
@@ -944,12 +944,12 @@ export function getHermesHome(profile?: string): string {
  *   2. Default `config.yaml` top-level `API_SERVER_KEY` (legacy override)
  *   3. Profile `.env` `API_SERVER_KEY` (matches what the gateway reads)
  *   4. Default `.env` `API_SERVER_KEY`
- *   5. Profile `config.yaml` `api_server.token` (canonical hermes-agent
+ *   5. Profile `config.yaml` `api_server.token` (canonical oceanos-agent
  *      gateway-secret location — issue #333)
  *   6. Default `config.yaml` `api_server.token`
  *
  * The `api_server.token` candidates are the bug fix for #333: users who
- * ran `hermes setup` (which writes `api_server.token` into `config.yaml`
+ * ran `oceanos setup` (which writes `api_server.token` into `config.yaml`
  * but does not touch `.env`) would otherwise see chat fail on the
  * second message with *"Session continuation requires API key
  * authentication. Configure API_SERVER_KEY to enable this feature."*
@@ -1027,8 +1027,8 @@ export function getApiServerKey(profile?: string): string {
         from: source,
         to:
           profile && profile !== "default"
-            ? `~/.hermes/profiles/${profile}/.env`
-            : "~/.hermes/.env",
+            ? `~/.oceanos/profiles/${profile}/.env`
+            : "~/.oceanos/.env",
         profile: profile || "default",
         valueMasked: maskKey(value),
       });
@@ -1129,7 +1129,7 @@ export function maskKey(value: string): string {
 }
 
 /**
- * Append a JSONL entry to `~/.hermes/logs/config-fixes.log` recording
+ * Append a JSONL entry to `~/.oceanos/logs/config-fixes.log` recording
  * an automated or user-initiated config migration. Auto-truncates the
  * log to the most-recent 1000 entries on each write so it doesn't grow
  * unbounded. Best-effort — any I/O error is silently swallowed so a
@@ -1174,7 +1174,7 @@ export function appendConfigFixLog(entry: ConfigFixLogEntry): void {
 
 // ── Platform enabled/disabled ─────────────────────────────
 //
-// The Python hermes gateway (gateway/config.py) decides which messaging
+// The Python oceanos gateway (gateway/config.py) decides which messaging
 // platforms to start from env vars in .env; it doesn't look at a fictional
 // `platforms:` YAML section. config.yaml only carries an override-disable
 // switch: `<platform>.enabled: false` at the top level. Earlier the desktop
@@ -1481,7 +1481,7 @@ function authFilePath(profile?: string): string {
 /**
  * Shape of a credential-pool entry as the upstream gateway expects it.
  *
- * The engine's resolver (`hermes_cli/auth.py` and the credential-pool
+ * The engine's resolver (`oceanos_cli/auth.py` and the credential-pool
  * entry parser) reads `access_token` (not `key`), needs an
  * `auth_type` to distinguish OAuth from API-key entries inside the
  * same pool, and uses `id` / `priority` / `source` for rotation and

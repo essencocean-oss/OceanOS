@@ -210,7 +210,7 @@ export function getPlatformToolsets(profile?: string): Record<string, string[]> 
 export function getToolsets(profile?: string): ToolsetInfo[] {
   const configFile = join(profileHome(profile), "config.yaml");
 
-  // If no config, assume all toolsets are enabled (hermes default behavior)
+  // If no config, assume all toolsets are enabled (oceanos default behavior)
   if (!existsSync(configFile)) {
     return localizeToolDefs(true);
   }

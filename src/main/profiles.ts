@@ -5,8 +5,8 @@ import { promises as fs } from "fs";
 import { existsSync } from "fs";
 import {
   OCEAN_HOME,
-  HERMES_PYTHON,
-  hermesCliArgs,
+  OCEANOS_PYTHON,
+  oceanCliArgs,
   getEnhancedPath,
 } from "./installer";
 import {
@@ -94,7 +94,7 @@ async function isGatewayRunning(profilePath: string): Promise<boolean> {
   const pidFile = join(profilePath, "gateway.pid");
   try {
     const raw = (await fs.readFile(pidFile, "utf-8")).trim();
-    // The Python hermes CLI writes JSON: {"pid": <n>, "kind": ..., ...}.
+    // The Python oceanos CLI writes JSON: {"pid": <n>, "kind": ..., ...}.
     // Older builds wrote a bare integer, so fall back to parseInt.
     const parsed = raw.startsWith("{")
       ? (JSON.parse(raw) as { pid?: unknown }).pid
@@ -153,7 +153,7 @@ export async function listProfiles(): Promise<ProfileInfo[]> {
     gatewayRunning: defaultGw,
   });
 
-  // Named profiles under ~/.hermes/profiles/
+  // Named profiles under ~/.oceanos/profiles/
   if (existsSync(PROFILES_DIR)) {
     try {
       const dirs = await fs.readdir(PROFILES_DIR);
@@ -166,7 +166,7 @@ export async function listProfiles(): Promise<ProfileInfo[]> {
         const stat = await fs.stat(profilePath);
         if (!stat.isDirectory()) return null;
 
-        // Any subdirectory of ~/.hermes/profiles/ is treated as a profile.
+        // Any subdirectory of ~/.oceanos/profiles/ is treated as a profile.
         // We deliberately do NOT require config.yaml or .env to exist —
         // a freshly created profile may have neither yet, and filtering on
         // them silently hides it from the UI (issue #19).
@@ -220,8 +220,8 @@ export function createProfile(
     const args = clone
       ? ["profile", "create", name, "--clone"]
       : ["profile", "create", name];
-    execFileSync(HERMES_PYTHON, hermesCliArgs(args), {
-      cwd: join(OCEAN_HOME, "hermes-agent"),
+    execFileSync(OCEANOS_PYTHON, oceanCliArgs(args), {
+      cwd: join(OCEAN_HOME, "oceanos-agent"),
       env: {
         ...process.env,
         PATH: getEnhancedPath(),
@@ -250,10 +250,10 @@ export function deleteProfile(name: string): {
 
   try {
     execFileSync(
-      HERMES_PYTHON,
-      hermesCliArgs(["profile", "delete", name, "--yes"]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["profile", "delete", name, "--yes"]),
       {
-        cwd: join(OCEAN_HOME, "hermes-agent"),
+        cwd: join(OCEAN_HOME, "oceanos-agent"),
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -277,8 +277,8 @@ export function setActiveProfile(name: string): void {
   }
 
   try {
-    execFileSync(HERMES_PYTHON, hermesCliArgs(["profile", "use", name]), {
-      cwd: join(OCEAN_HOME, "hermes-agent"),
+    execFileSync(OCEANOS_PYTHON, oceanCliArgs(["profile", "use", name]), {
+      cwd: join(OCEAN_HOME, "oceanos-agent"),
       env: {
         ...process.env,
         PATH: getEnhancedPath(),

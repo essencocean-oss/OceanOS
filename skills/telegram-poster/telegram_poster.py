@@ -1,7 +1,7 @@
 import requests, os, sys
 from pathlib import Path
 
-CONFIG_PATH = Path.home() / "AppData" / "Local" / "hermes" / "config.yaml"
+CONFIG_PATH = Path.home() / "AppData" / "Local" / "oceanos" / "config.yaml"
 
 def load_token():
     import re

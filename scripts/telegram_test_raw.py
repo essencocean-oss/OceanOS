@@ -3,8 +3,8 @@ from pathlib import Path
 
 # Read actual token from local Ocean env
 paths = [
-    Path(os.path.expanduser("~")) / ".hermes" / ".env",
-    Path(os.environ.get("LOCALAPPDATA", "")) / "hermes" / ".env",
+    Path(os.path.expanduser("~")) / ".oceanos" / ".env",
+    Path(os.environ.get("LOCALAPPDATA", "")) / "oceanos" / ".env",
 ]
 token = None
 for p in paths:

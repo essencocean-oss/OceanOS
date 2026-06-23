@@ -185,7 +185,7 @@ export async function ensureSshTunnel(config: SshConfig): Promise<void> {
   await startSshTunnel(config);
 }
 
-// Test SSH reachability + hermes health endpoint through a temporary tunnel
+// Test SSH reachability + oceanos health endpoint through a temporary tunnel
 export function testSshConnection(config: SshConfig): Promise<boolean> {
   return findFreePort(config.localPort || 19642)
     .then(
@@ -234,7 +234,7 @@ export function testSshConnection(config: SshConfig): Promise<boolean> {
               return;
             }
 
-            // Port is open — hit hermes /health
+            // Port is open — hit oceanos /health
             const req = http.request(
               `http://127.0.0.1:${localPort}/health`,
               { method: "GET", timeout: 3000 },

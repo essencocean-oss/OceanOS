@@ -17,7 +17,7 @@ import Gateway from "./Gateway";
 describe("Gateway screen recovery controls", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    Object.defineProperty(window, "hermesAPI", {
+    Object.defineProperty(window, "oceanAPI", {
       configurable: true,
       value: {
         getEnv: vi.fn().mockResolvedValue({}),

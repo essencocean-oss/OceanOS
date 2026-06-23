@@ -4,13 +4,13 @@ import {
   parseRunSseBlock,
   runCompletedUsage,
   runEventReasoningText,
-  supportsHermesRunsTransport,
+  supportsOceanOSRunsTransport,
 } from "./run-stream";
 
-describe("supportsHermesRunsTransport", () => {
+describe("supportsOceanOSRunsTransport", () => {
   it("requires the run features and endpoint paths", () => {
     expect(
-      supportsHermesRunsTransport({
+      supportsOceanOSRunsTransport({
         features: {
           run_submission: true,
           run_events_sse: true,
@@ -30,7 +30,7 @@ describe("supportsHermesRunsTransport", () => {
 
   it("rejects older gateways that only expose chat completions", () => {
     expect(
-      supportsHermesRunsTransport({
+      supportsOceanOSRunsTransport({
         features: {
           chat_completions_streaming: true,
         },
@@ -43,7 +43,7 @@ describe("supportsHermesRunsTransport", () => {
 
   it("rejects partial run support without stop", () => {
     expect(
-      supportsHermesRunsTransport({
+      supportsOceanOSRunsTransport({
         features: {
           run_submission: true,
           run_events_sse: true,
@@ -61,7 +61,7 @@ describe("supportsHermesRunsTransport", () => {
 
   it("rejects run support without the approval response endpoint", () => {
     expect(
-      supportsHermesRunsTransport({
+      supportsOceanOSRunsTransport({
         features: {
           run_submission: true,
           run_events_sse: true,

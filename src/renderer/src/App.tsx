@@ -111,7 +111,7 @@ function App(): React.JSX.Element {
     // install is broken, surface the warning then — don't block startup.
     //
     // Skip for remote-mode connections: verifyInstall() probes the LOCAL
-    // Python + script paths (HERMES_PYTHON / HERMES_SCRIPT in installer.ts),
+    // Python + script paths (OCEANOS_PYTHON / OCEANOS_SCRIPT in installer.ts),
     // which don't exist on machines that only use a remote backend. Without
     // this guard the user is bounced back to Welcome with an "installBroken"
     // error immediately after a successful remote connect. (#47, #41, #30)

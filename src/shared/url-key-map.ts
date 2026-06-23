@@ -4,7 +4,7 @@
  *
  * Used in three places that were previously each maintaining their own
  * copy of this table:
- *   - Main process: gateway spawn env hydration (hermes.ts)
+ *   - Main process: gateway spawn env hydration (oceanos.ts)
  *   - Renderer: Edit Model dialog (Models.tsx)
  *   - Renderer: Setup wizard's custom-host path (Setup.tsx)
  *
@@ -81,7 +81,7 @@ export function isLocalBaseUrl(url: string | null | undefined): boolean {
 
 /**
  * Provider ids the runtime routes through its OpenAI-compatible "custom
- * endpoint" path (see sendMessageViaCli in hermes.ts). For these, the gateway
+ * endpoint" path (see sendMessageViaCli in oceanos.ts). For these, the gateway
  * resolves the upstream key from a fallback chain — URL-specific key →
  * CUSTOM_PROVIDER_<name>_KEY → CUSTOM_API_KEY → OPENAI_API_KEY — rather than
  * insisting on the URL-derived key. Single source of truth so the gateway

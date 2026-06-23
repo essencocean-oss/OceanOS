@@ -104,13 +104,13 @@ const COLUMNS: { key: string }[] = [
 const POLL_INTERVAL_MS = 6000;
 
 // Sentinel slug for the read-only Claw3D HQ virtual board. Distinct from any
-// real hermes-agent kanban board slug (which is bash-safe alphanumeric per
+// real oceanos-agent kanban board slug (which is bash-safe alphanumeric per
 // the backend CLI).
 const HQ_BOARD_SLUG = "__claw3d_hq__";
 
 // localStorage key for remembering which board the user last viewed across
 // sessions. Stored value is either a real board slug or HQ_BOARD_SLUG.
-const ACTIVE_BOARD_LS_KEY = "hermes:kanban:active-board";
+const ACTIVE_BOARD_LS_KEY = "oceanos:kanban:active-board";
 
 function readStoredActiveBoard(): string | null {
   try {

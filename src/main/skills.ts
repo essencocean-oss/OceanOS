@@ -11,9 +11,9 @@ import { isAbsolute, join, relative, resolve } from "path";
 import { homedir } from "os";
 import {
   OCEAN_HOME,
-  HERMES_PYTHON,
-  HERMES_REPO,
-  hermesCliArgs,
+  OCEANOS_PYTHON,
+  OCEANOS_REPO,
+  oceanCliArgs,
   getEnhancedPath,
 } from "./installer";
 import { isValidNamedProfileName, profileHome } from "./utils";
@@ -152,7 +152,7 @@ function isProfileSkillFile(skillFile: string): boolean {
 function isAllowedSkillFile(skillFile: string): boolean {
   const allowedRoots = [
     join(OCEAN_HOME, "skills"),
-    join(HERMES_REPO, "skills"),
+    join(OCEANOS_REPO, "skills"),
   ].map(realOrResolved);
 
   return (
@@ -180,15 +180,15 @@ export function getSkillContent(skillPath: string): string {
 }
 
 /**
- * Search the skill registry via the hermes CLI.
+ * Search the skill registry via the oceanos CLI.
  */
 export function searchSkills(query: string): SkillSearchResult[] {
   try {
     const output = execFileSync(
-      HERMES_PYTHON,
-      hermesCliArgs(["skills", "browse", "--query", query, "--json"]),
+      OCEANOS_PYTHON,
+      oceanCliArgs(["skills", "browse", "--query", query, "--json"]),
       {
-        cwd: HERMES_REPO,
+        cwd: OCEANOS_REPO,
         env: {
           ...process.env,
           PATH: getEnhancedPath(),
@@ -228,10 +228,10 @@ export function searchSkills(query: string): SkillSearchResult[] {
 }
 
 /**
- * List bundled skills from the hermes-agent repo.
+ * List bundled skills from the oceanos-agent repo.
  */
 export function listBundledSkills(): SkillSearchResult[] {
-  const bundledDir = join(HERMES_REPO, "skills");
+  const bundledDir = join(OCEANOS_REPO, "skills");
   if (!existsSync(bundledDir)) return [];
 
   const skills: SkillSearchResult[] = [];
@@ -284,11 +284,11 @@ export function listBundledSkills(): SkillSearchResult[] {
 }
 
 /**
- * Failure markers seen in `hermes skills install/uninstall` stdout when the
+ * Failure markers seen in `oceanos skills install/uninstall` stdout when the
  * CLI exits 0 despite the operation having failed. Observed live against
  * Ocean Agent v0.14.0 (2026.5.16) on 2026-05-22:
  *
- *   $ hermes skills install concept-diagram --yes
+ *   $ oceanos skills install concept-diagram --yes
  *   Resolving 'concept-diagram'...
  *   No exact match for 'concept-diagram'. Did you mean one of these?
  *     concept-diagrams - official/creative/concept-diagrams
@@ -310,7 +310,7 @@ export interface SkillCliResult {
 }
 
 /**
- * Classify the combined output of `hermes skills install/uninstall` after
+ * Classify the combined output of `oceanos skills install/uninstall` after
  * the subprocess has exited 0. The CLI exits 0 even on resolution failure
  * (issue #310), so the exit code alone is not enough. When a known failure
  * marker is present, surface the message (minus the leading
@@ -346,13 +346,13 @@ export function installSkill(
   profile?: string,
 ): SkillCliResult {
   try {
-    const args = hermesCliArgs(["skills", "install", identifier, "--yes"]);
+    const args = oceanCliArgs(["skills", "install", identifier, "--yes"]);
     if (profile && profile !== "default") {
       args.splice(process.platform === "win32" ? 2 : 1, 0, "-p", profile);
     }
 
-    const stdout = execFileSync(HERMES_PYTHON, args, {
-      cwd: HERMES_REPO,
+    const stdout = execFileSync(OCEANOS_PYTHON, args, {
+      cwd: OCEANOS_REPO,
       env: {
         ...process.env,
         PATH: getEnhancedPath(),
@@ -381,13 +381,13 @@ export function uninstallSkill(name: string, profile?: string): SkillCliResult {
   // Try the CLI first (updates hub lock files, handles complex cases).
   let cliResult: SkillCliResult | undefined;
   try {
-    const args = hermesCliArgs(["skills", "uninstall", name, "--yes"]);
+    const args = oceanCliArgs(["skills", "uninstall", name, "--yes"]);
     if (profile && profile !== "default") {
       args.splice(process.platform === "win32" ? 2 : 1, 0, "-p", profile);
     }
 
-    const stdout = execFileSync(HERMES_PYTHON, args, {
-      cwd: HERMES_REPO,
+    const stdout = execFileSync(OCEANOS_PYTHON, args, {
+      cwd: OCEANOS_REPO,
       env: {
         ...process.env,
         PATH: getEnhancedPath(),

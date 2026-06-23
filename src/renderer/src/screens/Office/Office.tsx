@@ -15,7 +15,7 @@ interface OfficeProps {
 
 // The CEO assignment is desktop-local UI state (one agent at a time), persisted
 // across reloads like the app's other renderer preferences (theme, locale).
-const CEO_STORAGE_KEY = "hermes:office:ceo";
+const CEO_STORAGE_KEY = "oceanos:office:ceo";
 
 function readStoredCeo(): string | null {
   try {

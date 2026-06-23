@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { execFile } from "child_process";
-import { OCEAN_HOME, HERMES_PYTHON, hermesCliArgs } from "./installer";
+import { OCEAN_HOME, OCEANOS_PYTHON, oceanCliArgs } from "./installer";
 import { profileHome } from "./utils";
 import {
   isRemoteMode,
@@ -185,13 +185,13 @@ export async function listCronJobs(
 }
 
 /**
- * Run a hermes cron CLI command and return the result.
+ * Run a oceanos cron CLI command and return the result.
  */
 function runCronCommand(
   args: string[],
   profile?: string,
 ): Promise<{ success: boolean; output: string; error?: string }> {
-  const cliArgs = hermesCliArgs();
+  const cliArgs = oceanCliArgs();
   if (profile && profile !== "default") {
     cliArgs.push("-p", profile);
   }
@@ -199,10 +199,10 @@ function runCronCommand(
 
   return new Promise((resolve) => {
     execFile(
-      HERMES_PYTHON,
+      OCEANOS_PYTHON,
       cliArgs,
       {
-        cwd: join(OCEAN_HOME, "hermes-agent"),
+        cwd: join(OCEAN_HOME, "oceanos-agent"),
         timeout: 15000,
         ...HIDDEN_SUBPROCESS_OPTIONS,
       },

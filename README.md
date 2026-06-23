@@ -38,7 +38,7 @@ OceanOS runs AI agents, skills, and workflows locally. Its default view is a res
 
 ## Migration notes
 
-Electron has been replaced by Tauri 2.0. The renderer now calls Tauri commands directly; the legacy `window.hermesAPI` compatibility shim has been removed. All known Electron imports (`electron`, `ipcRenderer`, `contextBridge`, `remote`) are cleared from the renderer tree.
+Electron has been replaced by Tauri 2.0. The renderer now calls Tauri commands directly; the legacy `window.oceanAPI` compatibility shim has been removed. All known Electron imports (`electron`, `ipcRenderer`, `contextBridge`, `remote`) are cleared from the renderer tree.
 
 ## Topics
 

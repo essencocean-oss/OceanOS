@@ -12,8 +12,8 @@ import { URL_KEY_MAP } from "../shared/url-key-map";
  * or null if the URL doesn't match a known vendor pattern.
  *
  * Used by both:
- *   - `hermes.ts` runtime spawn (CLI path) — writes the host-derived
- *     var into the child process env so a freshly-spawned hermes-agent
+ *   - `oceanos.ts` runtime spawn (CLI path) — writes the host-derived
+ *     var into the child process env so a freshly-spawned oceanos-agent
  *     can resolve the key.
  *   - `models.ts` custom-provider persistence — writes the host-derived
  *     var into `.env` so the long-running gateway (started from

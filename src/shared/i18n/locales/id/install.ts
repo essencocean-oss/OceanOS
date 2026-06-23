@@ -25,7 +25,7 @@ export default {
   confirmInstallBtn: "Pasang OceanOS",
   useExistingBtn: "Gunakan pemasangan yang sudah ada",
   useExistingHint:
-    "Pilih folder yang berisi pemasangan OceanOS Anda yang sudah ada (folder yang memuat folder hermes-agent).",
+    "Pilih folder yang berisi pemasangan OceanOS Anda yang sudah ada (folder yang memuat folder oceanos-agent).",
   useExistingInvalid:
     "Tidak ada pemasangan OceanOS yang dapat digunakan di folder itu.",
   useExistingDone:

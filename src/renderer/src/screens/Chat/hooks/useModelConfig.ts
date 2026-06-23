@@ -121,7 +121,7 @@ export function useModelConfig(profile?: string): UseModelConfigResult {
   const selectModel = useCallback(
     async (provider: string, model: string, baseUrl: string): Promise<void> => {
       // Named providers (deepseek, groq, anthropic, …) have a hardcoded
-      // canonical base_url in `hermes-agent`'s PROVIDER_REGISTRY.  A stored
+      // canonical base_url in `oceanos-agent`'s PROVIDER_REGISTRY.  A stored
       // model entry that carries a stale `baseUrl` from an earlier confused
       // save (e.g. a deepseek-tagged entry whose baseUrl points at the codex
       // endpoint) would route the request to the wrong host.  Drop the

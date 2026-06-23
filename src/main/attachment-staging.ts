@@ -9,7 +9,7 @@ import { OCEAN_HOME } from "./installer";
  * agent.
  *
  * Layout:
- *   %LOCALAPPDATA%/hermes/desktop-staging/<sessionId>/<filename>
+ *   %LOCALAPPDATA%/oceanos/desktop-staging/<sessionId>/<filename>
  *
  * Files persist across desktop restarts so the agent can re-read them
  * on session resume.  Per-session subdirs are cleaned up when the

@@ -13,8 +13,8 @@ import { getAppLocale } from "./locale";
 /**
  * The session cache lives alongside its own profile's data so profiles
  * don't share a single cache file. The default profile keeps
- * ~/.hermes/desktop/sessions.json; named profiles use
- * ~/.hermes/profiles/<name>/desktop/sessions.json (issue #311).
+ * ~/.oceanos/desktop/sessions.json; named profiles use
+ * ~/.oceanos/profiles/<name>/desktop/sessions.json (issue #311).
  */
 function cacheFilePath(): string {
   return join(
@@ -93,7 +93,7 @@ function getDb(): Database.Database | null {
   return new Database(dbPath, { readonly: true });
 }
 
-// Sync from hermes DB to local cache — only fetches new/updated sessions
+// Sync from oceanos DB to local cache — only fetches new/updated sessions
 export function syncSessionCache(): CachedSession[] {
   const cache = readCache();
   const db = getDb();
@@ -180,7 +180,7 @@ export function syncSessionCache(): CachedSession[] {
     if (staleIds.length > 0) {
       // SQLite caps prepared-statement parameters; chunk well under
       // SQLITE_MAX_VARIABLE_NUMBER (default 999 on older builds) for
-      // portability across the better-sqlite3 versions hermes ships.
+      // portability across the better-sqlite3 versions oceanos ships.
       const CHUNK = 500;
       const countsById = new Map<string, number>();
       for (let i = 0; i < staleIds.length; i += CHUNK) {

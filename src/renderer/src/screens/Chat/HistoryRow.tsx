@@ -2,7 +2,7 @@ import { memo, useState } from "react";
 import { Brain, ChevronRight, Spinner, Wrench } from "../../assets/icons";
 import { useI18n } from "../../components/useI18n";
 import { AttachmentChip } from "../../components/AttachmentChip";
-import { HermesAvatar, AvatarSpacer } from "./MessageRow";
+import { OceanAvatar, AvatarSpacer } from "./MessageRow";
 import type {
   Attachment,
   ReasoningMessage,
@@ -34,7 +34,7 @@ export const ReasoningRow = memo(function ReasoningRow({
         showAvatar ? "" : " chat-message--grouped"
       }`}
     >
-      {showAvatar ? <HermesAvatar /> : <AvatarSpacer />}
+      {showAvatar ? <OceanAvatar /> : <AvatarSpacer />}
       <div
         className={`chat-reasoning-group${
           active ? " chat-reasoning-group--active" : ""
@@ -212,7 +212,7 @@ export const ToolActivityGroup = memo(function ToolActivityGroup({
         showAvatar ? "" : " chat-message--grouped"
       }`}
     >
-      {showAvatar ? <HermesAvatar /> : <AvatarSpacer />}
+      {showAvatar ? <OceanAvatar /> : <AvatarSpacer />}
       <div
         className={`chat-tool-group${active ? " chat-tool-group--active" : ""}`}
       >
