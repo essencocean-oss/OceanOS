@@ -14,7 +14,7 @@ vi.mock("../../components/useI18n", () => ({
   }),
 }));
 
-vi.mock("../../components/common/HermesLogo", () => ({
+vi.mock("../../components/common/OceanLogo", () => ({
   default: (): React.JSX.Element => <div data-testid="hermes-logo" />,
 }));
 

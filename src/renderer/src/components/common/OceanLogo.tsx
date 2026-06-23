@@ -1,6 +1,6 @@
 import logo from "../../assets/brand-assets/logo.jpg";
 
-function HermesLogo({ size = 32 }: { size?: number }) {
+function OceanLogo({ size = 32 }: { size?: number }) {
   return (
     <img
       src={logo}
@@ -12,4 +12,4 @@ function HermesLogo({ size = 32 }: { size?: number }) {
   );
 }
 
-export default HermesLogo;
+export default OceanLogo;

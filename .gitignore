@@ -1,24 +1,31 @@
-# Python
+# Python / artifacts
 __pycache__/
 *.py[cod]
 *.log
 
 # Virtual env
 .venv/
+env/
+venv/
 
 # Local configs
 config.local.yaml
 telegram_post_state.json
 
-# Secrets / credentials
+# Secrets
 .env
 .env.*
 wallet.json
 secrets/
+*.p8
+*.p12
+*.pfx
+*.key
 
-# OS
+# OS junk
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Node
 node_modules/
@@ -26,13 +33,26 @@ dist/
 out/
 *.tsbuildinfo
 
-# Electron build
+# Electron build chaff
 electron/node_modules/
 electron/dist/
 
+# Git chaff
+*.orig
+*.rej
+
 # Project-specific
-create_alpha.py
 media/
 memory_store.json
 processes.json
 notifications.json
+create_alpha.py
+
+# Large binaries / models
+*.glb
+*.gltf
+*.wasm
+
+# IDE
+.vscode/
+.idea/

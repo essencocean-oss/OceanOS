@@ -26,7 +26,7 @@ function AgentAvatar({ name }: { name: string }): React.JSX.Element {
   if (name === "default") {
     return (
       <div className="agents-card-avatar agents-card-avatar-icon">
-        <HermesLogo size={22} />
+        <OceanLogo size={22} />
       </div>
     );
   }
