@@ -44,9 +44,9 @@ function App(): React.JSX.Element {
       setSplashStatus("Checking connection…");
       const conn = await tauri.getConnectionConfig();
       isRemote = conn.mode === "remote" || conn.mode === "ssh";
-      setConnectionMode(conn.mode);
+      setConnectionMode(conn.mode as "local" | "remote" | "ssh");
 
-      if (conn.mode === "ssh" && conn.ssh) {
+      if (conn.mode === "ssh") {
         setSplashStatus("Starting SSH tunnel…");
         try {
           await tauri.startSshTunnel();

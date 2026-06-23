@@ -103,11 +103,7 @@ export function ConfigHealth({
     async (issue: Issue): Promise<void> => {
       setFixingCode(issue.code);
       try {
-        const res = await tauri.autofixConfigIssue(
-          issue.code,
-          profile,
-          issue.context,
-        );
+        const res = await tauri.autofixConfigIssue(issue.code);
         setResults((prev) => ({
           ...prev,
           [issue.code]:

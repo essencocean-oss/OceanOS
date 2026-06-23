@@ -158,17 +158,20 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     ]);
     setOceanOSHome(home);
     setAppVersion(aVersion);
-    setConnMode(conn.mode);
-    setConnRemoteUrl(conn.remoteUrl);
-    setConnHasApiKey(conn.hasApiKey);
-    const mask = conn.hasApiKey ? makeApiKeyMask(conn.apiKeyLength) : "";
+    setConnMode(conn.mode as "local" | "remote" | "ssh");
+    setConnRemoteUrl(conn.remoteUrl || "");
+    const hasApiKey = !!conn.apiKey;
+    setConnHasApiKey(hasApiKey);
+    const mask = hasApiKey
+      ? `${conn.apiKey?.slice(0, 4)}${"•".repeat(Math.max((conn.apiKey?.length || 0) - 4, 4))}`
+      : "";
     setConnApiKeyMask(mask);
-    setConnApiKey(mask);
-    setSshHost(conn.ssh?.host || "");
-    setSshPort(conn.ssh?.port ? String(conn.ssh.port) : "");
-    setSshUser(conn.ssh?.username || "");
-    setSshKeyPath(conn.ssh?.keyPath || "");
-    setSshRemotePort(conn.ssh?.remotePort ? String(conn.ssh.remotePort) : "");
+    setConnApiKey(conn.apiKey || "");
+    setSshHost("");
+    setSshPort("");
+    setSshUser("");
+    setSshKeyPath("");
+    setSshRemotePort("");
     setApiServerKeyMissing(!keyStatus.hasKey);
     connLoaded.current = true;
 
@@ -243,23 +246,17 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     setMigrationLog("");
     setMigrationResult(null);
 
-    const cleanup = tauri.onInstallProgress((p) => {
-      setMigrationLog(p.log);
-    });
-
     try {
       const result = await tauri.runClawMigrate();
-      cleanup();
       if (result.success) {
         setMigrationResult(t("settings.migrationComplete"));
         setMigrationResultType("success");
         setOpenclawFound(false);
       } else {
-        setMigrationResult(result.error || t("settings.migrationFailed"));
+        setMigrationResult(t("settings.migrationFailed"));
         setMigrationResultType("error");
       }
     } catch (err) {
-      cleanup();
       setMigrationResult(
         (err as Error).message || t("settings.migrationFailed"),
       );
@@ -367,7 +364,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleBackup(): Promise<void> {
     setBackingUp(true);
     setBackupResult(null);
-    const result = await tauri.runOceanBackup(profile);
+    const result = await tauri.runOceanBackup();
     setBackingUp(false);
     if (result.success) {
       setBackupResult(`Backup created: ${result.path || "success"}`);
@@ -385,22 +382,21 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       if (!file) return;
       setImporting(true);
       setImportResult(null);
-      const filePath = tauri.getPathForFile(file);
-      const result = await tauri.runOceanImport(filePath, profile);
+      const result = await tauri.runOceanImport();
       setImporting(false);
       if (result.success) {
         setImportResult(t("settings.migrationComplete"));
       } else {
-        setImportResult(result.error || t("settings.migrationFailed"));
+        setImportResult(t("settings.migrationFailed"));
       }
     };
     input.click();
   }
 
   async function loadLogs(): Promise<void> {
-    const result = await tauri.readLogs(logFile, 300);
-    setLogContent(result.content);
-    setLogPath(result.path);
+    const result = await tauri.readLogs();
+    setLogContent((result as { content?: string }).content || "");
+    setLogPath((result as { path?: string }).path || "");
   }
 
   async function handleDoctor(): Promise<void> {
@@ -435,7 +431,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       setUpdateResultType("success");
       refreshVersion();
     } else {
-      setUpdateResult(result.error || t("settings.updateFailed"));
+      setUpdateResult(t("settings.updateFailed"));
       setUpdateResultType("error");
     }
   }
@@ -1178,7 +1174,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                   className={`btn btn-sm ${logFile === f ? "btn-primary" : "btn-secondary"}`}
                   onClick={() => {
                     setLogFile(f);
-                    tauri.readLogs(f, 300).then((r) => {
+                    tauri.readLogs().then((r) => {
                       setLogContent(r.content);
                       setLogPath(r.path);
                     });
