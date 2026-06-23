@@ -1,5 +1,5 @@
-appId: com.nousresearch.hermes
-productName: Hermes One
+appId: com.nousresearch.oceanos
+productName: OceanOS
 directories:
   buildResources: build
 files:
@@ -13,7 +13,8 @@ asarUnpack:
   - resources/**
   - node_modules/better-sqlite3/build/Release/*.node
 win:
-  executableName: hermes-agent
+  executableName: OceanOS
+  icon: build/icon.ico
   target:
     - nsis
     - portable
@@ -52,8 +53,8 @@ linux:
   category: Utility
   synopsis: Self-improving AI assistant desktop app
   description: >-
-    Hermes One is a native desktop app for installing, configuring, and chatting
-    with Hermes Agent — a self-improving AI assistant with tool use, multi-platform
+    OceanOS is a native desktop app for installing, configuring, and chatting
+    with Ocean Agent — a self-improving AI assistant with tool use, multi-platform
     messaging, and a closed learning loop.
 appImage:
   artifactName: ${name}-${version}.${ext}
@@ -69,5 +70,5 @@ rpm:
 npmRebuild: false
 publish:
   provider: github
-  owner: essencocean-oss
-  repo: OceanOS
+  owner: fathah
+  repo: ocean-desktop

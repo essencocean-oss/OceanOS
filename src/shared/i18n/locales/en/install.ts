@@ -3,7 +3,7 @@ export default {
   startingInstall: "Starting installation",
   installationComplete: "Installation Complete",
   installationFailed: "Installation Failed",
-  installingHermes: "Installing OceanOS",
+  installingOceanOS: "Installing OceanOS",
   installationFailedHint:
     "Installation failed. Please try again or install via terminal.",
   retryInstallation: "Retry Installation",

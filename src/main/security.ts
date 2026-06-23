@@ -1,44 +1,77 @@
-import * as electron from "electron";
-import type { ScanContext } from "../security/types";
+import type { WebContents, WebPreferences } from "electron";
+import { pathToFileURL } from "url";
 
-export function hardenAttachedWebContents(webContents: electron.WebContents): void {
-  webContents.setWindowOpenHandler(({ url }) => {
-    const ctx: ScanContext = {
-      kind: "command",
-      payload: { url, action: "navigate" },
-    };
-    const blocked = !isAllowedExternalUrl(url) || !isAllowedAppNavigationUrl(url);
-    return blocked ? { action: "deny" } : { action: "allow" };
-  });
-}
+const EXTERNAL_PROTOCOLS = new Set(["https:", "http:", "mailto:"]);
+const LOCAL_WEBVIEW_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
-export function hardenWebviewPreferences(
-  webPreferences: electron.WebPreferences & Record<string, unknown>,
-): void {
-  webPreferences.nodeIntegration = false;
-  webPreferences.nodeIntegrationInWorker = false;
-  webPreferences.contextIsolation = true;
-  webPreferences.sandbox = true;
-  webPreferences.nativeWindowOpen = true;
-}
+type WebviewPreferences = WebPreferences & {
+  preloadURL?: string;
+};
 
-export function isAllowedAppNavigationUrl(url: string): boolean {
+function parseUrl(rawUrl: unknown): URL | null {
+  if (typeof rawUrl !== "string") return null;
   try {
-    const u = new URL(url);
-    return ["http:", "https:", "file:"].includes(u.protocol);
+    return new URL(rawUrl);
   } catch {
-    return false;
+    return null;
   }
 }
 
-export function isAllowedExternalUrl(url: string): boolean {
-  return /^https?:\/\//.test(url);
+export function isAllowedExternalUrl(rawUrl: unknown): rawUrl is string {
+  const url = parseUrl(rawUrl);
+  return !!url && EXTERNAL_PROTOCOLS.has(url.protocol);
 }
 
-export function isAllowedWebviewUrl(url: string): boolean {
-  return isAllowedAppNavigationUrl(url) && isAllowedExternalUrl(url);
+export function isAllowedAppNavigationUrl(
+  rawUrl: unknown,
+  rendererHtmlPath: string,
+  devServerUrl?: string,
+): rawUrl is string {
+  const url = parseUrl(rawUrl);
+  if (!url) return false;
+
+  const devServer = parseUrl(devServerUrl);
+  if (devServer) {
+    return url.origin === devServer.origin;
+  }
+
+  const rendererUrl = pathToFileURL(rendererHtmlPath);
+  return (
+    url.protocol === "file:" && url.href.split("#")[0] === rendererUrl.href
+  );
 }
 
-export function shutdownSentinel(): void {
-  // no-op for now; audit/gate hooks live under src/security/* and are not yet wired into main/index
+export function isAllowedWebviewUrl(rawUrl: unknown): rawUrl is string {
+  const url = parseUrl(rawUrl);
+  if (!url || url.protocol !== "http:") return false;
+  if (!LOCAL_WEBVIEW_HOSTS.has(url.hostname)) return false;
+
+  const port = Number(url.port);
+  return Number.isInteger(port) && port >= 1024 && port <= 65535;
+}
+
+export function hardenWebviewPreferences(
+  webPreferences: WebviewPreferences,
+): void {
+  delete webPreferences.preload;
+  delete webPreferences.preloadURL;
+  webPreferences.nodeIntegration = false;
+  webPreferences.contextIsolation = true;
+  webPreferences.sandbox = true;
+  webPreferences.webSecurity = true;
+  webPreferences.allowRunningInsecureContent = false;
+}
+
+export function hardenAttachedWebContents(webContents: WebContents): void {
+  webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  webContents.on("will-navigate", (event, url) => {
+    if (!isAllowedWebviewUrl(url)) {
+      event.preventDefault();
+    }
+  });
+  webContents.on("will-redirect", (event, url) => {
+    if (!isAllowedWebviewUrl(url)) {
+      event.preventDefault();
+    }
+  });
 }

@@ -1,20 +1,20 @@
 # OceanOS
 
-The local-first operating environment for AI agents — an Electron app that turns your desktop into a mission control for autonomous work.
+The local-first operating environment for AI agents — a desktop runtime that turns your machine into mission control for autonomous work.
 
 ![OceanOS splash](docs/assets/hero.jpg)
 
 ## What it is
 
-OceanOS runs AI agents, skills, and workflows on your machine. Its default view is a research and execution cockpit, but it’s built to support many surfaces: chat, registry, marketplace, and autonomous builders.
+OceanOS runs AI agents, skills, and workflows locally. Its default view is a research and execution cockpit, with surfaces for chat, registry, marketplace, and autonomous builders.
 
 ## Quick start
 
-- Requirements: Node.js 18+, pnpm or npm
-- Install deps: `pnpm install`
-- Dev: `pnpm dev`
-- Build: `pnpm build`
-- Windows release: `pnpm release:win`
+- Requirements: Node.js 18+, npm
+- Install deps: `npm install`
+- Dev: `npm run dev`
+- Build: `npm run build`
+- Windows release: `npm run build:win`
 
 ## Repo layout
 
@@ -22,8 +22,11 @@ OceanOS runs AI agents, skills, and workflows on your machine. Its default view 
 - `src/preload` — context bridge layer
 - `src/renderer` — React renderer / screens
 - `src/shared` — shared types / i18n
-- `sign/` — code signing and notarization scripts
+- `registry/` — skills and agent registry
+- `docs/` — architecture and runbooks
+- `scripts/` — deployment and notification helpers
+- `skills/` — bundled skills and manifests
 
-## Notes
+## Topics
 
-This README now includes the latest app image.
+agentic-os · ai-agents · desktop-environment · tauri · local-first · marketplace · skills · windows · macos · linux

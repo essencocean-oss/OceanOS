@@ -64,7 +64,7 @@ import {
   runHermesAuthLogin,
   cancelHermesAuthLogin,
   detectDeviceCode,
-} from "./hermes-auth";
+} from "./ocean-auth";
 import {
   isRemoteMode,
   isRemoteOnlyMode,
@@ -82,7 +82,7 @@ import {
   setSshRemoteApiKey,
   getRemoteAuthHeader,
   resolvePendingClarify,
-} from "./hermes";
+} from "./ocean";
 import {
   startSshTunnel,
   stopSshTunnel,
@@ -108,6 +108,7 @@ import {
   Claw3dSetupProgress,
 } from "./claw3d";
 import { startOfficeStack } from "./office-start";
+import { registerProcessIpc } from "./processes";
 import {
   readEnv,
   setEnvValue,
@@ -481,12 +482,12 @@ function setupIPC(): void {
 
   // Pre-install inspection + "use an existing installation" (issue #272).
   ipcMain.handle("inspect-install-target", () => inspectInstallTarget());
-  ipcMain.handle("validate-hermes-home", (_event, dir: string) =>
+  ipcMain.handle("validate-ocean-home", (_event, dir: string) =>
     validateHermesHome(dir),
   );
-  ipcMain.handle("adopt-hermes-home", (_event, dir: string) => {
+  ipcMain.handle("adopt-ocean-home", (_event, dir: string) => {
     if (!validateHermesHome(dir)) return false;
-    // Persist the choice only. HERMES_HOME is resolved once at module
+    // Persist the choice only. OCEAN_HOME is resolved once at module
     // load, so the override takes effect on the next launch — the renderer
     // asks the user to restart. (An app-driven relaunch is unreliable
     // under the dev server, which is torn down with the process.)
@@ -495,7 +496,7 @@ function setupIPC(): void {
   });
   ipcMain.handle("quit-app", () => app.quit());
 
-  // Hermes engine info
+  // Ocean engine info
   ipcMain.handle("get-hermes-version", async () => {
     const conn = getConnectionConfig();
     if (conn.mode === "ssh" && conn.ssh) return sshGetHermesVersion(conn.ssh);
@@ -519,7 +520,7 @@ function setupIPC(): void {
         event.sender.send("install-progress", {
           step: 1,
           totalSteps: 1,
-          title: "Updating remote Hermes Agent",
+          title: "Updating remote Ocean Agent",
           detail: "Running hermes update over SSH...",
           log: "Running hermes update over SSH...\n",
         });
@@ -680,7 +681,7 @@ function setupIPC(): void {
     },
   );
 
-  ipcMain.handle("get-hermes-home", (_event, profile?: string) => {
+  ipcMain.handle("get-ocean-home", (_event, profile?: string) => {
     const conn = getConnectionConfig();
     if (conn.mode === "ssh" && conn.ssh)
       return sshGetHermesHome(conn.ssh, profile);
@@ -1026,7 +1027,7 @@ function setupIPC(): void {
                 .trim()
                 .slice(0, 80);
               new Notification({
-                title: "Hermes One",
+                title: "Ocean One",
                 body: preview || "Response ready",
               }).show();
             }
@@ -1038,7 +1039,7 @@ function setupIPC(): void {
             // Notify on error too if window not focused
             if (mainWindow && !mainWindow.isFocused()) {
               new Notification({
-                title: "Hermes One — Error",
+                title: "Ocean One — Error",
                 body: error.slice(0, 100),
               }).show();
             }
@@ -1209,7 +1210,7 @@ function setupIPC(): void {
         success: false,
         running: false,
         error:
-          "Remote mode points at an already-running Hermes server. Start or restart the gateway on that remote host.",
+          "Remote mode points at an already-running Ocean server. Start or restart the gateway on that remote host.",
       };
     }
     return startGatewayDetailed();
@@ -2140,7 +2141,7 @@ function buildMenu(): void {
       label: "Help",
       submenu: [
         {
-          label: "Hermes Agent on GitHub",
+          label: "Ocean Agent on GitHub",
           click: (): void => {
             openExternalUrl("https://github.com/NousResearch/hermes-agent/");
           },
@@ -2259,7 +2260,7 @@ if (process.env.ENABLE_CDP === "1") {
 }
 
 app.whenReady().then(() => {
-  app.setName("Hermes One");
+  app.setName("Ocean One");
   electronApp.setAppUserModelId("com.nousresearch.hermes");
   cleanupTempMediaFiles();
 
@@ -2287,6 +2288,7 @@ app.whenReady().then(() => {
 
   buildMenu();
   setupIPC();
+  registerProcessIpc();
   createWindow();
   setupUpdater();
 

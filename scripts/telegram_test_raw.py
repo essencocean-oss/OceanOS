@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-# Read actual token from local Hermes env
+# Read actual token from local Ocean env
 paths = [
     Path(os.path.expanduser("~")) / ".hermes" / ".env",
     Path(os.environ.get("LOCALAPPDATA", "")) / "hermes" / ".env",
