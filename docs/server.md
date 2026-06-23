@@ -22,3 +22,13 @@ Place skills under `skills/<name>/SKILL.md`. Registry mounts `/skills`, `/skills
 
 ## State
 `agents/`, `workspaces/`, `users/` are persisted locally. Do not put secrets in these folders.
+
+## Process Manager
+`src/main/processes.ts` exposes local process lifecycle over Electron IPC:
+- `processes:start` -> spawn with label/command/args/cwd
+- `processes:list` -> managed process snapshot
+- `processes:kill` -> stop by id
+- `processes:restart` -> stop then start
+
+Renderer screen: `src/renderer/src/screens/Processes/Processes.tsx`
+Preload bridge: `src/preload/index.ts` in `window.hermesAPI`

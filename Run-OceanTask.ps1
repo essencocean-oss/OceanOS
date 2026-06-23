@@ -46,7 +46,7 @@ switch ($Action) {
                 }
                 if ($bot) { $envFile = $path; break }
             }
-            if (-not $envFile) { throw "TELEGRAM_BOT_TOKEN not found in any Hermes .env" }
+            if (-not $envFile) { throw "TELEGRAM_BOT_TOKEN not found in any Ocean .env" }
 
             $chat = '6677764672'
             $body = @{ chat_id=$chat; text=$Arg1 } | ConvertTo-Json -Compress

@@ -1,7 +1,7 @@
 {
   "name": "spawn",
   "version": "0.1.0",
-  "description": "Per-user Hermes runtime lifecycle",
+  "description": "Per-user Ocean runtime lifecycle",
   "author": "essencocean-oss",
   "license": "MIT",
   "price_cents": 0,

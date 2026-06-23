@@ -6,33 +6,31 @@ __pycache__/
 # Virtual env
 .venv/
 
-# Hermes local configs
+# Local configs
 config.local.yaml
 telegram_post_state.json
 
 # Secrets / credentials
 .env
-*.env
+.env.*
 wallet.json
 secrets/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Node
+node_modules/
+dist/
+out/
+*.tsbuildinfo
+
+# Electron build
 electron/node_modules/
 electron/dist/
-electron/dist/
-electron/dist/
-electron/dist/
-electron/dist/
-electron/dist/
-electron/dist/
-electron/dist/
-electron/node_modules/
-electron/dist/
-electron/node_modules/
-electron/dist/
-electron/node_modules/
+
+# Project-specific
 create_alpha.py
 media/
 memory_store.json

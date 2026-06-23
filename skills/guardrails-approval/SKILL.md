@@ -16,7 +16,7 @@ entrypoints:
 
 # Guardrails / Approval Skill
 
-This skill configures Hermes runtime guardrails for command approval and privacy redaction:
+This skill configures Ocean runtime guardrails for command approval and privacy redaction:
 - approvals.mode: smart|manual|off
 - security.redact_secrets: true|false
 - privacy.redact_pii: true|false

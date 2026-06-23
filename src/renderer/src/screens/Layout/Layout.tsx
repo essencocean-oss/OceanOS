@@ -21,7 +21,7 @@ import Kanban from "../Kanban/Kanban";
 import Processes from "../Processes/Processes";
 import RemoteNotice from "../../components/RemoteNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
-import oceanoslogo from "../../assets/oceanos-logo.svg";
+import OceanLogo from "../../components/common/OceanLogo";
 import {
   ChatBubble,
   Clock,
@@ -290,15 +290,7 @@ function Layout({
     <div className={`layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <span
-            className="sidebar-logo"
-            role="img"
-            aria-label="OceanOS"
-            style={{
-              maskImage: `url(${oceanoslogo})`,
-              WebkitMaskImage: `url(${oceanoslogo})`,
-            }}
-          />
+          <OceanLogo size={24} />
           <button
             className="sidebar-collapse-toggle"
             type="button"

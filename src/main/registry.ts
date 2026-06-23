@@ -28,7 +28,7 @@ export type {
  * (agent|mcp|skill|workflow) and a `path` to its folder in the repo. "Set up"
  * actions download the entry's files into the active profile.
  */
-const REGISTRY_REPO = "essencocean-oss/OceanOS-Registry";
+const REGISTRY_REPO = "fathah/hermes-registry";
 const REGISTRY_BRANCH = "main";
 const REGISTRY_RAW_BASE = `https://raw.githubusercontent.com/${REGISTRY_REPO}/refs/heads/${REGISTRY_BRANCH}`;
 const REGISTRY_REPO_BASE = `https://github.com/${REGISTRY_REPO}/tree/${REGISTRY_BRANCH}`;
@@ -282,7 +282,7 @@ function buildSpec(
   if (item.version) rows.push({ label: "Version", value: item.version });
   const compat = m?.compatibility;
   if (compat?.hermes) {
-    rows.push({ label: "Requires Hermes", value: compat.hermes, mono: true });
+    rows.push({ label: "Requires Ocean", value: compat.hermes, mono: true });
   }
 
   return { description: m?.description || item.description || "", rows };

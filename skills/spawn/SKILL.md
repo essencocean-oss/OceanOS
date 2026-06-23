@@ -1,6 +1,6 @@
 ---
 name: spawn
-description: Lifecycle for a per-user Hermes runtime: install, run, stop, status, kill.
+description: Lifecycle for a per-user Ocean runtime: install, run, stop, status, kill.
 triggers:
   - install
   - run
@@ -14,7 +14,7 @@ triggers:
 
 # spawn
 
-Manage one user’s isolated Hermes runtime.
+Manage one user’s isolated Ocean runtime.
 
 ## Inputs
 - user_id: string

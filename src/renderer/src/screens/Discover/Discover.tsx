@@ -512,7 +512,7 @@ export default function Discover({
           <p className="discover-subtitle">{t("discover.subtitle")}</p>
         </div>
         <a
-          href="https://github.com/essencocean-oss/OceanOS-Registry"
+          href="https://github.com/fathah/hermes-registry"
           target="_blank"
           rel="noreferrer"
           className="btn btn-secondary btn-sm"

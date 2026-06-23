@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import startVid from "../../assets/startvid.mp4";
-import splashLogo from "../../assets/oceanos-logo.svg";
+import splashLogo from "../../assets/oceanos-logo.jpg";
 
 interface SplashScreenProps {
   onFinished: () => void;
@@ -32,11 +32,10 @@ function SplashScreen({
         ref={videoRef}
         className="splash-bg"
         src={startVid}
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         style={{ display: "block", objectFit: "cover" }}
       />
       <img className="splash-logo" src={splashLogo} alt="OceanOS" />
