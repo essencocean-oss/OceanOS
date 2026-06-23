@@ -402,18 +402,11 @@ export interface ThemeDef {
  * entry here and define its CSS variables there — nothing else is required.
  */
 export const THEMES: ThemeDef[] = [
+  { id: "ocean-deep", name: "Ocean Deep", appearance: "dark" },
+  { id: "abyss", name: "Abyss", appearance: "dark" },
+  { id: "aether", name: "Aether", appearance: "light" },
   { id: "dark", name: "Dark", appearance: "dark" },
   { id: "light", name: "Light", appearance: "light" },
-  { id: "dracula", name: "Dracula", appearance: "dark" },
-  { id: "nord", name: "Nord", appearance: "dark" },
-  { id: "one-dark", name: "One Dark", appearance: "dark" },
-  { id: "github-dark", name: "GitHub Dark", appearance: "dark" },
-  { id: "monokai", name: "Monokai", appearance: "dark" },
-  { id: "solarized-dark", name: "Solarized Dark", appearance: "dark" },
-  { id: "gruvbox-dark", name: "Gruvbox Dark", appearance: "dark" },
-  { id: "tokyo-night", name: "Tokyo Night", appearance: "dark" },
-  { id: "github-light", name: "GitHub Light", appearance: "light" },
-  { id: "solarized-light", name: "Solarized Light", appearance: "light" },
 ];
 
 /**
@@ -427,8 +420,8 @@ export const THEME_OPTIONS = [
 ];
 
 /** Themes used by the "System" setting when following the OS preference. */
-export const DEFAULT_DARK_THEME = "dark";
-export const DEFAULT_LIGHT_THEME = "light";
+export const DEFAULT_DARK_THEME = "ocean-deep";
+export const DEFAULT_LIGHT_THEME = "aether";
 
 export const THEME_STORAGE_KEY = "oceanos-theme";
 

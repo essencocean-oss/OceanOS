@@ -7,6 +7,7 @@ import {
 } from "../Chat/sessionHistory";
 import Sessions from "../Sessions/Sessions";
 import Agents from "../Agents/Agents";
+import Team from "../Team/Team";
 import Discover from "../Discover/Discover";
 import ProfileSwitcher from "./ProfileSwitcher";
 import Settings from "../Settings/Settings";
@@ -40,6 +41,7 @@ import {
   Download,
   PanelLeftClose,
   PanelLeftOpen,
+  Users,
 } from "../../assets/icons";
 import type { LucideIcon } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
@@ -59,6 +61,7 @@ type View =
   | "kanban"
   | "processes"
   | "gateway"
+  | "team"
   | "settings";
 
 const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string }[] = [
@@ -77,6 +80,7 @@ const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string }[] = [
   { view: "tools", icon: Wrench, labelKey: "navigation.tools" },
   { view: "schedules", icon: Timer, labelKey: "navigation.schedules" },
   { view: "gateway", icon: Signal, labelKey: "navigation.gateway" },
+  { view: "team", icon: Users, labelKey: "navigation.team" },
   { view: "settings", icon: SettingsIcon, labelKey: "navigation.settings" },
   { view: "processes", icon: Monitor, labelKey: "navigation.processes" },
 ];
@@ -422,6 +426,12 @@ function Layout({
                 }}
               />
             )}
+          </div>
+        )}
+
+        {visitedViews.has("team") && (
+          <div style={paneStyle("team")}>
+            <Team />
           </div>
         )}
 

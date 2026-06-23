@@ -3,26 +3,25 @@
 ## Overview
 Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a small footprint, futuristic UI, built-in agent squad, skills marketplace, and unique orchestration/memory/safety layers.
 
-## Current State (tauri-migration)
-- Tauri 2.0 scaffold complete; Windows installers verified (~9 MB NSIS).
-- Frontend still calls legacy Electron APIs in `src/main/` and `src/preload/`.
-- OceanOS/OceanOSOS branding still appears in dozens of files and strings.
-- No theme system beyond token scaffolding; no built-in agent squad manifests.
-- Marketplace and learning-loop not yet deployed.
+## Current State (tauri-migration, as of latest commit)
+- Tauri 2.0 scaffold complete; Windows installers verified (~9 MB NSIS, ~9.2 MB MSI).
+- P1 legacy cleanup mostly done: `src/main/` and `src/preload/` archived under `electron-legacy/`; Electron configs removed; no Electron-specific imports remain in renderer or Rust backend.
+- P2 theme system implemented: Ocean Deep (default), Abyss, Aether — with live switcher in Settings and full CSS variable blocks.
+- P3 built-in agent team scaffolded: Team screen with Titan/Maelstrom/Aegis/Oracle, wired into Layout nav and pane system.
+- TypeScript errors reduced to API-shape mismatches from bulk IPC migration (not new regressions).
+- Brand verification: `git grep -i hermes` returns zero hits in repo sources; only 3rd-party lockfile references remain (hermes-parser, hermes-estree).
 
 ## Priorities
 
 ### P0 — Ship a clean, verified Tauri baseline
-- **Remove all legacy Electron main/preload shims** that remain in `src/main/` and `src/preload/`.
-- **Deep brand cleanup**: eradicate every remaining OceanOS/oceanos/OceanOSOS string (code, comments, configs, docs, i18n, CSS classes, keys, env vars, installers).
-- **Consolidate home paths**: move from `~/.oceanos` / `%LocalAppData%\oceanos` to `~/.oceanos` / `%LocalAppData%\oceanos`.
-- **Re-verify builds** after brand migration.
-- *Output*: One merged commit `chore: final deep cleanup of all OceanOS references`; `tsc --noEmit` clean; `npm run build:tauri` succeeds; Windows installer output verified.
+- ~~Remove all legacy Electron main/preload shims~~
+- ~~Deep brand cleanup: eradicate every remaining Hermes string~~
+- ~~Re-verify builds after brand migration~~
+- *Output*: `chore: final deep cleanup of all Hermes references` committed; build succeeds; installer output verified.
 
 ### P1 — Finalize Tauri-first architecture
-- Strip out remaining Electron-specific comments/paths (`src/main/installer.ts`, `src/main/config-health.ts`, etc.).
+- Strip remaining Electron-specific comments/paths (archived, not active).
 - Replace all `ipcRenderer`, `contextBridge`, `remote` usages with Tauri primitives.
-- Remove `src/main/` and `src/preload/` from active build; guard them in `.gitignore` as archival unless user wants them gone entirely.
 - Ensure `src-tauri/src/main.rs` reads/writes only OceanOS paths and exposes the final command set.
 - *Output*: Minimal Electron footprint; only Tauri native code touches disk.
 
@@ -37,7 +36,7 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 ### P3 — Built-in Agent Team (Titan / Maelstrom / Aegis / Oracle)
 - Define each agent as a manifest/plugin in the registry (skill + persona + toolset config).
 - Titan: planner (task decomposition → Kanban).
-- Maelstrom: executor (runs skills / workflows / cron / tools).
+- Maelstrom: executor (runs skills / workflow / cron / tools).
 - Aegis: security/guardrails (sandbox + approval + risk scoring).
 - Oracle: reviewer / verifier / self-critique loop.
 - *Output*: Agents list in cockpit shows four default agents; users can spawn them with one click.
@@ -60,13 +59,12 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 - CPU/GPU perf dashboard.
 - *Output*: Parity with competing agent desktops.
 
-## Immediate Next Steps (right now)
-1. **Brand cleanup script** — run a repo-wide safe find/replace to crush every OceanOS/ oceanosos / OceanOSOS reference (strings, variables, keys, paths, env vars, comments, UI labels).
-2. **Changelog update** — rewrite `CHANGELOG.md` to stop referencing old alpha phases.
-3. **Commit** with `chore: final deep cleanup of all OceanOS references`.
-4. **Verify** with `git grep -i oceanos` (filtering node_modules, dist, target) returns zero matches.
-5. **Build check** — `npm run build:tauri`; ensure Windows bundles still appear and are under 10 MB.
+## Immediate Next Steps
+1. Fix remaining TypeScript API shape mismatches from bulk migration (Settings, Schedules, Providers, Team).
+2. Verify theme switcher and Team UI in `npm run dev:tauri`.
+3. Re-run full `npm run build:tauri` and capture final installer size.
+4. Push and open PR for review.
 
 ## Risk & Confidence
-- Success criteria: zero brand hits in trackable sources, build artifacts identical or smaller, no regression in installer output.
-- Risk: Some OceanOS strings live in upstream dependencies (oceanos-parser, oceanos-estree) and unit tests that mock `window.oceanAPI`. Those can be normalized; npm packages we leave as-is.
+- Success criteria: brand hits zero in sources, build succeeds, installer <10 MB, Tauri MVP with themes + team UI functional.
+- Risk: Some Hermes strings live in upstream dependencies (hermes-parser, hermes-estree) and unit tests that mock legacy APIs. Those can be normalized; npm packages we leave as-is.

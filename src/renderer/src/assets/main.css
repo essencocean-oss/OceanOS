@@ -75,6 +75,111 @@
   --selection: rgba(0, 63, 122, 0.2);
 }
 
+/* ----- Aether (clean light) ----- */
+[data-theme="aether"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef2f7;
+  --bg-elevated: #ffffff;
+  --bg-hover: #e2e8f0;
+  --bg-active: #cbd5e1;
+  --accent: #0891b2;
+  --accent-hover: #0e7490;
+  --accent-subtle: rgba(8, 145, 178, 0.1);
+  --accent-text: #0e7490;
+  --primary-yellow: #f59e0b;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-bright: #cbd5e1;
+  --border-focus: #0891b2;
+  --success: #16a34a;
+  --success-bg: rgba(22, 163, 74, 0.08);
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.06);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.08);
+  --user-bubble: #0891b2;
+  --user-bubble-text: #ffffff;
+  --agent-bubble: #eef2f7;
+  --agent-bubble-text: #0f172a;
+  --code-bg: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-hover: #94a3b8;
+  --selection: rgba(8, 145, 178, 0.2);
+}
+
+/* ----- Ocean Deep (default futuristic) ----- */
+[data-theme="ocean-deep"] {
+  --bg-primary: #0b1220;
+  --bg-secondary: #0f1b2d;
+  --bg-tertiary: #132238;
+  --bg-elevated: rgba(15, 27, 45, 0.85);
+  --bg-hover: rgba(16, 185, 129, 0.08);
+  --bg-active: rgba(16, 185, 129, 0.14);
+  --accent: #10b981;
+  --accent-hover: #34d399;
+  --accent-subtle: rgba(16, 185, 129, 0.14);
+  --accent-text: #34d399;
+  --primary-yellow: #fbbf24;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(148, 163, 184, 0.12);
+  --border-bright: rgba(148, 163, 184, 0.25);
+  --border-focus: #10b981;
+  --success: #22c55e;
+  --success-bg: rgba(34, 197, 94, 0.12);
+  --error: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --user-bubble: #10b981;
+  --user-bubble-text: #0b1220;
+  --agent-bubble: rgba(15, 27, 45, 0.7);
+  --agent-bubble-text: #e2e8f0;
+  --code-bg: #0f1b2d;
+  --scrollbar-thumb: rgba(148, 163, 184, 0.25);
+  --scrollbar-hover: rgba(148, 163, 184, 0.45);
+  --selection: rgba(16, 185, 129, 0.35);
+}
+
+/* ----- Abyss (maximum contrast dark) ----- */
+[data-theme="abyss"] {
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-tertiary: #0a0a0a;
+  --bg-elevated: rgba(10, 10, 10, 0.95);
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  --accent: #00ffc8;
+  --accent-hover: #33ffd6;
+  --accent-subtle: rgba(0, 255, 200, 0.12);
+  --accent-text: #00ffc8;
+  --primary-yellow: #fbbf24;
+  --text-primary: #f7f7f7;
+  --text-secondary: #b8b8b8;
+  --text-muted: #6b6b6b;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.18);
+  --border-focus: #00ffc8;
+  --success: #00e676;
+  --success-bg: rgba(0, 230, 118, 0.12);
+  --error: #ff5252;
+  --error-bg: rgba(255, 82, 82, 0.12);
+  --warning: #ffd740;
+  --warning-bg: rgba(255, 215, 64, 0.12);
+  --user-bubble: #00ffc8;
+  --user-bubble-text: #000000;
+  --agent-bubble: #0a0a0a;
+  --agent-bubble-text: #f7f7f7;
+  --code-bg: #050505;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --scrollbar-hover: rgba(255, 255, 255, 0.3);
+  --selection: rgba(0, 255, 200, 0.35);
+}
+
 /* ----- Dracula ----- */
 [data-theme="dracula"] {
   --bg-primary: #282a36;
