@@ -50,7 +50,7 @@ fn ping() -> Result<String, String> {
 fn run_agent(req: AgentRequest) -> Result<OkResponse<String>, ErrorResponse> {
     println!("[tauri] run_agent: {} input='{}'", req.agent, req.input);
 
-    let python = std::env::var("PYTHON").unwrap_or_else(|_| "python".to_string());
+    let _python = std::env::var("PYTHON").unwrap_or_else(|_| "python".to_string());
     let home = HOME_DIR.as_ref().ok_or_else(|| ErrorResponse {
         ok: false,
         error: "No home dir".to_string(),
@@ -98,7 +98,7 @@ fn run_agent(req: AgentRequest) -> Result<OkResponse<String>, ErrorResponse> {
 fn run_skill(req: SkillRequest) -> Result<OkResponse<String>, ErrorResponse> {
     println!("[tauri] run_skill: {} args={:?}", req.name, req.args);
 
-    let python = std::env::var("PYTHON").unwrap_or_else(|_| "python".to_string());
+    let _python = std::env::var("PYTHON").unwrap_or_else(|_| "python".to_string());
     let home = HOME_DIR.as_ref().ok_or_else(|| ErrorResponse {
         ok: false,
         error: "No home dir".to_string(),
