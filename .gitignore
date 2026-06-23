@@ -37,6 +37,9 @@ out/
 electron/node_modules/
 electron/dist/
 
+# Tauri
+src-tauri/target/
+
 # Git chaff
 *.orig
 *.rej

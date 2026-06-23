@@ -1,0 +1,11 @@
+{
+  "identifier": "default",
+  "description": "Core Tauri permissions for OceanOS",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "fs:default",
+    "notification:default"
+  ]
+}
