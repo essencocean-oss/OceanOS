@@ -1,3 +1,4 @@
+import { tauri } from "../../shared/tauri";
 import {
   type Attachment,
   MAX_ATTACHMENTS_PER_MESSAGE,
@@ -454,7 +455,7 @@ export async function processFiles(
 
     let path = "";
     try {
-      path = window.hermesAPI.getPathForFile(file) || "";
+      path = tauri.getPathForFile(file) || "";
     } catch {
       path = "";
     }
@@ -463,7 +464,7 @@ export async function processFiles(
       // No origin path (clipboard paste) — stage the bytes to disk.
       try {
         const base64 = await readAsBase64(file);
-        path = await window.hermesAPI.stageAttachment(
+        path = await tauri.stageAttachment(
           options.sessionId || "",
           name,
           base64,

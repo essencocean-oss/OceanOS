@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { tauri } from "../../shared/tauri";
 import toast from "react-hot-toast";
 import {
   Plus,
@@ -133,13 +134,13 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
   const [providerAutoFilled, setProviderAutoFilled] = useState(false);
 
   const loadModels = useCallback(async () => {
-    const list = await window.hermesAPI.listModels();
+    const list = await tauri.listModels();
     setModels(list);
     setLoading(false);
   }, []);
 
   const loadAuxConfig = useCallback(async () => {
-    const aux = await window.hermesAPI.getAuxiliaryConfig();
+    const aux = await tauri.getAuxiliaryConfig();
     setAuxConfig(aux);
   }, []);
 
@@ -148,7 +149,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
       setShowRegistry(true);
       setRegistryLoading(true);
       try {
-        const data = await window.hermesAPI.fetchModelRegistry(force);
+        const data = await tauri.fetchModelRegistry(force);
         setRegistry(data);
       } catch {
         setRegistry({ providers: [], error: t("models.registryLoadError") });
@@ -170,7 +171,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     const provider = isSupported ? prov.id : "custom";
     const baseUrl = isSupported ? "" : (prov.apiBase || "").trim();
     const name = model.label || model.name;
-    await window.hermesAPI.addModel(name, provider, model.name, baseUrl);
+    await tauri.addModel(name, provider, model.name, baseUrl);
     setPickedModels((prev) => new Set(prev).add(model.name));
     await loadModels();
     toast.success(t("models.registryAdded", { name }));
@@ -236,8 +237,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     // unknown hosts).
     setFormApiKey("");
     const envKey = expectedEnvKeyForUrl(m.baseUrl);
-    window.hermesAPI
-      .getEnv()
+    tauri.getEnv()
       .then((env) => {
         const saved = env[envKey];
         if (saved) setFormApiKey(saved);
@@ -306,12 +306,12 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
       // trip refreshes `config.yaml`. Library edits should "take" on
       // the active configuration when the entry being edited IS the
       // active one.
-      const activeBefore = await window.hermesAPI.getModelConfig();
+      const activeBefore = await tauri.getModelConfig();
       const editedWasActive =
         activeBefore.provider === editingModel.provider &&
         activeBefore.model === editingModel.model;
 
-      await window.hermesAPI.updateModel(editingModel.id, {
+      await tauri.updateModel(editingModel.id, {
         name,
         provider: formProvider,
         model,
@@ -327,14 +327,14 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
           formProvider,
           formBaseUrl,
         );
-        await window.hermesAPI.setModelConfig(
+        await tauri.setModelConfig(
           formProvider,
           model,
           effectiveBaseUrl,
         );
       }
     } else {
-      await window.hermesAPI.addModel(
+      await tauri.addModel(
         name,
         formProvider,
         model,
@@ -344,7 +344,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
 
     if (formApiKey.trim() && formProvider === "custom") {
       const envKey = expectedEnvKeyForUrl(formBaseUrl.trim());
-      await window.hermesAPI.setEnv(envKey, formApiKey.trim());
+      await tauri.setEnv(envKey, formApiKey.trim());
     }
 
     closeModal();
@@ -352,7 +352,7 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
   }
 
   async function handleDelete(id: string): Promise<void> {
-    await window.hermesAPI.removeModel(id);
+    await tauri.removeModel(id);
     setConfirmDelete(null);
     await loadModels();
   }
@@ -455,20 +455,20 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
 
   async function handleAuxSave(): Promise<void> {
     if (!auxEditingTask) return;
-    await window.hermesAPI.setAuxiliaryTask(auxEditingTask, {
+    await tauri.setAuxiliaryTask(auxEditingTask, {
       provider: auxFormProvider,
       model: auxFormModel,
       baseUrl: auxFormBaseUrl,
     });
-    const updated = await window.hermesAPI.getAuxiliaryConfig();
+    const updated = await tauri.getAuxiliaryConfig();
     setAuxConfig(updated);
     closeAuxModal();
     toast.success(t("constants.auxiliarySaved"));
   }
 
   async function handleResetAux(): Promise<void> {
-    await window.hermesAPI.resetAuxiliaryConfig();
-    const updated = await window.hermesAPI.getAuxiliaryConfig();
+    await tauri.resetAuxiliaryConfig();
+    const updated = await tauri.getAuxiliaryConfig();
     setAuxConfig(updated);
     toast.success(t("constants.auxiliaryResetSuccess"));
   }

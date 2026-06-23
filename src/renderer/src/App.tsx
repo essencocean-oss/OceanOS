@@ -9,6 +9,7 @@ import Setup from "./screens/Setup/Setup";
 import Layout from "./screens/Layout/Layout";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import { captureScreenView } from "./utils/analytics";
+import { tauri } from "./shared/tauri";
 
 type Screen = "splash" | "welcome" | "installing" | "setup" | "main";
 
@@ -31,7 +32,7 @@ function App(): React.JSX.Element {
   const [splashStatus, setSplashStatus] = useState<string | undefined>(
     undefined,
   );
-  const isMac = window.electron?.process?.platform === "darwin";
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent || '');
 
   const runInstallCheck = useCallback(async () => {
     const startedAt = Date.now();
@@ -41,14 +42,14 @@ function App(): React.JSX.Element {
 
     try {
       setSplashStatus("Checking connection…");
-      const conn = await window.hermesAPI.getConnectionConfig();
+      const conn = await tauri.getConnectionConfig();
       isRemote = conn.mode === "remote" || conn.mode === "ssh";
       setConnectionMode(conn.mode);
 
       if (conn.mode === "ssh" && conn.ssh) {
         setSplashStatus("Starting SSH tunnel…");
         try {
-          await window.hermesAPI.startSshTunnel();
+          await tauri.startSshTunnel();
           next = "main";
         } catch (tunnelErr) {
           error = `SSH tunnel failed to start: ${(tunnelErr as Error).message}`;
@@ -56,7 +57,7 @@ function App(): React.JSX.Element {
         }
       } else if (conn.mode === "remote" && conn.remoteUrl) {
         setSplashStatus("Testing remote connection…");
-        const ok = await window.hermesAPI.testRemoteConnection(conn.remoteUrl);
+        const ok = await tauri.testRemoteConnection(conn.remoteUrl);
         if (ok) {
           next = "main";
         } else {
@@ -65,7 +66,7 @@ function App(): React.JSX.Element {
         }
       } else {
         setSplashStatus("Checking local install…");
-        const status = await window.hermesAPI.checkInstall();
+        const status = await tauri.checkInstall();
         if (!status.installed) {
           next = "welcome";
         } else if (!status.hasApiKey) {
@@ -81,12 +82,10 @@ function App(): React.JSX.Element {
           setSplashStatus("Checking configuration…");
           await Promise.race([
             Promise.all([
-              window.hermesAPI
-                .getConfigHealth()
+              tauri.getConfigHealth()
                 .catch(() => null)
                 .then(() => undefined),
-              window.hermesAPI
-                .gatewayStatus()
+              tauri.gatewayStatus()
                 .catch(() => null)
                 .then(() => undefined),
             ]),
@@ -117,7 +116,7 @@ function App(): React.JSX.Element {
     // this guard the user is bounced back to Welcome with an "installBroken"
     // error immediately after a successful remote connect. (#47, #41, #30)
     if ((next === "main" || next === "setup") && !isRemote) {
-      window.hermesAPI.verifyInstall().then((ok) => {
+      tauri.verifyInstall().then((ok) => {
         // Files exist (checkInstall passed) but the probe failed. Surface
         // a soft warning instead of bouncing to Welcome — see #130.
         if (!ok) setVerifyWarning(true);
@@ -160,7 +159,7 @@ function App(): React.JSX.Element {
   }
 
   async function handleSwitchToLocal(): Promise<void> {
-    await window.hermesAPI.setConnectionConfig("local", "", "");
+    await tauri.setConnectionConfig("local", "", "");
     setConnectionMode("local");
     handleRecheck();
   }

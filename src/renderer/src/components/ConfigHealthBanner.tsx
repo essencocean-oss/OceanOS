@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "./useI18n";
 import { X } from "lucide-react";
+import { tauri } from "../shared/tauri";
 
 /**
  * Dismissible banner that surfaces config-health issues at the top of
@@ -82,7 +83,7 @@ export function ConfigHealthBanner({
     let cancelled = false;
     (async (): Promise<void> => {
       try {
-        const r = (await window.hermesAPI.getConfigHealth(profile)) as
+        const r = (await tauri.getConfigHealth(profile)) as
           | (Report & { ranAt: number })
           | null;
         if (!cancelled) setReport(r);
@@ -164,13 +165,13 @@ export function ConfigHealthBanner({
     if (!apiKeyValue.trim()) return;
     setSaving(true);
     try {
-      await window.hermesAPI.setEnv(
+      await tauri.setEnv(
         "API_SERVER_KEY",
         apiKeyValue.trim(),
         profile,
       );
       // Re-run the health check so the banner disappears.
-      const r = (await window.hermesAPI.rerunConfigHealth(profile)) as
+      const r = (await tauri.rerunConfigHealth(profile)) as
         | (Report & { ranAt: number })
         | null;
       setReport(r);

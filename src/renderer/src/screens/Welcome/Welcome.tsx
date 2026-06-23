@@ -1,6 +1,7 @@
 import { useState } from "react";
 import OceanLogo from "../../components/common/OceanLogo";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { tauri } from "../../shared/tauri";
 
 const SPLASH_BG =
   "/src/assets/brand-assets/ocean-cinematic.mp4";
@@ -51,12 +52,12 @@ function Welcome({
     setRemoteTesting(true);
     setRemoteError(null);
     try {
-      const ok = typeof window !== "undefined" && typeof window.hermesAPI?.testRemoteConnection === "function"
-        ? await window.hermesAPI.testRemoteConnection(url, key)
+      const ok = typeof window !== "undefined" && typeof tauri.testRemoteConnection === "function"
+        ? await tauri.testRemoteConnection(url, key)
         : true;
       if (ok) {
-        if (typeof window !== "undefined" && typeof window.hermesAPI?.setConnectionConfig === "function") {
-          await window.hermesAPI.setConnectionConfig("remote", url, key);
+        if (typeof window !== "undefined" && typeof tauri.setConnectionConfig === "function") {
+          await tauri.setConnectionConfig("remote", url, key);
         }
         onRecheck();
       } else {
@@ -81,12 +82,12 @@ function Welcome({
     setSshTesting(true);
     setSshError(null);
     try {
-      const ok = typeof window !== "undefined" && typeof window.hermesAPI?.testSshConnection === "function"
-        ? await window.hermesAPI.testSshConnection(host, port, user, sshKeyPath.trim(), remotePort)
+      const ok = typeof window !== "undefined" && typeof tauri.testSshConnection === "function"
+        ? await tauri.testSshConnection(host, port, user, sshKeyPath.trim(), remotePort)
         : true;
       if (ok) {
-        if (typeof window !== "undefined" && typeof window.hermesAPI?.setSshConfig === "function") {
-          await window.hermesAPI.setSshConfig(host, port, user, sshKeyPath.trim(), remotePort, 18642);
+        if (typeof window !== "undefined" && typeof tauri.setSshConfig === "function") {
+          await tauri.setSshConfig(host, port, user, sshKeyPath.trim(), remotePort, 18642);
         }
         onRecheck();
       } else {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { tauri } from "../../shared/tauri";
 import {
   Search,
   Refresh,
@@ -99,9 +100,9 @@ export default function Discover({
   const loadInstalled = useCallback(async () => {
     try {
       const [reg, profiles, skills] = await Promise.all([
-        window.hermesAPI.listInstalledRegistry(profile),
-        window.hermesAPI.listProfiles(),
-        window.hermesAPI.listInstalledSkills(profile),
+        tauri.listInstalledRegistry(profile),
+        tauri.listProfiles(),
+        tauri.listInstalledSkills(profile),
       ]);
       setInstalled({
         skills: skills.map((s) => s.name),
@@ -120,8 +121,8 @@ export default function Discover({
       setError(null);
       try {
         const [data, bundled] = await Promise.all([
-          window.hermesAPI.fetchRegistry(force),
-          window.hermesAPI.listBundledSkills(),
+          tauri.fetchRegistry(force),
+          tauri.listBundledSkills(),
         ]);
         if (data.error) setError(data.error);
         setCatalog({
@@ -260,7 +261,7 @@ export default function Discover({
       return next;
     });
     try {
-      const res = await window.hermesAPI.installRegistryItem(
+      const res = await tauri.installRegistryItem(
         kind,
         item,
         profile,
@@ -296,7 +297,7 @@ export default function Discover({
       return next;
     });
     try {
-      const res = await window.hermesAPI.removeMcpServer(item.id, profile);
+      const res = await tauri.removeMcpServer(item.id, profile);
       if (res.success) {
         setActions((a) => ({ ...a, [key]: "idle" }));
         setConfirmUninstall(false);
@@ -323,7 +324,7 @@ export default function Discover({
     setConfirmUninstall(false);
     setDetailLoading(true);
     try {
-      const detail = await window.hermesAPI.fetchRegistryDetail(kind, item);
+      const detail = await tauri.fetchRegistryDetail(kind, item);
       setDetailData(detail);
     } catch {
       setDetailData({ description: item.description });

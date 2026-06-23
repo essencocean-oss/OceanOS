@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useI18n } from "../../components/useI18n";
+import { tauri } from "../../shared/tauri";
 
 interface MemoryProfileProps {
   content: string;
@@ -22,7 +23,7 @@ export function MemoryProfile({
 
   async function handleSave(): Promise<void> {
     setError("");
-    const result = await window.hermesAPI.writeUserProfile(userContent, profile);
+    const result = await tauri.writeUserProfile(userContent, profile);
     if (result.success) {
       setUserEditing(false);
       setUserSaved(true);

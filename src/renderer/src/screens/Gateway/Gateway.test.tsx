@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { tauri } from "../../shared/tauri";
 
 vi.mock("../../components/useI18n", () => ({
   useI18n: () => ({
@@ -78,10 +79,10 @@ describe("Gateway screen recovery controls", () => {
   });
 
   it("shows a gateway error when restart IPC rejects", async () => {
-    window.hermesAPI.restartGateway = vi
+    tauri.restartGateway = vi
       .fn()
       .mockRejectedValue(new Error("restart failed"));
-    window.hermesAPI.gatewayStatus = vi
+    tauri.gatewayStatus = vi
       .fn()
       .mockResolvedValueOnce(true)
       .mockResolvedValueOnce(true)

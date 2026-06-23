@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
 import type { MemoryProviderInfo } from "./types";
+import { tauri } from "../../shared/tauri";
 
 const PROVIDER_URLS: Record<string, string> = {
   honcho: "https://app.honcho.dev",
@@ -34,7 +35,7 @@ export function MemoryProviders({
 
   async function handleActivate(name: string): Promise<void> {
     setActivating(name);
-    await window.hermesAPI.setConfig("memory.provider", name, profile);
+    await tauri.setConfig("memory.provider", name, profile);
     setCurrentProvider(name);
     setProviderList((prev) =>
       prev.map((p) => ({ ...p, active: p.name === name })),
@@ -45,7 +46,7 @@ export function MemoryProviders({
 
   async function handleDeactivate(): Promise<void> {
     setActivating("deactivate");
-    await window.hermesAPI.setConfig("memory.provider", "", profile);
+    await tauri.setConfig("memory.provider", "", profile);
     setCurrentProvider(null);
     setProviderList((prev) => prev.map((p) => ({ ...p, active: false })));
     setActivating(null);
@@ -94,7 +95,7 @@ export function MemoryProviders({
                     className="btn-ghost"
                     style={{ padding: 2, opacity: 0.6 }}
                     onClick={() =>
-                      window.hermesAPI.openExternal(PROVIDER_URLS[p.name])
+                      tauri.openExternal(PROVIDER_URLS[p.name])
                     }
                     title={t("memory.openProviderWebsite")}
                   >
@@ -133,7 +134,7 @@ export function MemoryProviders({
                           }))
                         }
                         onBlur={async () => {
-                          await window.hermesAPI.setEnv(
+                          await tauri.setEnv(
                             envKey,
                             providerEnv[envKey] || "",
                             profile,

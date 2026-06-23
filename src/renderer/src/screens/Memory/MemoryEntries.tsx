@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, Trash } from "../../assets/icons";
 import { useI18n } from "../../components/useI18n";
 import type { MemoryEntry } from "./types";
+import { tauri } from "../../shared/tauri";
 
 interface MemoryEntriesProps {
   entries: MemoryEntry[];
@@ -25,7 +26,7 @@ export function MemoryEntries({
   async function handleAddEntry(): Promise<void> {
     if (!newEntry.trim()) return;
     setError("");
-    const result = await window.hermesAPI.addMemoryEntry(newEntry.trim(), profile);
+    const result = await tauri.addMemoryEntry(newEntry.trim(), profile);
     if (result.success) {
       setNewEntry("");
       setShowAdd(false);
@@ -38,7 +39,7 @@ export function MemoryEntries({
   async function handleSaveEdit(): Promise<void> {
     if (editingIndex === null) return;
     setError("");
-    const result = await window.hermesAPI.updateMemoryEntry(
+    const result = await tauri.updateMemoryEntry(
       editingIndex,
       editContent.trim(),
       profile,
@@ -53,7 +54,7 @@ export function MemoryEntries({
   }
 
   async function handleDeleteEntry(index: number): Promise<void> {
-    await window.hermesAPI.removeMemoryEntry(index, profile);
+    await tauri.removeMemoryEntry(index, profile);
     setConfirmDelete(null);
     onRefresh();
   }

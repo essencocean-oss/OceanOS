@@ -22,6 +22,7 @@ import type { ChatMessage, UsageState } from "./types";
 import type { ContextUsage } from "./ContextGauge";
 import { contextWindowForModel } from "./contextWindows";
 import { QueuedMessages } from "./QueuedMessages";
+import { tauri } from "../../shared/tauri";
 
 interface QueuedMessage {
   text: string;
@@ -71,7 +72,7 @@ function Chat({
   useEffect(() => {
     let cancelled = false;
     (async (): Promise<void> => {
-      const flag = await window.hermesAPI.isRemoteMode();
+      const flag = await tauri.isRemoteMode();
       if (!cancelled) setRemoteMode(flag);
     })();
     return (): void => {
@@ -104,7 +105,7 @@ function Chat({
     let cancelled = false;
     (async (): Promise<void> => {
       try {
-        const r = await window.hermesAPI.validateChatReadiness(profile);
+        const r = await tauri.validateChatReadiness(profile);
         if (!cancelled) setReadiness(r);
       } catch {
         // Fail open on IPC error — never block Send on validation failure
@@ -131,8 +132,7 @@ function Chat({
     let cancelled = false;
     setRealContextWindow(null);
     if (!modelConfig.currentModel) return;
-    window.hermesAPI
-      .getModelContextWindow(
+    tauri.getModelContextWindow(
         modelConfig.currentProvider,
         modelConfig.currentModel,
         modelConfig.currentBaseUrl,
@@ -207,10 +207,10 @@ function Chat({
     messagesRef.current = messages;
   });
   useEffect(() => {
-    return window.hermesAPI.onContextMenuCopyChat((format) => {
+    return tauri.onContextMenuCopyChat((format) => {
       const msgs = messagesRef.current;
       if (msgs.length === 0) return;
-      void window.hermesAPI.copyToClipboard(buildChatTranscript(msgs, format));
+      void tauri.copyToClipboard(buildChatTranscript(msgs, format));
     });
   }, []);
 
@@ -218,7 +218,7 @@ function Chat({
   // select the entire window, so scope it to the .chat-bubble under the
   // cursor — the user can then Copy that message.
   useEffect(() => {
-    return window.hermesAPI.onContextMenuSelectBubble(({ x, y }) => {
+    return tauri.onContextMenuSelectBubble(({ x, y }) => {
       const bubble = document.elementFromPoint(x, y)?.closest(".chat-bubble");
       if (!bubble) return;
       const selection = window.getSelection();
@@ -271,13 +271,13 @@ function Chat({
 
   const handleClear = useCallback(() => {
     if (isLoading) {
-      window.hermesAPI.abortChat();
+      tauri.abortChat();
       setIsLoading(false);
     }
     const idToDelete = hermesSessionId ?? sessionId;
     if (idToDelete) {
-      void window.hermesAPI.deleteSession(idToDelete);
-      void window.hermesAPI.clearStagedAttachments(idToDelete);
+      void tauri.deleteSession(idToDelete);
+      void tauri.clearStagedAttachments(idToDelete);
     }
     setMessages([]);
     setHermesSessionId(null);
@@ -348,7 +348,7 @@ function Chat({
   }, []);
 
   const handlePickFolder = useCallback(async () => {
-    const path = await window.hermesAPI.selectFolder();
+    const path = await tauri.selectFolder();
     if (path) setContextFolder(path);
   }, []);
 

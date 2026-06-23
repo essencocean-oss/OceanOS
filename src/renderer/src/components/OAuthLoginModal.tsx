@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X } from "../assets/icons";
 import { useI18n } from "./useI18n";
+import { tauri } from "../shared/tauri";
 
 interface OAuthLoginModalProps {
   provider: string;
@@ -34,13 +35,12 @@ function OAuthLoginModal({
   const startedRef = useRef(false);
 
   useEffect(() => {
-    const cleanup = window.hermesAPI.onOAuthLoginProgress((chunk) => {
+    const cleanup = tauri.onOAuthLoginProgress((chunk) => {
       setLog((prev) => prev + chunk);
     });
     if (!startedRef.current) {
       startedRef.current = true;
-      window.hermesAPI
-        .oauthLogin(provider, profile)
+      tauri.oauthLogin(provider, profile)
         .then((res) => {
           if (res.success) {
             setStatus("success");
@@ -68,7 +68,7 @@ function OAuthLoginModal({
     // Abandoning a flow mid-OAuth: tell main to kill the CLI subprocess
     // so its loopback redirect server doesn't linger.
     if (status === "running") {
-      void window.hermesAPI.cancelOAuthLogin();
+      void tauri.cancelOAuthLogin();
     }
     onClose();
   }

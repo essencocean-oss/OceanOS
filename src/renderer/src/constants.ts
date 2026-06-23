@@ -1062,14 +1062,14 @@ export const WINDOWS_INSTALL_CMD =
   "powershell -NoProfile -ExecutionPolicy Bypass -c \"$oceanHome = Join-Path $env:USERPROFILE '.hermes'; $installDir = Join-Path $oceanHome 'hermes-agent'; $installer = [ScriptBlock]::Create((irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 -UseBasicParsing)); & $installer -SkipSetup -HermesHome $oceanHome -InstallDir $installDir\"";
 export const INSTALL_CMD =
   typeof window !== "undefined" &&
-  window.electron?.process?.platform === "win32"
+  /Win/.test(navigator.userAgent || "")
     ? WINDOWS_INSTALL_CMD
     : UNIX_INSTALL_CMD;
 
 export const INSTALL_CMD_WIN = WINDOWS_INSTALL_CMD;
 
 export function getInstallCmd(): string {
-  return window.electron?.process?.platform === "win32"
+  return /Win/.test(navigator.userAgent || "")
     ? WINDOWS_INSTALL_CMD
     : UNIX_INSTALL_CMD;
 }

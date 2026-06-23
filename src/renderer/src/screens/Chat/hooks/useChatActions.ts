@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { ChatInputHandle } from "../ChatInput";
 import type { Attachment, ChatMessage, ChatBubbleMessage } from "../types";
+import { tauri } from "../../../shared/tauri";
 
 function hasContent(msg: ChatMessage): msg is ChatBubbleMessage {
   return (
@@ -84,7 +85,7 @@ export function useChatActions({
   const sendToAgent = useCallback(
     async (text: string, attachments?: Attachment[]): Promise<void> => {
       try {
-        await window.hermesAPI.sendMessage(
+        await tauri.sendMessage(
           text,
           profile,
           hermesSessionId || undefined,
@@ -138,7 +139,7 @@ export function useChatActions({
   );
 
   const handleAbort = useCallback(() => {
-    window.hermesAPI.abortChat();
+    tauri.abortChat();
     setIsLoading(false);
     setTimeout(() => chatInputRef.current?.focus(), 50);
   }, [chatInputRef, setIsLoading]);

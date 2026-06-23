@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { tauri } from "../../../shared/tauri";
 
 /**
  * Voice input for the chat box.
@@ -100,7 +101,7 @@ export function useVoiceInput(
         const blob = new Blob(chunksRef.current, { type });
         if (blob.size === 0) return;
         const bytes = new Uint8Array(await blob.arrayBuffer());
-        const text = await window.hermesAPI.transcribeAudio(
+        const text = await tauri.transcribeAudio(
           bytes,
           blob.type,
           profile,

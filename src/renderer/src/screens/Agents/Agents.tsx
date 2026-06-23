@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Plus, Trash, ChatBubble } from "../../assets/icons";
 import OceanLogo from "../../components/common/OceanLogo";
 import { useI18n } from "../../components/useI18n";
+import { tauri } from "../../shared/tauri";
 
 interface ProfileInfo {
   name: string;
@@ -51,7 +52,7 @@ function Agents({
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const loadProfiles = useCallback(async (): Promise<void> => {
-    const list = await window.hermesAPI.listProfiles();
+    const list = await tauri.listProfiles();
     setProfiles(list);
     setLoading(false);
   }, []);
@@ -65,7 +66,7 @@ function Agents({
     if (!name) return;
     setCreating(true);
     setError("");
-    const result = await window.hermesAPI.createProfile(name, cloneConfig);
+    const result = await tauri.createProfile(name, cloneConfig);
     setCreating(false);
     if (result.success) {
       setShowCreate(false);
@@ -82,7 +83,7 @@ function Agents({
     setError("");
     setProfiles((current) => current.filter((p) => p.name !== name));
 
-    const result = await window.hermesAPI.deleteProfile(name);
+    const result = await tauri.deleteProfile(name);
     if (result.success) {
       if (activeProfile === name) onSelectProfile("default");
       loadProfiles();
@@ -93,7 +94,7 @@ function Agents({
   }
 
   async function handleSelect(name: string): Promise<void> {
-    await window.hermesAPI.setActiveProfile(name);
+    await tauri.setActiveProfile(name);
     onSelectProfile(name);
     loadProfiles();
   }

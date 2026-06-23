@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import { useI18n } from "../../components/useI18n";
 import type { ClarifyMessage } from "./types";
+import { tauri } from "../../shared/tauri";
 
 /**
  * Sentinel answer for "skip — let Ocean decide". Mirrors the gateway's
@@ -37,7 +38,7 @@ export const ClarifyCard = memo(function ClarifyCard({
     setSubmitting(true);
     setError(false);
     try {
-      const ok = await window.hermesAPI.respondClarify(msg.requestId, answer);
+      const ok = await tauri.respondClarify(msg.requestId, answer);
       // The IPC handler returns false when no pending request matched (e.g. the
       // turn already ended). Only flip the card to resolved on a confirmed
       // delivery; otherwise surface an error and let the user retry.

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { tauri } from "../../shared/tauri";
 import { useTheme } from "../../components/ThemeProvider";
 import { useFont } from "../../components/FontProvider";
 import { THEMES, FONT_OPTIONS } from "../../constants";
@@ -150,10 +151,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   const loadConfig = useCallback(async (): Promise<void> => {
     // Load fast config first (cached in main process)
     const [home, aVersion, conn, keyStatus] = await Promise.all([
-      window.hermesAPI.getHermesHome(profile),
-      window.hermesAPI.getAppVersion(),
-      window.hermesAPI.getConnectionConfig(),
-      window.hermesAPI.getApiServerKeyStatus(profile),
+      tauri.getHermesHome(profile),
+      tauri.getAppVersion(),
+      tauri.getConnectionConfig(),
+      tauri.getApiServerKeyStatus(profile),
     ]);
     setHermesHome(home);
     setAppVersion(aVersion);
@@ -172,10 +173,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     connLoaded.current = true;
 
     // Load network settings from config.yaml
-    window.hermesAPI.getConfig("network.force_ipv4", profile).then((v) => {
+    tauri.getConfig("network.force_ipv4", profile).then((v) => {
       setForceIpv4(v === "true" || v === "True");
     });
-    window.hermesAPI.getConfig("network.proxy", profile).then((v) => {
+    tauri.getConfig("network.proxy", profile).then((v) => {
       const loadedProxy = v || "";
       setHttpProxy(loadedProxy);
       httpProxyRef.current = loadedProxy;
@@ -183,7 +184,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     });
 
     // Defer slow calls — background refresh, cached values show instantly
-    window.hermesAPI.getHermesVersion().then((v) => {
+    tauri.getHermesVersion().then((v) => {
       setHermesVersion(v);
       if (v) {
         try {
@@ -195,7 +196,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     });
 
     if (localStorage.getItem("hermes-openclaw-dismissed") !== "true") {
-      window.hermesAPI.checkOpenClaw().then((claw) => {
+      tauri.checkOpenClaw().then((claw) => {
         setOpenclawFound(claw.found);
         setOpenclawPath(claw.path);
         try {
@@ -214,7 +215,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   const saveHttpProxy = useCallback(async (): Promise<void> => {
     const trimmed = httpProxyRef.current.trim();
     if (trimmed === savedHttpProxyRef.current) return;
-    await window.hermesAPI.setConfig("network.proxy", trimmed, profile);
+    await tauri.setConfig("network.proxy", trimmed, profile);
     savedHttpProxyRef.current = trimmed;
     setNetworkSaved(true);
     setTimeout(() => setNetworkSaved(false), 2000);
@@ -242,12 +243,12 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     setMigrationLog("");
     setMigrationResult(null);
 
-    const cleanup = window.hermesAPI.onInstallProgress((p) => {
+    const cleanup = tauri.onInstallProgress((p) => {
       setMigrationLog(p.log);
     });
 
     try {
-      const result = await window.hermesAPI.runClawMigrate();
+      const result = await tauri.runClawMigrate();
       cleanup();
       if (result.success) {
         setMigrationResult(t("settings.migrationComplete"));
@@ -287,7 +288,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
   async function handleSaveConnection(): Promise<void> {
     if (connMode === "ssh") {
-      await window.hermesAPI.setSshConfig(
+      await tauri.setSshConfig(
         sshHost.trim(),
         parseInt(sshPort, 10) || 22,
         sshUser.trim(),
@@ -297,7 +298,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       );
     } else {
       const apiKey = getConnectionApiKeyForSave();
-      await window.hermesAPI.setConnectionConfig(
+      await tauri.setConnectionConfig(
         connMode,
         connRemoteUrl,
         apiKey,
@@ -326,7 +327,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       }
       setConnTesting(true);
       setConnStatus(null);
-      const ok = await window.hermesAPI.testSshConnection(
+      const ok = await tauri.testSshConnection(
         sshHost.trim(),
         parseInt(sshPort, 10) || 22,
         sshUser.trim(),
@@ -343,7 +344,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       }
       setConnTesting(true);
       setConnStatus(null);
-      const ok = await window.hermesAPI.testRemoteConnection(
+      const ok = await tauri.testRemoteConnection(
         url,
         getConnectionApiKeyForSave(),
       );
@@ -358,7 +359,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     setConnApiKey("");
     setConnApiKeyMask("");
     setConnHasApiKey(false);
-    await window.hermesAPI.setConnectionConfig("local", "", "");
+    await tauri.setConnectionConfig("local", "", "");
     setConnStatus(t("settings.switchedToLocal"));
     setTimeout(() => setConnStatus(null), 2000);
   }
@@ -366,7 +367,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleBackup(): Promise<void> {
     setBackingUp(true);
     setBackupResult(null);
-    const result = await window.hermesAPI.runHermesBackup(profile);
+    const result = await tauri.runHermesBackup(profile);
     setBackingUp(false);
     if (result.success) {
       setBackupResult(`Backup created: ${result.path || "success"}`);
@@ -384,8 +385,8 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       if (!file) return;
       setImporting(true);
       setImportResult(null);
-      const filePath = window.hermesAPI.getPathForFile(file);
-      const result = await window.hermesAPI.runHermesImport(filePath, profile);
+      const filePath = tauri.getPathForFile(file);
+      const result = await tauri.runHermesImport(filePath, profile);
       setImporting(false);
       if (result.success) {
         setImportResult(t("settings.migrationComplete"));
@@ -397,7 +398,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   }
 
   async function loadLogs(): Promise<void> {
-    const result = await window.hermesAPI.readLogs(logFile, 300);
+    const result = await tauri.readLogs(logFile, 300);
     setLogContent(result.content);
     setLogPath(result.path);
   }
@@ -405,14 +406,14 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleDoctor(): Promise<void> {
     setDoctorRunning(true);
     setDoctorOutput(null);
-    const output = await window.hermesAPI.runHermesDoctor();
+    const output = await tauri.runHermesDoctor();
     setDoctorOutput(output);
     setDoctorRunning(false);
   }
 
   // Helper to fetch fresh version, clear backend cache, and update localStorage
   function refreshVersion(): void {
-    window.hermesAPI.refreshHermesVersion().then((v) => {
+    tauri.refreshHermesVersion().then((v) => {
       setHermesVersion(v);
       if (v) {
         try {
@@ -427,7 +428,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleUpdateHermes(): Promise<void> {
     setUpdating(true);
     setUpdateResult(null);
-    const result = await window.hermesAPI.runHermesUpdate();
+    const result = await tauri.runHermesUpdate();
     setUpdating(false);
     if (result.success) {
       setUpdateResult(t("settings.updateSuccess"));
@@ -566,7 +567,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               onClick={async () => {
                 setDumpRunning(true);
                 setDumpOutput(null);
-                const output = await window.hermesAPI.runHermesDump();
+                const output = await tauri.runHermesDump();
                 setDumpOutput(output);
                 setDumpRunning(false);
               }}
@@ -601,7 +602,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             <button
               className="btn btn-secondary"
               onClick={() =>
-                window.hermesAPI.openExternal(DISCORD_COMMUNITY_URL)
+                tauri.openExternal(DISCORD_COMMUNITY_URL)
               }
               title={DISCORD_COMMUNITY_URL}
             >
@@ -671,7 +672,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               disabled={generatingKey}
               onClick={async () => {
                 setGeneratingKey(true);
-                await window.hermesAPI.generateApiServerKey(profile);
+                await tauri.generateApiServerKey(profile);
                 setApiServerKeyMissing(false);
                 setGeneratingKey(false);
                 setConnStatus(t("settings.apiGenerated"));
@@ -1048,7 +1049,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                 onChange={async (e) => {
                   const val = e.target.checked;
                   setForceIpv4(val);
-                  await window.hermesAPI.setConfig(
+                  await tauri.setConfig(
                     "network.force_ipv4",
                     val ? "true" : "false",
                     profile,
@@ -1177,7 +1178,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                   className={`btn btn-sm ${logFile === f ? "btn-primary" : "btn-secondary"}`}
                   onClick={() => {
                     setLogFile(f);
-                    window.hermesAPI.readLogs(f, 300).then((r) => {
+                    tauri.readLogs(f, 300).then((r) => {
                       setLogContent(r.content);
                       setLogPath(r.path);
                     });

@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { processFiles, filesFromClipboard } from "./attachmentUtils";
 
-// Stub the window.hermesAPI surface used by the path-ref code path.
+// Stub the tauri surface used by the path-ref code path.
 // Picker / drag-drop normally return an absolute path via webUtils; we
 // simulate the paste path (no origin) by leaving getPathForFile empty
 // and routing through a fake stageAttachment.

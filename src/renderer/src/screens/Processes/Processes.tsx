@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { tauri } from "../../shared/tauri";
 
 export interface ProcessesProps {
   visible?: boolean;
@@ -26,7 +27,7 @@ function Processes({ visible = true }: ProcessesProps) {
     setLoading(true);
     setError(null);
     try {
-      const list = (await window.hermesAPI.processesList()) as ManagedProcessRow[];
+      const list = (await tauri.processesList()) as ManagedProcessRow[];
       setRows(list ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -42,12 +43,12 @@ function Processes({ visible = true }: ProcessesProps) {
   }, [visible]);
 
   const handleKill = async (id: string) => {
-    await window.hermesAPI.processesKill(id);
+    await tauri.processesKill(id);
     await load();
   };
 
   const handleRestart = async (id: string) => {
-    await window.hermesAPI.processesRestart(id);
+    await tauri.processesRestart(id);
     await load();
   };
 

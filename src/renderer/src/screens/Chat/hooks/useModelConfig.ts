@@ -3,6 +3,7 @@ import { PROVIDERS } from "../../../constants";
 import { useDiscoveredModels } from "../../../hooks/useDiscoveredModels";
 import { useI18n } from "../../../components/useI18n";
 import type { ModelGroup } from "../types";
+import { tauri } from "../../../shared/tauri";
 
 const OLLAMA_CLOUD_PROVIDER = "ollama-cloud";
 const OLLAMA_CLOUD_BASE_URL = "https://ollama.com/v1";
@@ -98,8 +99,8 @@ export function useModelConfig(profile?: string): UseModelConfigResult {
 
   const reload = useCallback(async (): Promise<void> => {
     const [mc, savedModels] = await Promise.all([
-      window.hermesAPI.getModelConfig(profile),
-      window.hermesAPI.listModels(),
+      tauri.getModelConfig(profile),
+      tauri.listModels(),
     ]);
     setCurrentModel(mc.model);
     setCurrentProvider(mc.provider);
@@ -128,7 +129,7 @@ export function useModelConfig(profile?: string): UseModelConfigResult {
       // to the provider's canonical URL.
       const effectiveBaseUrl =
         provider === "custom" || provider === OLLAMA_CLOUD_PROVIDER ? baseUrl : "";
-      await window.hermesAPI.setModelConfig(
+      await tauri.setModelConfig(
         provider,
         model,
         effectiveBaseUrl,

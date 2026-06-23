@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { tauri } from "../../../shared/tauri";
 import type { ChatMessage, UsageState } from "../types";
 import {
   dbItemsToChatMessages,
@@ -35,7 +36,7 @@ export function useChatIPC({
   const reasoningSegmentClosedRef = useRef(false);
 
   useEffect(() => {
-    const cleanupChunk = window.hermesAPI.onChatChunk((chunk) => {
+    const cleanupChunk = tauri.onChatChunk((chunk) => {
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (
@@ -61,7 +62,7 @@ export function useChatIPC({
     // Streaming reasoning / thinking bubbles for the current turn (#352).
     // Keep chunk order relative to tool rows. A new thought after a tool call
     // should become a new block there, not mutate the first thought block.
-    const cleanupReasoning = window.hermesAPI.onChatReasoningChunk((chunk) => {
+    const cleanupReasoning = tauri.onChatReasoningChunk((chunk) => {
       if (!chunk) return;
       const forceNewSegment = reasoningSegmentClosedRef.current;
       reasoningSegmentClosedRef.current = false;
@@ -70,7 +71,7 @@ export function useChatIPC({
       );
     });
 
-    const cleanupDone = window.hermesAPI.onChatDone(async (sessionId) => {
+    const cleanupDone = tauri.onChatDone(async (sessionId) => {
       reasoningSegmentClosedRef.current = false;
       if (sessionId) setHermesSessionId(sessionId);
       setToolProgress(null);
@@ -89,7 +90,7 @@ export function useChatIPC({
       // `reconcileStreamedWithDb` does the matching — see its doc block.
       if (!sessionId) return;
       try {
-        const items = (await window.hermesAPI.getSessionMessages(
+        const items = (await tauri.getSessionMessages(
           sessionId,
         )) as DbHistoryItem[];
         const dbMessages = dbItemsToChatMessages(items);
@@ -100,7 +101,7 @@ export function useChatIPC({
       }
     });
 
-    const cleanupError = window.hermesAPI.onChatError((error) => {
+    const cleanupError = tauri.onChatError((error) => {
       reasoningSegmentClosedRef.current = false;
       setMessages((prev) => [
         ...prev,
@@ -114,7 +115,7 @@ export function useChatIPC({
       setIsLoading(false);
     });
 
-    const cleanupClarify = window.hermesAPI.onClarifyRequest((req) => {
+    const cleanupClarify = tauri.onClarifyRequest((req) => {
       reasoningSegmentClosedRef.current = true;
       setToolProgress(null);
       // Keep the turn marked busy: the agent is blocked on the user's answer.
@@ -142,7 +143,7 @@ export function useChatIPC({
       });
     });
 
-    const cleanupToolProgress = window.hermesAPI.onChatToolProgress((tool) => {
+    const cleanupToolProgress = tauri.onChatToolProgress((tool) => {
       setToolProgress(null);
       if (!tool.trim()) return;
       reasoningSegmentClosedRef.current = true;
@@ -151,13 +152,13 @@ export function useChatIPC({
       );
     });
 
-    const cleanupToolEvent = window.hermesAPI.onChatToolEvent((toolEvent) => {
+    const cleanupToolEvent = tauri.onChatToolEvent((toolEvent) => {
       setToolProgress(null);
       reasoningSegmentClosedRef.current = true;
       setMessages((prev) => upsertLiveToolEvent(prev, toolEvent));
     });
 
-    const cleanupUsage = window.hermesAPI.onChatUsage((u) => {
+    const cleanupUsage = tauri.onChatUsage((u) => {
       setUsage((prev) => ({
         promptTokens: (prev?.promptTokens || 0) + u.promptTokens,
         completionTokens: (prev?.completionTokens || 0) + u.completionTokens,
