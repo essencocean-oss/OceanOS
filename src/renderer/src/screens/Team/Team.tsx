@@ -283,7 +283,7 @@ export default function Team(): React.JSX.Element {
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
-                onClick={() => {
+                onClick={async () => {
                   const prompt =
                     agent.id === "titan"
                       ? "Break down this goal into 3 steps: build a simple calculator skill"
@@ -292,7 +292,11 @@ export default function Team(): React.JSX.Element {
                         : agent.id === "oracle"
                           ? "Review the calculator output for correctness"
                           : "Check the calculator workflow for risks";
-                  void runAgent(agent.id, prompt);
+                  try {
+                    await runAgent(agent.id, prompt);
+                  } catch {
+                    // status already updated to error in runAgent
+                  }
                 }}
               >
                 Run check

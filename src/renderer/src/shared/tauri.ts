@@ -30,18 +30,17 @@ export const tauri = {
   fetchRegistryDetail: (kind: string, item: any) =>
     cmd("fetch_registry_detail", { kind, item }),
   listInstalledRegistry: (profile?: string) => cmd("list_installed_registry", { profile }),
-  installRegistryItem: (item: any, profile?: string) =>
-    cmd("install_registry_item", { item, profile }),
+  installRegistryItem: (..._args: any[]) => cmd("install_registry_item"),
   // Chat / sessions
-  sendMessage: (input: string) => cmd("send_message", { input }),
+  sendMessage: (..._args: any[]) => cmd("send_message"),
   abortChat: () => cmd("abort_chat"),
-  transcribeAudio: () => cmd("transcribe_audio"),
-  getSessionMessages: (sessionId?: string) => cmd("get_session_messages", { sessionId }),
-  deleteSession: (sessionId: string) => cmd("delete_session", { sessionId }),
+  transcribeAudio: (..._args: any[]) => cmd("transcribe_audio"),
+  getSessionMessages: (..._args: any[]) => cmd("get_session_messages"),
+  deleteSession: (..._args: any[]) => cmd("delete_session"),
   deleteSessions: (ids: string[]) => cmd("delete_sessions", { ids }),
   searchSessions: (query?: string) => cmd("search_sessions", { query }),
-  listCachedSessions: () => cmd("list_cached_sessions"),
-  syncSessionCache: () => cmd("sync_session_cache"),
+  listCachedSessions: (..._args: any[]) => cmd("list_cached_sessions"),
+  syncSessionCache: (..._args: any[]) => cmd("sync_session_cache"),
   updateSessionTitle: (sessionId: string, title: string) =>
     cmd("update_session_title", { sessionId, title }),
   // Profiles
@@ -60,30 +59,20 @@ export const tauri = {
   setToolsetEnabled: (id: string, enabled: boolean, profile?: string) =>
     cmd("set_toolset_enabled", { id, enabled, profile }),
   // Kanban
-  kanbanListBoards: (refresh?: boolean, profile?: string) =>
-    cmd("kanban_list_boards", { refresh, profile }),
-  kanbanListTasks: (opts?: any) => cmd("kanban_list_tasks", opts),
+  kanbanListBoards: (..._args: any[]) => cmd("kanban_list_boards"),
+  kanbanListTasks: (..._args: any[]) => cmd("kanban_list_tasks"),
   kanbanListClaw3dHqTasks: () => cmd("kanban_list_claw3d_hq_tasks"),
-  kanbanGetTask: (id: string, profile?: string) => cmd("kanban_get_task", { id, profile }),
-  kanbanCreateTask: (input: any, profile?: string) =>
-    cmd("kanban_create_task", { input, profile }),
-  kanbanSwitchBoard: (slug: string, profile?: string) =>
-    cmd("kanban_switch_board", { slug, profile }),
-  kanbanCreateBoard: (name: string, profile?: string) =>
-    cmd("kanban_create_board", { name, profile }),
-  kanbanCompleteTask: (id: string, profile?: string) =>
-    cmd("kanban_complete_task", { id, profile }),
-  kanbanBlockTask: (id: string, profile?: string) => cmd("kanban_block_task", { id, profile }),
-  kanbanUnblockTask: (id: string, profile?: string) =>
-    cmd("kanban_unblock_task", { id, profile }),
-  kanbanSpecifyTask: (id: string, profile?: string) =>
-    cmd("kanban_specify_task", { id, profile }),
-  kanbanArchiveTask: (id: string, profile?: string) =>
-    cmd("kanban_archive_task", { id, profile }),
-  kanbanReclaimTask: (id: string, profile?: string) =>
-    cmd("kanban_reclaim_task", { id, profile }),
-  kanbanDispatchOnce: (once: boolean, profile?: string) =>
-    cmd("kanban_dispatch_once", { once, profile }),
+  kanbanGetTask: (..._args: any[]) => cmd("kanban_get_task"),
+  kanbanCreateTask: (..._args: any[]) => cmd("kanban_create_task"),
+  kanbanSwitchBoard: (..._args: any[]) => cmd("kanban_switch_board"),
+  kanbanCreateBoard: (..._args: any[]) => cmd("kanban_create_board"),
+  kanbanCompleteTask: (..._args: any[]) => cmd("kanban_complete_task"),
+  kanbanBlockTask: (..._args: any[]) => cmd("kanban_block_task"),
+  kanbanUnblockTask: (..._args: any[]) => cmd("kanban_unblock_task"),
+  kanbanSpecifyTask: (..._args: any[]) => cmd("kanban_specify_task"),
+  kanbanArchiveTask: (..._args: any[]) => cmd("kanban_archive_task"),
+  kanbanReclaimTask: (..._args: any[]) => cmd("kanban_reclaim_task"),
+  kanbanDispatchOnce: (..._args: any[]) => cmd("kanban_dispatch_once"),
   // Config / env
   getEnv: (profile?: string) => cmd("get_env", { profile }),
   setEnv: (key: string, value: string, profile?: string) =>
@@ -115,32 +104,34 @@ export const tauri = {
   readLogs: () => cmd("read_logs"),
   writeUserProfile: (profile: string, content: string) =>
     cmd("write_user_profile", { profile, content }),
-  discoverMemoryProviders: () => cmd("discover_memory_providers"),
+  discoverMemoryProviders: (..._args: any[]) => cmd("discover_memory_providers"),
   // Messaging
   getMessagingPlatforms: (profile?: string) => cmd("get_messaging_platforms", { profile }),
-  updateMessagingPlatform: (platform: any, profile?: string) =>
-    cmd("update_messaging_platform", { platform, profile }),
+  updateMessagingPlatform: (..._args: any[]) => cmd("update_messaging_platform"),
   testMessagingPlatform: (id: string, profile?: string) =>
     cmd("test_messaging_platform", { id, profile }),
   // API server key / cron
   generateApiServerKey: (profile?: string) => cmd("generate_api_server_key", { profile }),
   getApiServerKeyStatus: (profile?: string) => cmd("get_api_server_key_status", { profile }),
-  listCronJobs: () => cmd("list_cron_jobs"),
-  createCronJob: () => cmd("create_cron_job"),
-  triggerCronJob: (id: string) => cmd("trigger_cron_job", { id }),
-  pauseCronJob: (id: string) => cmd("pause_cron_job", { id }),
-  resumeCronJob: (id: string) => cmd("resume_cron_job", { id }),
-  removeCronJob: (id: string) => cmd("remove_cron_job", { id }),
+  listCronJobs: (..._args: any[]) => cmd("list_cron_jobs"),
+  createCronJob: (..._args: any[]) => cmd("create_cron_job"),
+  triggerCronJob: (..._args: any[]) => cmd("trigger_cron_job"),
+  pauseCronJob: (..._args: any[]) => cmd("pause_cron_job"),
+  resumeCronJob: (..._args: any[]) => cmd("resume_cron_job"),
+  removeCronJob: (..._args: any[]) => cmd("remove_cron_job"),
   // Process
   processesList: () => cmd("processes_list"),
   processesKill: (id: string) => cmd("processes_kill", { id }),
   processesRestart: (id: string) => cmd("processes_restart", { id }),
   // Models
-  addModel: (model: any, profile?: string) => cmd("add_model", { model, profile }),
-  updateModel: (model: any, profile?: string) => cmd("update_model", { model, profile }),
-  removeModel: (id: string, profile?: string) => cmd("remove_model", { id, profile }),
-  fetchModelRegistry: () => cmd("fetch_model_registry"),
-  listModels: () => cmd("list_models"),
+  addModel: (..._args: any[]) => cmd("add_model"),
+  updateModel: (..._args: any[]) => cmd("update_model"),
+  removeModel: (..._args: any[]) => cmd("remove_model"),
+  fetchModelRegistry: (..._args: any[]) => cmd("fetch_model_registry"),
+  listModels: (..._args: any[]) => cmd("list_models"),
+  // Models config aliases
+  getModelConfig: (..._args: any[]) => cmd("get_model_config"),
+  setModelConfig: (..._args: any[]) => cmd("set_model_config"),
   // Misc runtime
   getAppVersion: () => cmd<string>("get_app_version").catch(() => Promise.resolve("0.1.0")),
   openExternal: (url: string) => open(url),
@@ -152,11 +143,8 @@ export const tauri = {
   runClawMigrate: () => Promise.resolve({ success: true }),
   // OceanOS home / config
   getOceanHome: (profile?: string) => cmd("get_ocean_home", { profile }),
-  getModelConfig: (profile?: string) => cmd("get_model_config", { profile }),
-  setModelConfig: (provider: string, model: string, baseUrl: string, profile?: string) =>
-    cmd("set_model_config", { provider, model, baseUrl, profile }),
-  getAuxiliaryConfig: (profile?: string) => cmd("get_auxiliary_config", { profile }),
-  setAuxiliaryTask: () => cmd("set_auxiliary_task"),
+  getAuxiliaryConfig: (..._args: any[]) => cmd("get_auxiliary_config"),
+  setAuxiliaryTask: (..._args: any[]) => cmd("set_auxiliary_task"),
   resetAuxiliaryConfig: () => cmd("reset_auxiliary_config"),
   isRemoteMode: () => cmd("is_remote_mode"),
   isRemoteOnlyMode: () => cmd("is_remote_only_mode"),
@@ -166,7 +154,7 @@ export const tauri = {
   runOceanDump: () => cmd("run_oceanos_dump"),
   runOceanImport: () => cmd("run_oceanos_import"),
   // Auth
-  oauthLogin: () => Promise.resolve({ success: true }),
+  oauthLogin: (..._args: any[]) => Promise.resolve({ success: true, error: undefined }),
   cancelOAuthLogin: () => Promise.resolve(true),
   // Listener stubs (no-ops until backend wiring)
   onChatChunk: (..._args: any[]) => () => {},
@@ -212,14 +200,14 @@ export const tauri = {
   readDirectory: (path: string) => cmd("read_directory", { path }),
   saveMediaFile: (path: string, name: string) => cmd("save_media_file", { path, name }),
   mediaFileExists: (path: string) => cmd("media_file_exists", { path }),
-  readMediaFile: () => cmd("read_media_file"),
+  readMediaFile: (..._args: any[]) => cmd("read_media_file"),
   showMediaMenu: (..._args: any[]) => {},
   selectFolder: () => cmd("select_folder"),
   openFileInEditor: (path: string) => cmd("open_file_in_editor", { path }),
   openTerminal: (path: string) => cmd("open_terminal", { path }),
-  getPathForFile: (file: string) => file,
-  stageAttachment: () => cmd("stage_attachment"),
-  clearStagedAttachments: () => cmd("clear_staged_attachments"),
+  getPathForFile: (..._args: any[]) => "",
+  stageAttachment: (..._args: any[]) => cmd("stage_attachment"),
+  clearStagedAttachments: (..._args: any[]) => cmd("clear_staged_attachments"),
   validateChatReadiness: (profile?: string) => cmd("validate_chat_readiness", { profile }),
   checkInstall: () => cmd("check_install"),
   verifyInstall: () => cmd("verify_install"),

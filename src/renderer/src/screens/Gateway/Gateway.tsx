@@ -58,7 +58,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         tauri.gatewayStatus(),
         tauri.getMessagingPlatforms(profile),
       ]);
-      setGatewayRunning(gwStatus);
+      setGatewayRunning(gwStatus.running);
       // Clear stale start-failure banners once the gateway is confirmed up,
       // but keep an explicit restart failure visible: a failed recovery can
       // leave the old gateway running while still needing user attention.
@@ -154,8 +154,8 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
           // Refresh status + platform catalog once the adapters have had a
           // moment to come up; surface an error if it exited immediately.
           void tauri.gatewayStatus().then((status) => {
-            setGatewayRunning(status);
-            if (status) {
+            setGatewayRunning(status.running);
+            if (status.running) {
               void loadConfig();
             } else {
               setGatewayError(
@@ -194,8 +194,8 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
       } else {
         gatewayStatusTimeoutRef.current = setTimeout(async () => {
           const status = await tauri.gatewayStatus();
-          setGatewayRunning(status);
-          if (status) {
+          setGatewayRunning(status.running);
+          if (status.running) {
             void loadConfig();
           }
           gatewayStatusTimeoutRef.current = null;

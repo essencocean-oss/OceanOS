@@ -6,9 +6,9 @@
     "src/shared/**/*"
   ],
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2021",
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "composite": true,
     "esModuleInterop": true,

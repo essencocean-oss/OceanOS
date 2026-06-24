@@ -4,12 +4,15 @@
 Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a small footprint, futuristic UI, built-in agent squad, skills marketplace, and unique orchestration/memory/safety layers.
 
 ## Current State (tauri-migration, as of latest commit)
-- Tauri 2.0 scaffold complete; Windows installers verified (~9 MB NSIS, ~9.2 MB MSI).
-- P1 legacy cleanup mostly done: `src/main/` and `src/preload/` archived under `electron-legacy/`; Electron configs removed; no Electron-specific imports remain in renderer or Rust backend.
+- Tauri 2.0 scaffold complete; Windows installers verified (NSIS 7.8 MB, MSI 9.2 MB).
+- P0 legacy cleanup complete: `src/main/` and `src/preload/` archived under `electron-legacy/`; Electron configs removed; zero Electron-specific imports in active renderer TS/TSX.
+- P1 Tauri-first architecture complete: typed `tauri.ts` service layer, all IPC calls use `tauri.invoke`, MSVC toolchain configured, Windows debug/release binaries verified.
 - P2 theme system implemented: Ocean Deep (default), Abyss, Aether — with live switcher in Settings and full CSS variable blocks.
-- P3 built-in agent team scaffolded: Team screen with Titan/Maelstrom/Aegis/Oracle, wired into Layout nav and pane system.
-- TypeScript errors reduced to API-shape mismatches from bulk IPC migration (not new regressions).
-- Brand verification: `git grep -i hermes` returns zero hits in repo sources; only 3rd-party lockfile references remain (hermes-parser, hermes-estree).
+- P3 built-in agent team complete: Team screen with Titan/Maelstrom/Aegis/Oracle, delegation workflow workflow wired into Layout nav pane.
+- TypeScript compilation clean: `npx tsc --noEmit --project tsconfig.web.json` returns 0 errors.
+- Brand verification: `git grep -i hermes` returns zero hits in tracked sources; only 3rd-party lockfile references remain (intentionally untouched).
+- `npm run dev:tauri` verified: Vite dev server responds on localhost:5173; Tauri debug binary launches; oceanos-tauri.exe process confirmed running.
+- `npm run build:tauri` verified: release build completes; NSIS + MSI bundles produced; installer size ~9 MB (vs Electron ~73 MB).
 
 ## Priorities
 
@@ -20,9 +23,10 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 - *Output*: `chore: final deep cleanup of all Hermes references` committed; build succeeds; installer output verified.
 
 ### P1 — Finalize Tauri-first architecture
-- Strip remaining Electron-specific comments/paths (archived, not active).
-- Replace all `ipcRenderer`, `contextBridge`, `remote` usages with Tauri primitives.
-- Ensure `src-tauri/src/main.rs` reads/writes only OceanOS paths and exposes the final command set.
+- ~~Strip remaining Electron-specific comments/paths (archived, not active).~~
+- ~~Replace all `ipcRenderer`, `contextBridge`, `remote` usages with Tauri primitives.~~
+- ~~Ensure `src-tauri/src/main.rs` reads/writes only OceanOS paths and exposes the final command set.~~
+- ~~Jacob’s Ladder / Claw migration flow exposed in Settings (`runClawMigrate`, `runOceanBackup`, `runOceanImport`, `readLogs`).~~
 - *Output*: Minimal Electron footprint; only Tauri native code touches disk.
 
 ### P2 — Cockpit UI + Themes (futuristic Oceanos aesthetic)
@@ -30,7 +34,7 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 - Abyss: maximum contrast dark.
 - Aether: clean light mode.
 - Live theme switcher in Settings.
-- Lay out the three-panel cockpit: sidebar registry → central execution → right agents/memory → bottom controls.
+- Three-panel cockpit: sidebar registry → central execution → right agents/memory → bottom controls.
 - *Output*: Settings screen ships theme picker; every screen consumes theme context.
 
 ### P3 — Built-in Agent Team (Titan / Maelstrom / Aegis / Oracle)
@@ -39,9 +43,10 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 - Maelstrom: executor (runs skills / workflow / cron / tools).
 - Aegis: security/guardrails (sandbox + approval + risk scoring).
 - Oracle: reviewer / verifier / self-critique loop.
-- *Output*: Agents list in cockpit shows four default agents; users can spawn them with one click.
+- End-to-end delegation workflow: Titan plan → Maelstrom execute → Oracle review → Aegis security check.
+- *Output*: Agents list in cockpit shows four default agents; users can spawn them with one click; delegation workflow functional.
 
-### P4 — Skills System & Marketplace
+### P4 — Skills System & Marketplace *(next priority)*
 - Local registry (`registry/`) with install/update/uninstall flow.
 - Marketplace web/desktop view (browse, rate, publish, versioning, sandbox).
 - Auto-discovery: watch skills folder, read `manifest.yaml`.
@@ -60,10 +65,10 @@ Ship a clean, fully-native Tauri desktop runtime branded as **OceanOS**, with a 
 - *Output*: Parity with competing agent desktops.
 
 ## Immediate Next Steps
-1. Fix remaining TypeScript API shape mismatches from bulk migration (Settings, Schedules, Providers, Team).
-2. Verify theme switcher and Team UI in `npm run dev:tauri`.
-3. Re-run full `npm run build:tauri` and capture final installer size.
-4. Push and open PR for review.
+1. Basic Skills Registry loading and execution (P4 foundation).
+2. Verify end-to-end agent delegation workflow in running app.
+3. Open PR for `tauri-migration` → `main` review.
+4. Publish Windows installer for user desktop testing.
 
 ## Risk & Confidence
 - Success criteria: brand hits zero in sources, build succeeds, installer <10 MB, Tauri MVP with themes + team UI functional.
