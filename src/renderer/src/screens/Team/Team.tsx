@@ -53,8 +53,28 @@ type WorkflowStep =
   | { stage: "planning"; agent: BuiltInAgent }
   | { stage: "executing"; agent: BuiltInAgent; plan?: string }
   | { stage: "reviewing"; agent: BuiltInAgent; plan?: string; result?: string }
-  | { stage: "securing"; agent: BuiltInAgent; plan?: string; result?: string; review?: string }
-  | { stage: "done"; plan: string; result: string; review: string; approved: boolean };
+  | {
+      stage: "securing";
+      agent: BuiltInAgent;
+      plan?: string;
+      result?: string;
+      review?: string;
+    }
+  | {
+      stage: "done";
+      plan: string;
+      result: string;
+      review: string;
+      approved: boolean;
+    };
+
+interface BundledSkill {
+  name: string;
+  description: string;
+  category: string;
+  source: string;
+  installed: boolean;
+}
 
 function StatusDot({
   status,
@@ -66,9 +86,7 @@ function StatusDot({
     running: "var(--success, #22c55e)",
     error: "var(--error, #ef4444)",
   };
-  return (
-    <span className="team-status-dot" style={{ background: map[status] }} />
-  );
+  return <span className="team-status-dot" style={{ background: map[status] }} />;
 }
 
 function WorkflowPanel({
@@ -135,6 +153,7 @@ export default function Team(): React.JSX.Element {
   const [agents, setAgents] = useState<BuiltInAgent[]>(DEFAULT_AGENTS);
   const [workflow, setWorkflow] = useState<WorkflowStep>({ stage: "idle" });
   const [log, setLog] = useState<string>("");
+  const [bundledSkills, setBundledSkills] = useState<BundledSkill[]>([]);
 
   const setAgent = (id: AgentId, patch: Partial<BuiltInAgent>) =>
     setAgents((prev) =>
@@ -165,6 +184,33 @@ export default function Team(): React.JSX.Element {
       throw e;
     }
   };
+
+  const runSkillOnAgent = async (id: AgentId, name: string) => {
+    setAgent(id, { status: "running" });
+    try {
+      const res = await tauri.runSkill(name, []);
+      const text = typeof res === "string" ? res : JSON.stringify(res);
+      appendLog(`[skill:${name}] ${text.slice(0, 200)}`);
+      setAgent(id, { status: "idle" });
+      return text;
+    } catch (e) {
+      appendLog(`[skill:${name}] error: ${e}`);
+      setAgent(id, { status: "error" });
+      throw e;
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    tauri.listBundledSkills().then((res) => {
+      if (!cancelled && Array.isArray((res as any)?.data)) {
+        setBundledSkills((res as any).data as BundledSkill[]);
+      }
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const runDemoWorkflow = async () => {
     setWorkflow({ stage: "planning", agent: DEFAULT_AGENTS[0] });
@@ -301,6 +347,26 @@ export default function Team(): React.JSX.Element {
               >
                 Run check
               </button>
+              <select
+                className="btn btn-secondary btn-sm"
+                value=""
+                onChange={(e) => {
+                  const name = e.target.value;
+                  if (name) {
+                    runSkillOnAgent(agent.id, name);
+                    e.currentTarget.value = "";
+                  }
+                }}
+              >
+                <option value="" disabled>
+                  Run skill…
+                </option>
+                {bundledSkills.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {s.name} · {s.category}
+                  </option>
+                ))}
+              </select>
               <span
                 className="team-card-badge"
                 style={{
