@@ -37,6 +37,9 @@ out/
 electron/node_modules/
 electron/dist/
 
+# Tauri
+src-tauri/target/
+
 # Git chaff
 *.orig
 *.rej
@@ -56,3 +59,5 @@ create_alpha.py
 # IDE
 .vscode/
 .idea/
+# Tauri
+src-tauri/gen/

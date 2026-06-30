@@ -3,6 +3,7 @@ import { useI18n } from "../../components/useI18n";
 import { Wrench, Plug, Puzzle, Search, X } from "../../assets/icons";
 import Skills from "../Skills/Skills";
 import RemoteNotice from "../../components/RemoteNotice";
+import { tauri } from "../../shared/tauri";
 
 interface ToolsetInfo {
   key: string;
@@ -462,9 +463,9 @@ function Tools({
     try {
       const [list, mcp] = await Promise.all([
         showPlatformToolsets
-          ? window.hermesAPI.getToolsets(profile)
+          ? tauri.getToolsets(profile)
           : Promise.resolve([]),
-        window.hermesAPI.listMcpServers(profile),
+        tauri.listMcpServers(profile),
       ]);
       setToolsets(list);
       setMcpServers(mcp);
@@ -486,13 +487,13 @@ function Tools({
     setToolsets((prev) =>
       prev.map((t) => (t.key === key ? { ...t, enabled: !currentEnabled } : t)),
     );
-    await window.hermesAPI.setToolsetEnabled(key, !currentEnabled, profile);
+    await tauri.setToolsetEnabled(key, !currentEnabled, profile);
   }
 
   async function reloadMcp(): Promise<void> {
     setMcpError("");
     try {
-      setMcpServers(await window.hermesAPI.listMcpServers(profile));
+      setMcpServers(await tauri.listMcpServers(profile));
     } catch (err) {
       setMcpError((err as Error).message || t("tools.mcpLoadFailed"));
     }
@@ -503,7 +504,7 @@ function Tools({
     setMcpMessage("");
     setMcpBusy("add");
     try {
-      const result = await window.hermesAPI.addMcpServer(
+      const result = await tauri.addMcpServer(
         {
           name: addForm.name,
           type: addForm.type,
@@ -534,7 +535,7 @@ function Tools({
     if (!window.confirm(t("tools.mcpRemoveConfirm", { name }))) return;
     setMcpBusy(`remove:${name}`);
     try {
-      const result = await window.hermesAPI.removeMcpServer(name, profile);
+      const result = await tauri.removeMcpServer(name, profile);
       if (!result.success) {
         setMcpError(result.error || t("tools.mcpRemoveFailed"));
         return;
@@ -559,7 +560,7 @@ function Tools({
       ),
     );
     try {
-      const result = await window.hermesAPI.setMcpServerEnabled(
+      const result = await tauri.setMcpServerEnabled(
         name,
         enabled,
         profile,
@@ -583,7 +584,7 @@ function Tools({
     setMcpError("");
     setMcpMessage("");
     try {
-      const result = await window.hermesAPI.testMcpServer(name, profile);
+      const result = await tauri.testMcpServer(name, profile);
       if (!result.success) {
         setMcpError(result.error || t("tools.mcpTestFailed"));
         return;

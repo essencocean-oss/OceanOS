@@ -34,7 +34,7 @@ describe("messaging platform catalog", () => {
 
     for (const platform of MESSAGING_PLATFORM_CATALOG) {
       expect(platform.docs_url).toBe(
-        `https://hermes-agent.nousresearch.com/docs/user-guide/messaging/${
+        `https://oceanos-agent.nousresearch.com/docs/user-guide/messaging/${
           expectedSlugs[platform.id]
         }/`,
       );
@@ -99,7 +99,7 @@ describe("messaging platform catalog", () => {
       {
         DINGTALK_APP_KEY: "old-key",
         DINGTALK_APP_SECRET: "old-secret",
-        EMAIL_ADDRESS: "hermes@example.com",
+        EMAIL_ADDRESS: "oceanos@example.com",
         EMAIL_PASSWORD: "app-password",
         EMAIL_IMAP_SERVER: "imap.example.com",
         EMAIL_SMTP_SERVER: "smtp.example.com",

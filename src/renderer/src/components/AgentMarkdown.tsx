@@ -5,6 +5,7 @@ import { Copy } from "lucide-react";
 import { useI18n } from "./useI18n";
 import { MediaImage, DownloadChip } from "./MediaImage";
 import { describeImageSrc } from "../screens/Chat/mediaUtils";
+import { tauri } from "../shared/tauri";
 
 // Lazy-load the heavy syntax highlighter — only imported when a code block renders
 let _highlighterMod: typeof import("react-syntax-highlighter") | null = null;
@@ -149,7 +150,7 @@ const AgentMarkdown = memo(function AgentMarkdown({
               } catch {
                 return;
               }
-              window.hermesAPI.openExternal(href);
+              tauri.openExternal(href);
             }}
           >
             {children}

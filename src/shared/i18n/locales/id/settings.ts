@@ -1,7 +1,7 @@
 export default {
   title: "Pengaturan",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "Tampilan",
     privacy: "Privasi",
     credentialPool: "Kumpulan Kredensial",
@@ -114,7 +114,7 @@ export default {
   save: "Simpan",
   serverConfigTitle: "Konfigurasi Server",
   serverConfigHint:
-    "Anda terhubung ke server OceanOS remote. Pilihan model, API key provider, dan kredensial dikelola di <code>~/.hermes/.env</code> dan <code>config.yaml</code> pada server. Edit di host (mis. <code>docker exec -it hermes vi /opt/data/.env</code>) lalu restart container.",
+    "Anda terhubung ke server OceanOS remote. Pilihan model, API key provider, dan kredensial dikelola di <code>~/.oceanos/.env</code> dan <code>config.yaml</code> pada server. Edit di host (mis. <code>docker exec -it oceanos vi /opt/data/.env</code>) lalu restart container.",
   connectionMode: "Mode",
   switchedToLocal: "Beralih ke mode lokal",
 } as const;

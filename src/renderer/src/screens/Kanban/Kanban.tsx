@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { tauri } from "../../shared/tauri";
 import {
   Plus,
   Refresh,
@@ -103,13 +104,13 @@ const COLUMNS: { key: string }[] = [
 const POLL_INTERVAL_MS = 6000;
 
 // Sentinel slug for the read-only Claw3D HQ virtual board. Distinct from any
-// real hermes-agent kanban board slug (which is bash-safe alphanumeric per
+// real oceanos-agent kanban board slug (which is bash-safe alphanumeric per
 // the backend CLI).
 const HQ_BOARD_SLUG = "__claw3d_hq__";
 
 // localStorage key for remembering which board the user last viewed across
 // sessions. Stored value is either a real board slug or HQ_BOARD_SLUG.
-const ACTIVE_BOARD_LS_KEY = "hermes:kanban:active-board";
+const ACTIVE_BOARD_LS_KEY = "oceanos:kanban:active-board";
 
 function readStoredActiveBoard(): string | null {
   try {
@@ -199,14 +200,14 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
           error?: string;
         };
         const [boardsRes, tasksRes, hqRes] = await Promise.all([
-          window.hermesAPI.kanbanListBoards(false, profile),
+          tauri.kanbanListBoards(false, profile),
           wantHq
             ? Promise.resolve<TasksRes>({ success: true, data: [] })
-            : window.hermesAPI.kanbanListTasks({
+            : tauri.kanbanListTasks({
                 includeArchived: false,
                 profile,
               }),
-          window.hermesAPI.kanbanListClaw3dHqTasks(),
+          tauri.kanbanListClaw3dHqTasks(),
         ]);
         if (!boardsRes.success) {
           // Only the genuine unsupported-mode result (plain remote HTTP)
@@ -284,7 +285,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
 
   useEffect(() => {
     if (!showCreate) return;
-    window.hermesAPI.listProfiles().then((profiles) => {
+    tauri.listProfiles().then((profiles) => {
       setProfileOptions(profiles.map((p) => p.name));
     });
   }, [showCreate]);
@@ -305,7 +306,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
     }
     let cancelled = false;
     setDetailLoading(true);
-    window.hermesAPI.kanbanGetTask(detailTaskId, profile).then((res) => {
+    tauri.kanbanGetTask(detailTaskId, profile).then((res) => {
       if (cancelled) return;
       if (res.success && res.data) setDetail(res.data);
       setDetailLoading(false);
@@ -346,7 +347,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
   }
 
   async function handlePickWorkspaceFolder(): Promise<void> {
-    const dir = await window.hermesAPI.selectFolder();
+    const dir = await tauri.selectFolder();
     if (dir) setNewWorkspaceDir(dir);
   }
 
@@ -363,7 +364,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
       workspaceArg = newWorkspace || undefined;
     }
     setActionBusy("create");
-    const res = await window.hermesAPI.kanbanCreateTask(
+    const res = await tauri.kanbanCreateTask(
       {
         title: newTitle.trim(),
         body: newBody.trim() || undefined,
@@ -394,7 +395,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
     }
     if (currentBoard?.slug === slug && !isHqActive) return;
     setActionBusy("board-switch");
-    const res = await window.hermesAPI.kanbanSwitchBoard(slug, profile);
+    const res = await tauri.kanbanSwitchBoard(slug, profile);
     setActionBusy(null);
     if (!res.success) {
       setError(res.error || t("kanban.errSwitchBoard"));
@@ -407,7 +408,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
   async function handleCreateBoard(): Promise<void> {
     if (!newBoardSlug.trim()) return;
     setActionBusy("board-create");
-    const res = await window.hermesAPI.kanbanCreateBoard(
+    const res = await tauri.kanbanCreateBoard(
       newBoardSlug.trim(),
       newBoardName.trim() || undefined,
       true,
@@ -429,20 +430,20 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
     setActionBusy(task.id);
     let res: { success: boolean; error?: string };
     if (target === "done") {
-      res = await window.hermesAPI.kanbanCompleteTask(
+      res = await tauri.kanbanCompleteTask(
         task.id,
         undefined,
         profile,
       );
     } else if (target === "blocked") {
       const reason = window.prompt(t("kanban.blockReasonPrompt")) || "";
-      res = await window.hermesAPI.kanbanBlockTask(
+      res = await tauri.kanbanBlockTask(
         task.id,
         reason || undefined,
         profile,
       );
     } else if (target === "ready" && task.status === "blocked") {
-      res = await window.hermesAPI.kanbanUnblockTask(task.id, profile);
+      res = await tauri.kanbanUnblockTask(task.id, profile);
     } else {
       setActionBusy(null);
       setError(
@@ -463,7 +464,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
 
   async function handleSpecify(task: KanbanTask): Promise<void> {
     setActionBusy(task.id);
-    const res = await window.hermesAPI.kanbanSpecifyTask(task.id, profile);
+    const res = await tauri.kanbanSpecifyTask(task.id, profile);
     setActionBusy(null);
     if (!res.success) {
       setError(res.error || t("kanban.errSpecify"));
@@ -497,7 +498,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
     if (!window.confirm(t("kanban.confirmArchive", { title: task.title })))
       return;
     setActionBusy(task.id);
-    const res = await window.hermesAPI.kanbanArchiveTask(task.id, profile);
+    const res = await tauri.kanbanArchiveTask(task.id, profile);
     setActionBusy(null);
     if (!res.success) {
       setError(res.error || t("kanban.errArchive"));
@@ -509,7 +510,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
 
   async function handleReclaim(task: KanbanTask): Promise<void> {
     setActionBusy(task.id);
-    const res = await window.hermesAPI.kanbanReclaimTask(
+    const res = await tauri.kanbanReclaimTask(
       task.id,
       "reclaimed from desktop",
       profile,
@@ -521,7 +522,7 @@ function Kanban({ profile, visible }: KanbanProps): React.JSX.Element {
 
   async function handleDispatch(): Promise<void> {
     setActionBusy("dispatch");
-    const res = await window.hermesAPI.kanbanDispatchOnce(false, profile);
+    const res = await tauri.kanbanDispatchOnce(false, profile);
     setActionBusy(null);
     if (!res.success) {
       setError(res.error || t("kanban.errDispatch"));

@@ -1,7 +1,7 @@
 export default {
   title: "Definições",
   sections: {
-    hermesAgent: "Agente OceanOS",
+    oceanosAgent: "Agente OceanOS",
     appearance: "Aparência",
     privacy: "Privacidade",
     credentialPool: "Pool de Credenciais",
@@ -109,7 +109,7 @@ export default {
   save: "Guardar",
   serverConfigTitle: "Configuração do Servidor",
   serverConfigHint:
-    "Está ligado a um servidor remoto do OceanOS. A selecção de modelos, as chaves de API dos fornecedores e as credenciais são geridas no host remoto em <code>~/.hermes/.env</code> e <code>config.yaml</code>. Edite-os aí e reinicie o servidor.",
+    "Está ligado a um servidor remoto do OceanOS. A selecção de modelos, as chaves de API dos fornecedores e as credenciais são geridas no host remoto em <code>~/.oceanos/.env</code> e <code>config.yaml</code>. Edite-os aí e reinicie o servidor.",
   connectionMode: "Modo",
   switchedToLocal: "Mudou para o modo local",
 } as const;

@@ -211,11 +211,11 @@ export const MESSAGING_TOOLSET_DEFINITIONS: MessagingToolsetDefinition[] = [
   },
 ];
 
-const HERMES_MESSAGING_DOCS =
-  "https://hermes-agent.nousresearch.com/docs/user-guide/messaging";
+const OCEANOS_MESSAGING_DOCS =
+  "https://oceanos-agent.nousresearch.com/docs/user-guide/messaging";
 
 function messagingDocs(slug: string): string {
-  return `${HERMES_MESSAGING_DOCS}/${slug}/`;
+  return `${OCEANOS_MESSAGING_DOCS}/${slug}/`;
 }
 
 const ENV_DEFINITIONS: Record<string, MessagingEnvDefinition> = {
@@ -304,7 +304,7 @@ const ENV_DEFINITIONS: Record<string, MessagingEnvDefinition> = {
   MATRIX_USER_ID: {
     key: "MATRIX_USER_ID",
     prompt: "User ID",
-    description: "Matrix user ID, e.g. @hermes:example.org",
+    description: "Matrix user ID, e.g. @oceanos:example.org",
   },
   MATRIX_ALLOWED_USERS: {
     key: "MATRIX_ALLOWED_USERS",

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { ArrowRight, Copy, Send } from "../../assets/icons";
+import { tauri } from "../../shared/tauri";
 
-const TELEGRAM_COMMUNITY_URL = "https://t.me/hermes_agent_desktop";
+const TELEGRAM_COMMUNITY_URL = "https://t.me/oceanos_agent_desktop";
 import { useI18n } from "../../components/useI18n";
 
 interface InstallProgress {
@@ -54,8 +55,7 @@ function Install({
   // confirmation can say exactly what to expect (fresh / update / replace).
   useEffect(() => {
     let mounted = true;
-    window.hermesAPI
-      .inspectInstallTarget()
+    tauri.inspectInstallTarget()
       .then((info) => {
         if (mounted) setTarget(info);
       })
@@ -71,12 +71,11 @@ function Install({
   useEffect(() => {
     if (phase !== "running") return;
     let isMounted = true;
-    const cleanup = window.hermesAPI.onInstallProgress((p) => {
+    const cleanup = tauri.onInstallProgress((p) => {
       if (isMounted) setProgress(p);
     });
 
-    window.hermesAPI
-      .startInstall()
+    tauri.startInstall()
       .then((result) => {
         if (!isMounted) return;
         if (result.success) {
@@ -114,14 +113,14 @@ function Install({
   // restart to adopt it (#272).
   async function handleUseExisting(): Promise<void> {
     setUseExistingError(null);
-    const dir = await window.hermesAPI.selectFolder();
+    const dir = await tauri.selectFolder();
     if (!dir) return;
-    const ok = await window.hermesAPI.validateHermesHome(dir);
+    const ok = await tauri.validateOceanHome(dir);
     if (!ok) {
       setUseExistingError(t("install.useExistingInvalid"));
       return;
     }
-    const saved = await window.hermesAPI.adoptHermesHome(dir);
+    const saved = await tauri.adoptOceanHome(dir);
     if (saved) {
       setAdopted(true);
     } else {
@@ -149,7 +148,7 @@ function Install({
             <div className="install-confirm-actions">
               <button
                 className="btn btn-primary"
-                onClick={() => window.hermesAPI.quitApp()}
+                onClick={() => tauri.quitApp()}
               >
                 {t("install.useExistingQuitBtn")}
               </button>
@@ -221,7 +220,7 @@ function Install({
           ? t("install.installationComplete")
           : failed
             ? t("install.installationFailed")
-            : t("install.installingHermes")}
+            : t("install.installingOceanOS")}
       </h1>
 
       <div className="install-progress-container">
@@ -265,7 +264,7 @@ function Install({
             <button
               className="btn btn-secondary btn-sm"
               onClick={() =>
-                window.hermesAPI.openExternal(TELEGRAM_COMMUNITY_URL)
+                tauri.openExternal(TELEGRAM_COMMUNITY_URL)
               }
               title={TELEGRAM_COMMUNITY_URL}
             >

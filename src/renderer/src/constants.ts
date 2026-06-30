@@ -16,8 +16,8 @@ export interface SectionDef {
 
 export const PROVIDERS = {
   // Ordered for the Providers / model-picker dropdown.  Each value must
-  // match a provider name `hermes-agent` recognises (see
-  // hermes_cli/auth.py::resolve_provider — _PROVIDER_ALIASES + PROVIDER_REGISTRY)
+  // match a provider name `oceanos-agent` recognises (see
+  // oceanos_cli/auth.py::resolve_provider — _PROVIDER_ALIASES + PROVIDER_REGISTRY)
   // so the gateway routes correctly when the user picks the entry.  The
   // catch-all `custom` stays last for unlisted OpenAI-compatible endpoints.
   options: [
@@ -148,7 +148,7 @@ export const PROVIDERS = {
       url: "https://platform.openai.com/api-keys",
       placeholder: "sk-...",
       // Routed through the `custom` provider with an explicit base_url:
-      // hermes-agent's resolve_provider does not recognise a bare `openai`
+      // oceanos-agent's resolve_provider does not recognise a bare `openai`
       // provider id (issue #294). The `custom` + api.openai.com path is
       // accepted, and the OpenAI key is picked up via the known-host
       // base-URL mapping.
@@ -244,9 +244,9 @@ export const PROVIDERS = {
 };
 
 // Subscription / OAuth-plan providers — these authenticate through an
-// interactive browser login (`hermes auth add <id> --type oauth`) rather
+// interactive browser login (`oceanos auth add <id> --type oauth`) rather
 // than a static API key. The Providers screen renders a "Sign in" card
-// for each. Values must match hermes-agent's provider registry.
+// for each. Values must match oceanos-agent's provider registry.
 export interface OAuthProviderDef {
   id: string;
   name: string;
@@ -278,7 +278,7 @@ export const OAUTH_PROVIDERS: OAuthProviderDef[] = [
   // Nous Portal OAuth — issue #367 Bug 2. The engine's
   // PROVIDER_REGISTRY registers `nous` with auth_type="oauth_device_code";
   // without this card the only way to trigger the sign-in flow was
-  // `hermes auth add nous --type oauth` from PowerShell.
+  // `oceanos auth add nous --type oauth` from PowerShell.
   {
     id: "nous",
     name: "Nous Portal (OAuth)",
@@ -402,18 +402,11 @@ export interface ThemeDef {
  * entry here and define its CSS variables there — nothing else is required.
  */
 export const THEMES: ThemeDef[] = [
+  { id: "ocean-deep", name: "Ocean Deep", appearance: "dark" },
+  { id: "abyss", name: "Abyss", appearance: "dark" },
+  { id: "aether", name: "Aether", appearance: "light" },
   { id: "dark", name: "Dark", appearance: "dark" },
   { id: "light", name: "Light", appearance: "light" },
-  { id: "dracula", name: "Dracula", appearance: "dark" },
-  { id: "nord", name: "Nord", appearance: "dark" },
-  { id: "one-dark", name: "One Dark", appearance: "dark" },
-  { id: "github-dark", name: "GitHub Dark", appearance: "dark" },
-  { id: "monokai", name: "Monokai", appearance: "dark" },
-  { id: "solarized-dark", name: "Solarized Dark", appearance: "dark" },
-  { id: "gruvbox-dark", name: "Gruvbox Dark", appearance: "dark" },
-  { id: "tokyo-night", name: "Tokyo Night", appearance: "dark" },
-  { id: "github-light", name: "GitHub Light", appearance: "light" },
-  { id: "solarized-light", name: "Solarized Light", appearance: "light" },
 ];
 
 /**
@@ -427,10 +420,10 @@ export const THEME_OPTIONS = [
 ];
 
 /** Themes used by the "System" setting when following the OS preference. */
-export const DEFAULT_DARK_THEME = "dark";
-export const DEFAULT_LIGHT_THEME = "light";
+export const DEFAULT_DARK_THEME = "ocean-deep";
+export const DEFAULT_LIGHT_THEME = "aether";
 
-export const THEME_STORAGE_KEY = "hermes-theme";
+export const THEME_STORAGE_KEY = "oceanos-theme";
 
 // ── Font ────────────────────────────────────────────────
 
@@ -460,7 +453,7 @@ export const FONT_OPTIONS: FontOption[] = [
 
 export const DEFAULT_FONT = "manrope";
 
-export const FONT_STORAGE_KEY = "hermes-font";
+export const FONT_STORAGE_KEY = "oceanos-font";
 
 // ── Settings API Key Sections ───────────────────────────
 
@@ -1056,20 +1049,20 @@ export const GATEWAY_PLATFORMS: PlatformDef[] = [
 // ── Install ─────────────────────────────────────────────
 
 export const UNIX_INSTALL_CMD =
-  "curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash";
+  "curl -fsSL https://raw.githubusercontent.com/NousResearch/oceanos-agent/main/scripts/install.sh | bash";
 export const INSTALL_CMD_UNIX = UNIX_INSTALL_CMD;
 export const WINDOWS_INSTALL_CMD =
-  "powershell -NoProfile -ExecutionPolicy Bypass -c \"$oceanHome = Join-Path $env:USERPROFILE '.hermes'; $installDir = Join-Path $oceanHome 'hermes-agent'; $installer = [ScriptBlock]::Create((irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 -UseBasicParsing)); & $installer -SkipSetup -HermesHome $oceanHome -InstallDir $installDir\"";
+  "powershell -NoProfile -ExecutionPolicy Bypass -c \"$oceanHome = Join-Path $env:USERPROFILE '.oceanos'; $installDir = Join-Path $oceanHome 'oceanos-agent'; $installer = [ScriptBlock]::Create((irm https://raw.githubusercontent.com/NousResearch/oceanos-agent/main/scripts/install.ps1 -UseBasicParsing)); & $installer -SkipSetup -OceanOSHome $oceanHome -InstallDir $installDir\"";
 export const INSTALL_CMD =
   typeof window !== "undefined" &&
-  window.electron?.process?.platform === "win32"
+  /Win/.test(navigator.userAgent || "")
     ? WINDOWS_INSTALL_CMD
     : UNIX_INSTALL_CMD;
 
 export const INSTALL_CMD_WIN = WINDOWS_INSTALL_CMD;
 
 export function getInstallCmd(): string {
-  return window.electron?.process?.platform === "win32"
+  return /Win/.test(navigator.userAgent || "")
     ? WINDOWS_INSTALL_CMD
     : UNIX_INSTALL_CMD;
 }

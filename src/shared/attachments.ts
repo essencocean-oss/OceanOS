@@ -21,7 +21,7 @@ export interface Attachment {
   text?: string;
   // Path-ref attachments (PDFs, docx, etc.): absolute filesystem path.
   // Origin is the original file path for picker/drag-drop, or a staged
-  // copy under %LOCALAPPDATA%/hermes/desktop-staging/<session>/ for paste.
+  // copy under %LOCALAPPDATA%/oceanos/desktop-staging/<session>/ for paste.
   path?: string;
 }
 

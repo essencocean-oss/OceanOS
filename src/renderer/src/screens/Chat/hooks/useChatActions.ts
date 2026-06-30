@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { ChatInputHandle } from "../ChatInput";
 import type { Attachment, ChatMessage, ChatBubbleMessage } from "../types";
+import { tauri } from "../../../shared/tauri";
 
 function hasContent(msg: ChatMessage): msg is ChatBubbleMessage {
   return (
@@ -17,7 +18,7 @@ interface LocalCommands {
 
 interface UseChatActionsArgs {
   profile?: string;
-  hermesSessionId: string | null;
+  oceanosSessionId: string | null;
   messages: ChatMessage[];
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -49,7 +50,7 @@ interface UseChatActionsResult {
  */
 export function useChatActions({
   profile,
-  hermesSessionId,
+  oceanosSessionId,
   messages,
   isLoading,
   setIsLoading,
@@ -84,10 +85,10 @@ export function useChatActions({
   const sendToAgent = useCallback(
     async (text: string, attachments?: Attachment[]): Promise<void> => {
       try {
-        await window.hermesAPI.sendMessage(
+        await tauri.sendMessage(
           text,
           profile,
-          hermesSessionId || undefined,
+          oceanosSessionId || undefined,
           messagesRef.current.filter(hasContent).map((m) => ({
             role: m.role,
             content: m.content,
@@ -99,7 +100,7 @@ export function useChatActions({
         // onChatError IPC already surfaces this to the user
       }
     },
-    [profile, hermesSessionId, contextFolder],
+    [profile, oceanosSessionId, contextFolder],
   );
 
   const handleSend = useCallback(
@@ -138,7 +139,7 @@ export function useChatActions({
   );
 
   const handleAbort = useCallback(() => {
-    window.hermesAPI.abortChat();
+    tauri.abortChat();
     setIsLoading(false);
     setTimeout(() => chatInputRef.current?.focus(), 50);
   }, [chatInputRef, setIsLoading]);

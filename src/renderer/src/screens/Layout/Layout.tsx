@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { tauri } from "../../shared/tauri";
 import Chat, { ChatMessage } from "../Chat/Chat";
 import {
   dbItemsToChatMessages,
@@ -6,6 +7,7 @@ import {
 } from "../Chat/sessionHistory";
 import Sessions from "../Sessions/Sessions";
 import Agents from "../Agents/Agents";
+import Team from "../Team/Team";
 import Discover from "../Discover/Discover";
 import ProfileSwitcher from "./ProfileSwitcher";
 import Settings from "../Settings/Settings";
@@ -39,6 +41,7 @@ import {
   Download,
   PanelLeftClose,
   PanelLeftOpen,
+  Users,
 } from "../../assets/icons";
 import type { LucideIcon } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
@@ -58,6 +61,7 @@ type View =
   | "kanban"
   | "processes"
   | "gateway"
+  | "team"
   | "settings";
 
 const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string }[] = [
@@ -76,6 +80,7 @@ const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string }[] = [
   { view: "tools", icon: Wrench, labelKey: "navigation.tools" },
   { view: "schedules", icon: Timer, labelKey: "navigation.schedules" },
   { view: "gateway", icon: Signal, labelKey: "navigation.gateway" },
+  { view: "team", icon: Users, labelKey: "navigation.team" },
   { view: "settings", icon: SettingsIcon, labelKey: "navigation.settings" },
   { view: "processes", icon: Monitor, labelKey: "navigation.processes" },
 ];
@@ -141,16 +146,15 @@ function Layout({
 
   // Re-check remote mode on tab switch (picks up Settings changes)
   useEffect(() => {
-    window.hermesAPI.isRemoteOnlyMode().then(setRemoteMode);
+    tauri.isRemoteOnlyMode().then(setRemoteMode);
   }, [view]);
 
   // Restore the last-activated profile on launch. The main process persists it
-  // in ~/.hermes/active_profile (via `hermes profile use`), so the desktop
+  // in ~/.oceanos/active_profile (via `oceanos profile use`), so the desktop
   // should reopen on that profile rather than always resetting to "default".
   useEffect(() => {
     let cancelled = false;
-    window.hermesAPI
-      .listProfiles()
+    tauri.listProfiles()
       .then((profiles) => {
         if (cancelled) return;
         const active = profiles.find((p) => p.isActive);
@@ -173,22 +177,22 @@ function Layout({
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   useEffect(() => {
-    const cleanupAvailable = window.hermesAPI.onUpdateAvailable((info) => {
+    const cleanupAvailable = tauri.onUpdateAvailable((info) => {
       setUpdateVersion(info.version);
       setUpdateState("available");
       setUpdateError(null);
       setDownloadPercent(0);
     });
-    const cleanupProgress = window.hermesAPI.onUpdateDownloadProgress(
+    const cleanupProgress = tauri.onUpdateDownloadProgress(
       (info) => {
         setDownloadPercent(info.percent);
       },
     );
-    const cleanupDownloaded = window.hermesAPI.onUpdateDownloaded(() => {
+    const cleanupDownloaded = tauri.onUpdateDownloaded(() => {
       setUpdateState("ready");
       setUpdateError(null);
     });
-    const cleanupError = window.hermesAPI.onUpdateError((message) => {
+    const cleanupError = tauri.onUpdateError((message) => {
       setUpdateState("error");
       setUpdateError(message);
       setDownloadPercent(0);
@@ -207,14 +211,14 @@ function Layout({
       setDownloadPercent(0);
       setUpdateState("downloading");
       try {
-        const ok = await window.hermesAPI.downloadUpdate();
+        const ok = await tauri.downloadUpdate();
         if (!ok) setUpdateState("error");
       } catch (err) {
         setUpdateError(err instanceof Error ? err.message : String(err));
         setUpdateState("error");
       }
     } else if (updateState === "ready") {
-      await window.hermesAPI.installUpdate();
+      await tauri.installUpdate();
     }
   }
 
@@ -232,7 +236,7 @@ function Layout({
 
   const handleNewChat = useCallback(() => {
     // Abort any in-flight chat before clearing
-    window.hermesAPI.abortChat();
+    tauri.abortChat();
     setMessages([]);
     setCurrentSessionId(null);
     goTo("chat");
@@ -240,10 +244,10 @@ function Layout({
 
   // Listen for menu IPC events (Cmd+N, Cmd+K from app menu)
   useEffect(() => {
-    const cleanupNewChat = window.hermesAPI.onMenuNewChat(() => {
+    const cleanupNewChat = tauri.onMenuNewChat(() => {
       handleNewChat();
     });
-    const cleanupSearch = window.hermesAPI.onMenuSearchSessions(() => {
+    const cleanupSearch = tauri.onMenuSearchSessions(() => {
       goTo("sessions");
     });
     return () => {
@@ -260,7 +264,7 @@ function Layout({
 
   const handleResumeSession = useCallback(
     async (sessionId: string) => {
-      const items = (await window.hermesAPI.getSessionMessages(
+      const items = (await tauri.getSessionMessages(
         sessionId,
       )) as DbHistoryItem[];
       setMessages(dbItemsToChatMessages(items));
@@ -422,6 +426,12 @@ function Layout({
                 }}
               />
             )}
+          </div>
+        )}
+
+        {visitedViews.has("team") && (
+          <div style={paneStyle("team")}>
+            <Team />
           </div>
         )}
 

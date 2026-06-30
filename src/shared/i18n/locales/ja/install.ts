@@ -25,7 +25,7 @@ export default {
   confirmInstallBtn: "OceanOS をインストール",
   useExistingBtn: "既存のインストールを使用",
   useExistingHint:
-    "既存の OceanOS インストールが含まれるフォルダ（hermes-agent フォルダを含むフォルダ）を選択してください。",
+    "既存の OceanOS インストールが含まれるフォルダ（oceanos-agent フォルダを含むフォルダ）を選択してください。",
   useExistingInvalid:
     "そのフォルダで使用可能な OceanOS インストールが見つかりませんでした。",
   useExistingDone:

@@ -25,7 +25,7 @@ export default {
   confirmInstallBtn: "OceanOS'i Kur",
   useExistingBtn: "Mevcut bir kurulumu kullan",
   useExistingHint:
-    "Mevcut OceanOS kurulumunuzu içeren klasörü seçin (hermes-agent klasörünü içeren).",
+    "Mevcut OceanOS kurulumunuzu içeren klasörü seçin (oceanos-agent klasörünü içeren).",
   useExistingInvalid:
     "Bu klasörde kullanılabilir bir OceanOS kurulumu bulunamadı.",
   useExistingDone:

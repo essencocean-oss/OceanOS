@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { tauri } from "../../shared/tauri";
 import { useI18n } from "../../components/useI18n";
 import { CONFIG_HEALTH_UPDATED_EVENT } from "../../components/ConfigHealthBanner";
 import {
@@ -72,7 +73,7 @@ export function ConfigHealth({
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const r = (await window.hermesAPI.getConfigHealth(profile)) as Report;
+      const r = (await tauri.getConfigHealth(profile)) as Report;
       setReport(r);
       publishConfigHealthReport(r);
     } catch {
@@ -89,7 +90,7 @@ export function ConfigHealth({
   const rerun = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const r = (await window.hermesAPI.rerunConfigHealth(profile)) as Report;
+      const r = (await tauri.rerunConfigHealth(profile)) as Report;
       setReport(r);
       publishConfigHealthReport(r);
       setResults({});
@@ -102,11 +103,7 @@ export function ConfigHealth({
     async (issue: Issue): Promise<void> => {
       setFixingCode(issue.code);
       try {
-        const res = await window.hermesAPI.autofixConfigIssue(
-          issue.code,
-          profile,
-          issue.context,
-        );
+        const res = await tauri.autofixConfigIssue(issue.code);
         setResults((prev) => ({
           ...prev,
           [issue.code]:
@@ -115,7 +112,7 @@ export function ConfigHealth({
         }));
         if (res.ok) {
           // Re-run so the issue disappears from the list when fixed
-          const r = (await window.hermesAPI.rerunConfigHealth(
+          const r = (await tauri.rerunConfigHealth(
             profile,
           )) as Report;
           setReport(r);

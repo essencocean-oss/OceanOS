@@ -3,6 +3,7 @@ import { X, FileCode, ExternalLink } from "lucide-react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
 import { useI18n } from "../../components/useI18n";
+import { tauri } from "../../shared/tauri";
 
 interface FileViewerProps {
   filePath: string;
@@ -184,7 +185,7 @@ export const FileViewer = memo(function FileViewer({
     const loadFile = async (): Promise<void> => {
       // If image file, load as data URL
       if (isImageFile(filePath)) {
-        const imageData = await window.hermesAPI.readImageFile(filePath);
+        const imageData = await tauri.readImageFile(filePath);
         if (cancelled) return;
         if (imageData === null) {
           setError(t("worktree.errorLoading"));
@@ -196,7 +197,7 @@ export const FileViewer = memo(function FileViewer({
       }
 
       // Otherwise load as text
-      const result = await window.hermesAPI.readFile(filePath, 102400);
+      const result = await tauri.readFile(filePath, 102400);
       if (cancelled) return;
       if (result === null) {
         setError(t("worktree.errorLoading"));
@@ -256,7 +257,7 @@ export const FileViewer = memo(function FileViewer({
           <div className="file-viewer-actions">
             <button
               className="btn-ghost file-viewer-open"
-              onClick={() => window.hermesAPI.openFileInEditor(filePath)}
+              onClick={() => tauri.openFileInEditor(filePath)}
               title={t("worktree.openInEditor")}
             >
               <ExternalLink size={14} />

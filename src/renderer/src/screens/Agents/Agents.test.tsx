@@ -15,7 +15,7 @@ vi.mock("../../components/useI18n", () => ({
 }));
 
 vi.mock("../../components/common/OceanLogo", () => ({
-  default: (): React.JSX.Element => <div data-testid="hermes-logo" />,
+  default: (): React.JSX.Element => <div data-testid="oceanos-logo" />,
 }));
 
 import Agents from "./Agents";
@@ -36,7 +36,7 @@ interface ProfileInfo {
 function profile(name: string, isDefault = false): ProfileInfo {
   return {
     name,
-    path: isDefault ? "C:/hermes" : `C:/hermes/profiles/${name}`,
+    path: isDefault ? "C:/oceanos" : `C:/oceanos/profiles/${name}`,
     isDefault,
     isActive: isDefault,
     model: "",
@@ -48,7 +48,7 @@ function profile(name: string, isDefault = false): ProfileInfo {
   };
 }
 
-function installHermesAPI(): {
+function installOceanOSAPI(): {
   listProfiles: ReturnType<typeof vi.fn>;
   createProfile: ReturnType<typeof vi.fn>;
   deleteProfile: ReturnType<typeof vi.fn>;
@@ -60,7 +60,7 @@ function installHermesAPI(): {
     deleteProfile: vi.fn(),
     setActiveProfile: vi.fn(),
   };
-  Object.defineProperty(window, "hermesAPI", {
+  Object.defineProperty(window, "oceanAPI", {
     configurable: true,
     value: api,
   });
@@ -80,14 +80,14 @@ function deferred<T>(): {
 
 describe("Agents profile creation", () => {
   it("refreshes profiles after a failed create so ambiguous successes appear", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     api.listProfiles
       .mockResolvedValueOnce([profile("default", true)])
       .mockResolvedValueOnce([profile("default", true), profile("test2")]);
     api.createProfile.mockResolvedValue({
       success: false,
       error:
-        "Error: Profile 'test2' already exists at C:/hermes/profiles/test2",
+        "Error: Profile 'test2' already exists at C:/oceanos/profiles/test2",
     });
 
     render(
@@ -116,7 +116,7 @@ describe("Agents profile creation", () => {
   });
 
   it("hides a profile immediately while delete is pending", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     const deletion = deferred<{ success: boolean }>();
     api.listProfiles
       .mockResolvedValueOnce([profile("default", true), profile("test2")])
@@ -152,7 +152,7 @@ describe("Agents profile creation", () => {
   });
 
   it("restores a profile and shows an error when delete fails", async () => {
-    const api = installHermesAPI();
+    const api = installOceanOSAPI();
     api.listProfiles.mockResolvedValue([
       profile("default", true),
       profile("test2"),

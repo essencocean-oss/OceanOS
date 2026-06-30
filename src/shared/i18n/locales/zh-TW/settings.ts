@@ -1,7 +1,7 @@
 export default {
   title: "設定",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "外觀",
     privacy: "隱私",
     credentialPool: "憑證池",
@@ -102,7 +102,7 @@ export default {
   save: "儲存",
   serverConfigTitle: "伺服器設定",
   serverConfigHint:
-    "你已連線到遠端 OceanOS 伺服器。模型選擇、供應商 API Key 和憑證均在伺服器的 <code>~/.hermes/.env</code> 和 <code>config.yaml</code> 中管理。請在主機上編輯（例如 <code>docker exec -it hermes vi /opt/data/.env</code>）然後重新啟動容器。",
+    "你已連線到遠端 OceanOS 伺服器。模型選擇、供應商 API Key 和憑證均在伺服器的 <code>~/.oceanos/.env</code> 和 <code>config.yaml</code> 中管理。請在主機上編輯（例如 <code>docker exec -it oceanos vi /opt/data/.env</code>）然後重新啟動容器。",
   connectionMode: "模式",
   switchedToLocal: "已切換到本機模式",
 } as const;

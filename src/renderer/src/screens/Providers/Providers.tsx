@@ -5,6 +5,7 @@ import BrandLogo from "../../components/common/BrandLogo";
 import { useDiscoveredModels } from "../../hooks/useDiscoveredModels";
 import OAuthLoginModal from "../../components/OAuthLoginModal";
 import { KeyRound } from "../../assets/icons";
+import { tauri } from "../../shared/tauri";
 
 // Local mirror of the ambient `CredentialPoolEntry` from
 // src/preload/index.d.ts — the renderer's tsconfig sometimes doesn't
@@ -77,9 +78,9 @@ function Providers({
 
   const loadConfig = useCallback(async (): Promise<void> => {
     const [envData, mc, pool] = await Promise.all([
-      window.hermesAPI.getEnv(profile),
-      window.hermesAPI.getModelConfig(profile),
-      window.hermesAPI.getCredentialPool(),
+      tauri.getEnv(profile),
+      tauri.getModelConfig(profile),
+      tauri.getCredentialPool(),
     ]);
     setEnv(envData);
     setModelProvider(mc.provider);
@@ -101,7 +102,7 @@ function Providers({
   useEffect(() => {
     if (!visible) return;
     (async (): Promise<void> => {
-      const mc = await window.hermesAPI.getModelConfig(profile);
+      const mc = await tauri.getModelConfig(profile);
       modelLoaded.current = false;
       setModelProvider(mc.provider);
       setModelName(mc.model);
@@ -116,7 +117,7 @@ function Providers({
   // typing in the Model field still feels responsive.
   const saveModelConfig = useCallback(async () => {
     if (!modelLoaded.current) return;
-    await window.hermesAPI.setModelConfig(
+    await tauri.setModelConfig(
       modelProvider,
       modelName,
       modelBaseUrl,
@@ -151,8 +152,7 @@ function Providers({
     if (modelLibTimer.current) clearTimeout(modelLibTimer.current);
     modelLibTimer.current = setTimeout(() => {
       const displayName = modelName.split("/").pop() || modelName;
-      window.hermesAPI
-        .addModel(displayName, modelProvider, modelName, modelBaseUrl)
+      tauri.addModel(displayName, modelProvider, modelName, modelBaseUrl)
         .catch(() => {
           /* non-fatal — library write is best-effort */
         });
@@ -171,7 +171,7 @@ function Providers({
       envSaveTimers.current.delete(key);
     }
     const value = env[key] || "";
-    await window.hermesAPI.setEnv(key, value, profile);
+    await tauri.setEnv(key, value, profile);
     setSavedKey(key);
     setTimeout(() => setSavedKey(null), 2000);
   }
@@ -188,7 +188,7 @@ function Providers({
     if (pending) clearTimeout(pending);
     const timer = setTimeout(() => {
       envSaveTimers.current.delete(key);
-      void window.hermesAPI.setEnv(key, value, profile);
+      void tauri.setEnv(key, value, profile);
     }, 400);
     envSaveTimers.current.set(key, timer);
   }
@@ -209,7 +209,7 @@ function Providers({
     return () => {
       for (const [key, timer] of timers) {
         clearTimeout(timer);
-        void window.hermesAPI.setEnv(key, envRef.current[key] || "", profile);
+        void tauri.setEnv(key, envRef.current[key] || "", profile);
       }
       timers.clear();
     };
@@ -223,7 +223,7 @@ function Providers({
     // actually readable by the gateway's credential resolver. The
     // previous code wrote `{key, label}` which the engine couldn't
     // parse (issue #367).
-    const updated = await window.hermesAPI.addCredentialPoolEntry(
+    const updated = await tauri.addCredentialPoolEntry(
       poolProvider,
       poolNewKey.trim(),
       poolNewLabel.trim(),
@@ -239,7 +239,7 @@ function Providers({
   ): Promise<void> {
     const entries = [...(credPool[provider] || [])];
     entries.splice(index, 1);
-    await window.hermesAPI.setCredentialPool(provider, entries);
+    await tauri.setCredentialPool(provider, entries);
     setCredPool((prev) => ({ ...prev, [provider]: entries }));
   }
 

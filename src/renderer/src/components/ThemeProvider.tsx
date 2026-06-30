@@ -29,7 +29,7 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 const THEME_IDS = new Set(THEMES.map((t) => t.id));
-const RADIUS_STORAGE_KEY = "hermes-rounded";
+const RADIUS_STORAGE_KEY = "oceanos-rounded";
 
 function getSystemTheme(): string {
   return window.matchMedia("(prefers-color-scheme: dark)").matches

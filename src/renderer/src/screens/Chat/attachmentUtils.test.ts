@@ -2,12 +2,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { processFiles, filesFromClipboard } from "./attachmentUtils";
 
-// Stub the window.hermesAPI surface used by the path-ref code path.
+// Stub the tauri surface used by the path-ref code path.
 // Picker / drag-drop normally return an absolute path via webUtils; we
 // simulate the paste path (no origin) by leaving getPathForFile empty
 // and routing through a fake stageAttachment.
 beforeEach(() => {
-  (window as unknown as { hermesAPI: Record<string, unknown> }).hermesAPI = {
+  (window as unknown as { oceanAPI: Record<string, unknown> }).oceanAPI = {
     getPathForFile: vi.fn(() => ""),
     stageAttachment: vi.fn(
       async (sessionId: string, filename: string): Promise<string> =>
@@ -140,7 +140,7 @@ describe("processFiles", () => {
   });
 
   it("uses the origin path returned by webUtils for picker/drag-drop files", async () => {
-    (window as unknown as { hermesAPI: Record<string, unknown> }).hermesAPI = {
+    (window as unknown as { oceanAPI: Record<string, unknown> }).oceanAPI = {
       getPathForFile: vi.fn(() => "C:/Users/me/Downloads/doc.pdf"),
       stageAttachment: vi.fn(),
     };
@@ -154,9 +154,9 @@ describe("processFiles", () => {
     expect(
       (
         window as unknown as {
-          hermesAPI: { stageAttachment: ReturnType<typeof vi.fn> };
+          oceanAPI: { stageAttachment: ReturnType<typeof vi.fn> };
         }
-      ).hermesAPI.stageAttachment,
+      ).oceanAPI.stageAttachment,
     ).not.toHaveBeenCalled();
   });
 

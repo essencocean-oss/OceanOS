@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Bot, Check, ChevronDown, Settings } from "../../assets/icons";
 import { useI18n } from "../../components/useI18n";
+import { tauri } from "../../shared/tauri";
 
 interface ProfileInfo {
   name: string;
@@ -38,8 +39,7 @@ export default function ProfileSwitcher({
   const rootRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(() => {
-    window.hermesAPI
-      .listProfiles()
+    tauri.listProfiles()
       .then(setProfiles)
       .catch(() => {
         /* keep last-known list */
@@ -87,7 +87,7 @@ export default function ProfileSwitcher({
     setOpen(false);
     if (name === activeProfile) return;
     try {
-      await window.hermesAPI.setActiveProfile(name);
+      await tauri.setActiveProfile(name);
     } catch {
       /* still reflect the choice optimistically */
     }

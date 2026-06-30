@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { tauri } from "../shared/tauri";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import {
   APP_LOCALES,
@@ -35,7 +36,7 @@ export function I18nProvider({
 }): React.JSX.Element {
   const [locale, setLocaleState] = useState<AppLocale>(initialLocale);
   const [mainLocaleLoaded, setMainLocaleLoaded] = useState(
-    () => !window.hermesAPI?.getLocale,
+    () => !tauri.getLocale,
   );
   const userSelectedLocale = useRef(false);
 
@@ -46,7 +47,7 @@ export function I18nProvider({
 
   useEffect(() => {
     let cancelled = false;
-    const getMainLocale = window.hermesAPI?.getLocale;
+    const getMainLocale = tauri.getLocale;
 
     if (!getMainLocale) {
       return;
@@ -77,7 +78,7 @@ export function I18nProvider({
     if (sharedI18n.language !== locale) {
       setSharedLocale(locale);
     }
-    void window.hermesAPI?.setLocale?.(locale).catch(() => {
+    void tauri.setLocale?.(locale).catch(() => {
       /* ignore */
     });
     try {

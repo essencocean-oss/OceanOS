@@ -137,7 +137,7 @@ export default {
   matrixHomeserver: "Matrix Homeserver",
   matrixHomeHint: "例如：https://matrix.org",
   matrixUserId: "Matrix 使用者 ID",
-  matrixUserHint: "例如：@hermes:matrix.org",
+  matrixUserHint: "例如：@oceanos:matrix.org",
   matrixAccessToken: "Matrix Access Token",
   matrixTokenHint: "Matrix 登入的存取 token",
   mattermostUrl: "Mattermost 位址",

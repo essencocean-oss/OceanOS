@@ -4,14 +4,13 @@ const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || "";
 const POSTHOG_HOST =
   import.meta.env.VITE_POSTHOG_HOST || "https://eu.i.posthog.com";
 
-const ANALYTICS_CONSENT_KEY = "hermes-analytics-enabled";
+const ANALYTICS_CONSENT_KEY = "oceanos-analytics-enabled";
 
 function isAnalyticsEnabled(): boolean {
-  // Default to true for official builds (key present), false otherwise
   const hasKey = POSTHOG_KEY.length > 0;
   try {
     const stored = localStorage.getItem(ANALYTICS_CONSENT_KEY);
-    if (stored === null) return hasKey; // First run: enabled if key exists
+    if (stored === null) return hasKey;
     return stored === "true";
   } catch {
     return false;
@@ -19,7 +18,7 @@ function isAnalyticsEnabled(): boolean {
 }
 
 function getOrCreateAnonymousId(): string {
-  const key = "hermes-anonymous-id";
+  const key = "oceanos-anonymous-id";
   try {
     let id = localStorage.getItem(key);
     if (!id) {
@@ -37,7 +36,6 @@ let initialized = false;
 export function initAnalytics(): void {
   if (initialized) return;
   if (!POSTHOG_KEY) {
-    // No key configured — silently skip analytics
     initialized = true;
     return;
   }
@@ -48,26 +46,17 @@ export function initAnalytics(): void {
 
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
-    capture_pageview: false, // We handle manually for SPA
+    capture_pageview: false,
     capture_pageleave: false,
-    disable_session_recording: true, // Privacy-first: no session recording
+    disable_session_recording: true,
     persistence: "localStorage",
-    // Privacy hardening:
-    //  - respect_dnt: honour the user's "Do Not Track" preference if set.
-    //  - mask_personal_data_properties: auto-mask common PII patterns
-    //    (emails, names) from any properties we ever pass to capture().
-    // Note: full IP-address suppression is NOT possible from the client —
-    // PostHog's deprecated `ip: false` option is a no-op. IP capture must
-    // be disabled server-side in the PostHog project settings
-    // ("Discard IP data"). See:
-    // https://posthog.com/tutorials/web-redact-properties#hiding-customer-ip-address
     respect_dnt: true,
     mask_personal_data_properties: true,
     loaded: () => {
       posthog.identify(getOrCreateAnonymousId(), {
-        app_version: window.electron?.process?.versions?.electron || "unknown",
-        platform: window.electron?.process?.platform || "unknown",
-        node_version: window.electron?.process?.versions?.node || "unknown",
+        app_version: import.meta.env.VITE_APP_VERSION || "unknown",
+        platform: typeof navigator !== "undefined" ? navigator.platform || "unknown" : "unknown",
+        runtime: "tauri",
       });
     },
   });
@@ -83,7 +72,7 @@ export function capture(
   try {
     posthog.capture(event, properties);
   } catch {
-    // Silently fail — analytics should never break the app
+    // Silently fail
   }
 }
 

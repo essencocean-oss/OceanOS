@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { tauri } from "../shared/tauri";
 
 export type DiscoveryStatus =
   | "idle"
@@ -69,7 +70,7 @@ export function useDiscoveredModels(
     setStatus("loading");
     const handle = setTimeout(async () => {
       try {
-        const result = await window.hermesAPI.discoverProviderModels(
+        const result = await tauri.discoverProviderModels(
           provider,
           baseUrl,
           apiKey,

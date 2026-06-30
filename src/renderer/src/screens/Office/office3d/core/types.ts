@@ -1,6 +1,6 @@
 import type { AgentAvatarProfile } from "../avatars/profile";
 
-// Originally `@/lib/office/places` in hermes-office; the office tab only needs
+// Originally `@/lib/office/places` in oceanos-office; the office tab only needs
 // the structural agent types, so we keep this as an open string identifier.
 export type OfficeInteractionTargetId = string;
 

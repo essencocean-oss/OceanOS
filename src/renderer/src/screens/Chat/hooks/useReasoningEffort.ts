@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { tauri } from "../../../shared/tauri";
 
 export type ReasoningEffort =
   | "auto"
@@ -38,8 +39,7 @@ export function useReasoningEffort(profile?: string): UseReasoningEffortResult {
 
   useEffect(() => {
     let cancelled = false;
-    window.hermesAPI
-      .getConfig("agent.reasoning_effort", profile)
+    tauri.getConfig("agent.reasoning_effort", profile)
       .then((value) => {
         if (!cancelled) {
           const next = normalizeReasoningEffort(value);
@@ -66,7 +66,7 @@ export function useReasoningEffort(profile?: string): UseReasoningEffortResult {
       setReasoningEffortState(next);
 
       try {
-        await window.hermesAPI.setConfig(
+        await tauri.setConfig(
           "agent.reasoning_effort",
           next,
           profile,

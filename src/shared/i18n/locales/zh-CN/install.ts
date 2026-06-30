@@ -22,7 +22,7 @@ export default {
   confirmInstallBtn: "安装 OceanOS",
   useExistingBtn: "使用现有安装",
   useExistingHint:
-    "选择包含你现有 OceanOS 安装的文件夹（即包含 hermes-agent 文件夹的那个）。",
+    "选择包含你现有 OceanOS 安装的文件夹（即包含 oceanos-agent 文件夹的那个）。",
   useExistingInvalid: "在该文件夹中未找到可用的 OceanOS 安装。",
   useExistingDone: "已设置现有安装 — 退出并重新打开 OceanOS 以应用。",
   useExistingQuitBtn: "退出 OceanOS",

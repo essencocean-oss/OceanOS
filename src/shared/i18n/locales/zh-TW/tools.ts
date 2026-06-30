@@ -25,7 +25,7 @@ export default {
   todo: { label: "工作規劃", description: "為複雜工作建立和管理待辦列表" },
   mcpServers: "MCP 伺服器",
   mcpDescription:
-    "在 config.yaml 中設定的 Model Context Protocol 伺服器。在終端機中使用 <code>hermes mcp add/remove</code> 管理。",
+    "在 config.yaml 中設定的 Model Context Protocol 伺服器。在終端機中使用 <code>oceanos mcp add/remove</code> 管理。",
   http: "HTTP",
   stdio: "標準 I/O",
   disabled: "已停用",

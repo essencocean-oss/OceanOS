@@ -1,7 +1,7 @@
 export default {
   title: "Ayarlar",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "Görünüm",
     privacy: "Gizlilik",
     credentialPool: "Kimlik Bilgisi Havuzu",
@@ -127,7 +127,7 @@ export default {
   save: "Kaydet",
   serverConfigTitle: "Sunucu Yapılandırması",
   serverConfigHint:
-    "Uzak bir OceanOS sunucusuna bağlandınız. Model seçimi, sağlayıcı API anahtarları ve kimlik bilgileri sunucunun <code>~/.hermes/.env</code> ve <code>config.yaml</code> dosyalarında yönetilir. Bunları ana bilgisayarda düzenleyin (örn. <code>docker exec -it hermes vi /opt/data/.env</code>) ve kabı yeniden başlatın.",
+    "Uzak bir OceanOS sunucusuna bağlandınız. Model seçimi, sağlayıcı API anahtarları ve kimlik bilgileri sunucunun <code>~/.oceanos/.env</code> ve <code>config.yaml</code> dosyalarında yönetilir. Bunları ana bilgisayarda düzenleyin (örn. <code>docker exec -it oceanos vi /opt/data/.env</code>) ve kabı yeniden başlatın.",
   connectionMode: "Mod",
   switchedToLocal: "Yerel moda geçildi",
 
@@ -144,7 +144,7 @@ export default {
   generateKey: "Benim için bir anahtar oluştur ve kaydet",
   generating: "Üretiliyor…",
   remoteEnvTitle: "Uzak sunucuda API_SERVER_KEY değerini ayarlayın",
-  remoteEnvSshDesc: "SSH modu: uzak sunucudaki ~/.hermes/profiles/<profile>/.env dosyasına API_SERVER_KEY=<anahtarınız> ekleyin, ardından oradaki gateway'i yeniden başlatın.",
+  remoteEnvSshDesc: "SSH modu: uzak sunucudaki ~/.oceanos/profiles/<profile>/.env dosyasına API_SERVER_KEY=<anahtarınız> ekleyin, ardından oradaki gateway'i yeniden başlatın.",
   remoteEnvDesc: "Uzak mod: uzak OceanOS sunucunuzdaki .env dosyasına API_SERVER_KEY=<anahtarınız> ekleyin, ardından gateway'i yeniden başlatın.",
   sshHost: "SSH Sunucusu",
   sshPort: "SSH Portu",
@@ -161,7 +161,7 @@ export default {
   sshTitle: "SSH ile Bağlan",
   sshSubtitle: "SSH üzerinden uzak bir OceanOS'e tünel oluşturun — açık bağlantı noktası veya API anahtarı gerekmez.",
   sshHostPlaceholder: "192.168.1.100 veya sunucum.local",
-  sshUsernamePlaceholder: "hermes",
+  sshUsernamePlaceholder: "oceanos",
   sshErrorRequired: "Sunucu ve kullanıcı adı gereklidir.",
   sshErrorConnection: "SSH üzerinden bağlanılamadı veya uzaktaki OceanOS'e ulaşılamadı. Şunlardan emin olun:\n• SSH anahtarı doğru (veya varsayılan ~/.ssh/id_rsa çalışıyor)\n• Uzak sunucuda OceanOS gateway'i çalışıyor\n• Uzak port doğru (varsayılan 8642)",
   sshErrorFailed: "SSH bağlantı testi başarısız oldu: {{msg}}",

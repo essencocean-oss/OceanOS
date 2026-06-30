@@ -1,13 +1,13 @@
 version: '3.8'
 services:
   runtime:
-    image: hermes-agent:latest
+    image: oceanos-agent:latest
     volumes:
       - ./users/${USER_ID}/workspace:/workspace
       - ./users/${USER_ID}/skills:/skills
       - ./users/${USER_ID}/data:/data
       - ./users/${USER_ID}/logs:/logs
     environment:
-      - HERMES_USER_ID=${USER_ID}
-      - HERMES_WORKSPACE=/workspace
+      - OCEANOS_USER_ID=${USER_ID}
+      - OCEANOS_WORKSPACE=/workspace
     restart: unless-stopped

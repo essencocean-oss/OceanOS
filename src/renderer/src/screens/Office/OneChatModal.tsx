@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Send, Bot } from "lucide-react";
 import type { OfficeAgent } from "./office3d/core/types";
+import { tauri } from "../../shared/tauri";
 
 interface OneChatModalProps {
   open: boolean;
@@ -53,7 +54,7 @@ export default function OneChatModal({
     let cancelled = false;
     (async (): Promise<void> => {
       try {
-        const items = (await window.hermesAPI.getSessionMessages(
+        const items = (await tauri.getSessionMessages(
           sessionId,
         )) as Array<{
           kind: "user" | "assistant";
@@ -132,14 +133,14 @@ export default function OneChatModal({
       const history = (messages[selectedAgentId] ?? [])
         .filter((m) => m.role === "user" || m.role === "agent")
         .map((m) => ({ role: m.role, content: m.text }));
-      await window.hermesAPI.sendMessage(
+      await tauri.sendMessage(
         text,
         selectedAgentId,
         sessionId,
         history,
       );
       // Reload persisted messages from the session
-      const items = (await window.hermesAPI.getSessionMessages(
+      const items = (await tauri.getSessionMessages(
         sessionId,
       )) as Array<{
         kind: "user" | "assistant";
@@ -160,7 +161,7 @@ export default function OneChatModal({
       // Try to reload from the database before showing a raw error.
       try {
         const reloadSessionId = `office-${selectedAgentId}`;
-        const items = (await window.hermesAPI.getSessionMessages(
+        const items = (await tauri.getSessionMessages(
           reloadSessionId,
         )) as Array<{
           kind: "user" | "assistant";

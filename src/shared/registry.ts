@@ -1,6 +1,6 @@
 /**
  * Shared types for the "Discover" community marketplace. The catalog is served
- * from the hermes-registry GitHub repo and consumed by both the main process
+ * from the oceanos-registry GitHub repo and consumed by both the main process
  * (fetch + install) and the renderer (browse UI).
  */
 
@@ -20,7 +20,7 @@ export interface RegistryItem {
   platforms?: string[];
   /** Folder for this entry within the registry repo (e.g. "skills/apple/apple-notes"). */
   path?: string;
-  /** Bundled skills only: install identifier for `hermes skills install`. */
+  /** Bundled skills only: install identifier for `oceanos skills install`. */
   source?: string;
 }
 
@@ -58,7 +58,7 @@ export interface RegistryDetail {
 }
 
 /**
- * Model registry (models.json) types. Served from the hermes-registry repo and
+ * Model registry (models.json) types. Served from the oceanos-registry repo and
  * consumed by the Models screen to let users pick curated models.
  */
 export interface RegistryModel {

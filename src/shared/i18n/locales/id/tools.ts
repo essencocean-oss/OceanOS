@@ -65,7 +65,7 @@ export default {
   },
   mcpServers: "Server MCP",
   mcpDescription:
-    "Server Model Context Protocol yang dikonfigurasi di config.yaml. Kelola melalui <code>hermes mcp add/remove</code> di terminal.",
+    "Server Model Context Protocol yang dikonfigurasi di config.yaml. Kelola melalui <code>oceanos mcp add/remove</code> di terminal.",
   http: "HTTP",
   stdio: "stdio",
   disabled: "nonaktif",

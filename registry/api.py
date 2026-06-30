@@ -54,7 +54,7 @@ def get_ratings(name: str):
 
 @app.get('/health')
 def health():
-    docker_cmd = os.environ.get('HERMES_DOCKER_CMD', 'docker')
+    docker_cmd = os.environ.get('OCEANOS_DOCKER_CMD', 'docker')
     return {'status': 'ok', 'service': 'oceanos-registry', 'sandbox': False}
 
 @app.post("/skills/{name}/download")
@@ -148,11 +148,11 @@ def _copy_skill_dir(src: str, dest: str) -> int:
 def list_skills():
     manifests = _load_manifests()
     fallback_repo = {
-        "memory": "https://github.com/NousResearch/hermes-agent",
-        "spawn": "https://github.com/NousResearch/hermes-agent",
-        "github-integration": "https://github.com/NousResearch/hermes-agent",
-        "guardrails-approval": "https://github.com/NousResearch/hermes-agent",
-        "web-browser-automation": "https://github.com/NousResearch/hermes-agent",
+        "memory": "https://github.com/NousResearch/oceanos-agent",
+        "spawn": "https://github.com/NousResearch/oceanos-agent",
+        "github-integration": "https://github.com/NousResearch/oceanos-agent",
+        "guardrails-approval": "https://github.com/NousResearch/oceanos-agent",
+        "web-browser-automation": "https://github.com/NousResearch/oceanos-agent",
         "portfolio-tracker": "https://github.com/essencocean-oss/OceanOS",
         "telegram-poster": "https://github.com/essencocean-oss/OceanOS",
     }
@@ -200,11 +200,11 @@ def install_skill(name: str):
     if not os.path.isdir(src):
         raise HTTPException(409, "Skill source directory missing")
     candidates = [
-        os.environ.get("HERMES_SKILLS_DIR"),
-        os.path.join(os.path.expanduser("~"), ".hermes", "skills"),
-        os.path.join(os.path.expanduser("~"), "AppData", "Local", "hermes", "skills"),
+        os.environ.get("OCEANOS_SKILLS_DIR"),
+        os.path.join(os.path.expanduser("~"), ".oceanos", "skills"),
+        os.path.join(os.path.expanduser("~"), "AppData", "Local", "oceanos", "skills"),
     ]
-    dest_root = next((p for p in candidates if p), os.path.join(os.path.expanduser("~"), ".hermes", "skills"))
+    dest_root = next((p for p in candidates if p), os.path.join(os.path.expanduser("~"), ".oceanos", "skills"))
     dest = os.path.join(dest_root, name)
     if os.path.exists(dest):
         return {"installed": name, "status": "already_installed", "downloads": downloads.get(name, 0)}

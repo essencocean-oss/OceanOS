@@ -22,6 +22,7 @@ import type { ChatMessage, UsageState } from "./types";
 import type { ContextUsage } from "./ContextGauge";
 import { contextWindowForModel } from "./contextWindows";
 import { QueuedMessages } from "./QueuedMessages";
+import { tauri } from "../../shared/tauri";
 
 interface QueuedMessage {
   text: string;
@@ -53,7 +54,7 @@ function Chat({
 }: ChatProps): React.JSX.Element {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
-  const [hermesSessionId, setHermesSessionId] = useState<string | null>(null);
+  const [oceanosSessionId, setOceanOSSessionId] = useState<string | null>(null);
   const [toolProgress, setToolProgress] = useState<string | null>(null);
   const [usage, setUsage] = useState<UsageState | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -71,7 +72,7 @@ function Chat({
   useEffect(() => {
     let cancelled = false;
     (async (): Promise<void> => {
-      const flag = await window.hermesAPI.isRemoteMode();
+      const flag = await tauri.isRemoteMode();
       if (!cancelled) setRemoteMode(flag);
     })();
     return (): void => {
@@ -104,7 +105,7 @@ function Chat({
     let cancelled = false;
     (async (): Promise<void> => {
       try {
-        const r = await window.hermesAPI.validateChatReadiness(profile);
+        const r = await tauri.validateChatReadiness(profile);
         if (!cancelled) setReadiness(r);
       } catch {
         // Fail open on IPC error — never block Send on validation failure
@@ -131,8 +132,7 @@ function Chat({
     let cancelled = false;
     setRealContextWindow(null);
     if (!modelConfig.currentModel) return;
-    window.hermesAPI
-      .getModelContextWindow(
+    tauri.getModelContextWindow(
         modelConfig.currentProvider,
         modelConfig.currentModel,
         modelConfig.currentBaseUrl,
@@ -158,18 +158,18 @@ function Chat({
 
   useChatIPC({
     setMessages,
-    setHermesSessionId,
+    setOceanOSSessionId,
     setToolProgress,
     setIsLoading,
     setUsage,
   });
 
-  // Reset hermes session when the parent clears messages (new chat).
+  // Reset oceanos session when the parent clears messages (new chat).
   // Effect-driven sync because `messages` is owned by the parent; a key-based
   // remount would discard unrelated local state (model picker, etc.).
   useEffect(() => {
     if (messages.length === 0) {
-      setHermesSessionId(null);
+      setOceanOSSessionId(null);
       setContextFolder(null);
       queueRef.current = [];
       setQueuedMessages([]);
@@ -181,7 +181,7 @@ function Chat({
   // issue #276) and the per-conversation context folder (issue #27). Chat is
   // not remounted on session switch, so this must be done explicitly.
   useEffect(() => {
-    setHermesSessionId(sessionId);
+    setOceanOSSessionId(sessionId);
     setContextFolder(null);
     queueRef.current = [];
     setQueuedMessages([]);
@@ -207,10 +207,10 @@ function Chat({
     messagesRef.current = messages;
   });
   useEffect(() => {
-    return window.hermesAPI.onContextMenuCopyChat((format) => {
+    return tauri.onContextMenuCopyChat((format) => {
       const msgs = messagesRef.current;
       if (msgs.length === 0) return;
-      void window.hermesAPI.copyToClipboard(buildChatTranscript(msgs, format));
+      void tauri.copyToClipboard(buildChatTranscript(msgs, format));
     });
   }, []);
 
@@ -218,7 +218,7 @@ function Chat({
   // select the entire window, so scope it to the .chat-bubble under the
   // cursor — the user can then Copy that message.
   useEffect(() => {
-    return window.hermesAPI.onContextMenuSelectBubble(({ x, y }) => {
+    return tauri.onContextMenuSelectBubble(({ x, y }) => {
       const bubble = document.elementFromPoint(x, y)?.closest(".chat-bubble");
       if (!bubble) return;
       const selection = window.getSelection();
@@ -271,22 +271,22 @@ function Chat({
 
   const handleClear = useCallback(() => {
     if (isLoading) {
-      window.hermesAPI.abortChat();
+      tauri.abortChat();
       setIsLoading(false);
     }
-    const idToDelete = hermesSessionId ?? sessionId;
+    const idToDelete = oceanosSessionId ?? sessionId;
     if (idToDelete) {
-      void window.hermesAPI.deleteSession(idToDelete);
-      void window.hermesAPI.clearStagedAttachments(idToDelete);
+      void tauri.deleteSession(idToDelete);
+      void tauri.clearStagedAttachments(idToDelete);
     }
     setMessages([]);
-    setHermesSessionId(null);
+    setOceanOSSessionId(null);
     setContextFolder(null);
     setUsage(null);
     setToolProgress(null);
     queueRef.current = [];
     setQueuedMessages([]);
-  }, [isLoading, hermesSessionId, sessionId, setMessages]);
+  }, [isLoading, oceanosSessionId, sessionId, setMessages]);
 
   const localCommands = useLocalCommands({
     profile,
@@ -299,7 +299,7 @@ function Chat({
 
   const actions = useChatActions({
     profile,
-    hermesSessionId,
+    oceanosSessionId,
     messages,
     isLoading,
     setIsLoading,
@@ -348,7 +348,7 @@ function Chat({
   }, []);
 
   const handlePickFolder = useCallback(async () => {
-    const path = await window.hermesAPI.selectFolder();
+    const path = await tauri.selectFolder();
     if (path) setContextFolder(path);
   }, []);
 
@@ -463,8 +463,8 @@ function Chat({
         <ChatInput
           ref={chatInputRef}
           isLoading={isLoading}
-          hasSession={!!hermesSessionId}
-          sessionId={hermesSessionId}
+          hasSession={!!oceanosSessionId}
+          sessionId={oceanosSessionId}
           remoteMode={remoteMode}
           profile={profile}
           contextUsage={contextUsage}

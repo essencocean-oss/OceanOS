@@ -8,6 +8,7 @@ import { MemoryEntries } from "./MemoryEntries";
 import { MemoryProfile } from "./MemoryProfile";
 import { MemoryProviders } from "./MemoryProviders";
 import type { MemoryData, MemoryProviderInfo, MemoryTab } from "./types";
+import { tauri } from "../../shared/tauri";
 
 function Memory({ profile }: { profile?: string }): React.JSX.Element {
   const { t } = useI18n();
@@ -20,9 +21,9 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
 
   const loadData = useCallback(async () => {
     const [d, provider, provs] = await Promise.all([
-      window.hermesAPI.readMemory(profile),
-      window.hermesAPI.getConfig("memory.provider", profile),
-      window.hermesAPI.discoverMemoryProviders(profile),
+      tauri.readMemory(profile),
+      tauri.getConfig("memory.provider", profile),
+      tauri.discoverMemoryProviders(profile),
     ]);
     setData(d as MemoryData);
     setMemoryProvider(provider);

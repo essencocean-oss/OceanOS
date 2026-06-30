@@ -1,7 +1,7 @@
 export default {
   title: "Configuración",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "Apariencia",
     privacy: "Privacidad",
     credentialPool: "Grupo de credenciales",
@@ -118,7 +118,7 @@ export default {
   save: "Guardar",
   serverConfigTitle: "Configuración del servidor",
   serverConfigHint:
-    "Estás conectado a un servidor remoto de OceanOS. La selección de modelos, las API keys de proveedores y las credenciales se administran en <code>~/.hermes/.env</code> y <code>config.yaml</code> del servidor. Edítalos en el host (por ejemplo, <code>docker exec -it hermes vi /opt/data/.env</code>) y reinicia el contenedor.",
+    "Estás conectado a un servidor remoto de OceanOS. La selección de modelos, las API keys de proveedores y las credenciales se administran en <code>~/.oceanos/.env</code> y <code>config.yaml</code> del servidor. Edítalos en el host (por ejemplo, <code>docker exec -it oceanos vi /opt/data/.env</code>) y reinicia el contenedor.",
   connectionMode: "Modo",
   switchedToLocal: "Se cambió al modo local",
 } as const;

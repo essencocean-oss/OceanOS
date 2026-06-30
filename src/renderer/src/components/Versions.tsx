@@ -1,13 +1,24 @@
 import { useState } from "react";
+import { tauri } from "../shared/tauri";
 
 function Versions(): React.JSX.Element {
-  const [versions] = useState(window.electron.process.versions);
+  const [appVersion, setAppVersion] = useState<string>("…");
+  const [platform, setPlatform] = useState<string>(() =>
+    typeof navigator !== "undefined" && navigator.userAgent
+      ? navigator.userAgent
+      : "unknown",
+  );
+
+  useState(() => {
+    tauri.getAppVersion().then((v) => {
+      if (typeof v === "string") setAppVersion(v);
+    });
+  });
 
   return (
     <ul className="versions">
-      <li className="electron-version">Electron v{versions.electron}</li>
-      <li className="chrome-version">Chromium v{versions.chrome}</li>
-      <li className="node-version">Node v{versions.node}</li>
+      <li className="app-version">OceanOS v{appVersion}</li>
+      <li className="platform-version">OS: {platform}</li>
     </ul>
   );
 }

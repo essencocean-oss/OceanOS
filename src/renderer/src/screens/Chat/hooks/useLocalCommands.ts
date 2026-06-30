@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useI18n } from "../../../components/useI18n";
 import { SLASH_COMMANDS } from "../slashCommands";
 import type { UsageState } from "../types";
+import { tauri } from "../../../shared/tauri";
 
 interface UseLocalCommandsArgs {
   profile?: string;
@@ -60,7 +61,7 @@ export function useLocalCommands({
           return true;
 
         case "/model": {
-          const mc = await window.hermesAPI.getModelConfig(profile);
+          const mc = await tauri.getModelConfig(profile);
           const display = mc.model || "Not set";
           const prov = mc.provider || "auto";
           addAgentMessage(
@@ -71,7 +72,7 @@ export function useLocalCommands({
         }
 
         case "/memory": {
-          const mem = await window.hermesAPI.readMemory(profile);
+          const mem = await tauri.readMemory(profile);
           const lines: string[] = ["**Agent Memory**\n"];
           if (mem.memory.exists && mem.memory.content.trim()) {
             lines.push(mem.memory.content.trim());
@@ -86,7 +87,7 @@ export function useLocalCommands({
         }
 
         case "/tools": {
-          const tools = await window.hermesAPI.getToolsets(profile);
+          const tools = await tauri.getToolsets(profile);
           if (!tools.length) {
             addAgentMessage(t("memory.noToolsetsFound"));
           } else {
@@ -102,7 +103,7 @@ export function useLocalCommands({
         }
 
         case "/skills": {
-          const skills = await window.hermesAPI.listInstalledSkills(profile);
+          const skills = await tauri.listInstalledSkills(profile);
           if (!skills.length) {
             addAgentMessage("No skills installed.");
           } else {
@@ -115,7 +116,7 @@ export function useLocalCommands({
         }
 
         case "/persona": {
-          const soul = await window.hermesAPI.readSoul(profile);
+          const soul = await tauri.readSoul(profile);
           addAgentMessage(
             soul.trim()
               ? `**Current Persona**\n\n${soul.trim()}`
@@ -125,18 +126,18 @@ export function useLocalCommands({
         }
 
         case "/version": {
-          const [hermesVer, appVer] = await Promise.all([
-            window.hermesAPI.getHermesVersion(),
-            window.hermesAPI.getAppVersion(),
+          const [oceanosVer, appVer] = await Promise.all([
+            tauri.getOceanOSVersion(),
+            tauri.getAppVersion(),
           ]);
           addAgentMessage(
-            `**Ocean Agent:** ${hermesVer || "unknown"}\n**Ocean One:** v${appVer}`,
+            `**Ocean Agent:** ${oceanosVer || "unknown"}\n**Ocean One:** v${appVer}`,
           );
           return true;
         }
 
         case "/fast": {
-          const current = await window.hermesAPI.getConfig(
+          const current = await tauri.getConfig(
             "agent.service_tier",
             profile,
           );

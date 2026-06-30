@@ -5,6 +5,7 @@ import { useI18n } from "../../components/useI18n";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
 import BrandLogo from "../../components/common/BrandLogo";
 import { expectedEnvKeyForUrl } from "../../../../shared/url-key-map";
+import { tauri } from "../../shared/tauri";
 
 interface SetupProps {
   onComplete: () => void;
@@ -60,16 +61,16 @@ function Setup({
 
     try {
       if (provider.needsKey && provider.envKey) {
-        await window.hermesAPI.setEnv(provider.envKey, apiKey.trim());
+        await tauri.setEnv(provider.envKey, apiKey.trim());
       } else if (isLocal && apiKey.trim()) {
         const envKey = resolveCustomEnvKey(baseUrl.trim());
-        await window.hermesAPI.setEnv(envKey, apiKey.trim());
+        await tauri.setEnv(envKey, apiKey.trim());
       }
 
       const configProvider = isLocal ? "custom" : provider.configProvider;
       const configBaseUrl = isLocal ? baseUrl.trim() : provider.baseUrl;
       const configModel = modelName.trim() || "";
-      await window.hermesAPI.setModelConfig(
+      await tauri.setModelConfig(
         configProvider,
         configModel,
         configBaseUrl,
@@ -238,7 +239,7 @@ function Setup({
 
             <button
               className="setup-link"
-              onClick={() => window.hermesAPI.openExternal(provider.url)}
+              onClick={() => tauri.openExternal(provider.url)}
             >
               {t("setup.noKeyHint")}
               <ExternalLink size={12} />

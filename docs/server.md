@@ -31,4 +31,4 @@ Place skills under `skills/<name>/SKILL.md`. Registry mounts `/skills`, `/skills
 - `processes:restart` -> stop then start
 
 Renderer screen: `src/renderer/src/screens/Processes/Processes.tsx`
-Preload bridge: `src/preload/index.ts` in `window.hermesAPI`
+Preload bridge: `src/preload/index.ts` in `window.oceanAPI`

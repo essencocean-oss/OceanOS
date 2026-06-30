@@ -1,7 +1,7 @@
 export default {
   title: "設定",
   sections: {
-    hermesAgent: "OceanOS Agent",
+    oceanosAgent: "OceanOS Agent",
     appearance: "外観",
     privacy: "プライバシー",
     credentialPool: "認証情報プール",
@@ -112,7 +112,7 @@ export default {
   save: "保存",
   serverConfigTitle: "サーバ設定",
   serverConfigHint:
-    "リモート OceanOS サーバに接続中です。モデル選択、プロバイダ API キー、認証情報はサーバ側の <code>~/.hermes/.env</code> と <code>config.yaml</code> で管理されます。ホスト側で編集（例：<code>docker exec -it hermes vi /opt/data/.env</code>）してコンテナを再起動してください。",
+    "リモート OceanOS サーバに接続中です。モデル選択、プロバイダ API キー、認証情報はサーバ側の <code>~/.oceanos/.env</code> と <code>config.yaml</code> で管理されます。ホスト側で編集（例：<code>docker exec -it oceanos vi /opt/data/.env</code>）してコンテナを再起動してください。",
   connectionMode: "モード",
   switchedToLocal: "ローカルモードに切り替えました",
 } as const;

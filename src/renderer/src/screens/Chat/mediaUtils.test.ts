@@ -267,7 +267,7 @@ describe("parseMediaTokens (issue #299)", () => {
 describe("cleanLeakedToolTags", () => {
   it("extracts the answer from a leaked skill_view tag", () => {
     const raw =
-      '<skill_view name="hermes-agent-skill-authoring">{"answer": "To develop an AI agent, start by defining its purpose."}</skill_view>';
+      '<skill_view name="oceanos-agent-skill-authoring">{"answer": "To develop an AI agent, start by defining its purpose."}</skill_view>';
     expect(cleanLeakedToolTags(raw)).toBe(
       "To develop an AI agent, start by defining its purpose.",
     );

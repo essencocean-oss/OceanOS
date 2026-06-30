@@ -6,6 +6,7 @@ import OneChatModal from "./OneChatModal";
 import Office3D from "./office3d/Office3D";
 import { profilesToOfficeAgents } from "./office3d/agents";
 import type { OfficeAgent } from "./office3d/core/types";
+import { tauri } from "../../shared/tauri";
 
 interface OfficeProps {
   profile?: string;
@@ -14,7 +15,7 @@ interface OfficeProps {
 
 // The CEO assignment is desktop-local UI state (one agent at a time), persisted
 // across reloads like the app's other renderer preferences (theme, locale).
-const CEO_STORAGE_KEY = "hermes:office:ceo";
+const CEO_STORAGE_KEY = "oceanos:office:ceo";
 
 function readStoredCeo(): string | null {
   try {
@@ -52,7 +53,7 @@ function Office({ visible }: OfficeProps): React.JSX.Element {
   const loadAgents = useCallback(async () => {
     setLoading(true);
     try {
-      const profiles = await window.hermesAPI.listProfiles();
+      const profiles = await tauri.listProfiles();
       setAgents(profilesToOfficeAgents(profiles));
     } catch {
       setAgents([]);
@@ -75,7 +76,7 @@ function Office({ visible }: OfficeProps): React.JSX.Element {
   // never toggle `loading`, so this stays flicker-free.
   const refreshAgentStatuses = useCallback(async () => {
     try {
-      const profiles = await window.hermesAPI.listProfiles();
+      const profiles = await tauri.listProfiles();
       const next = profilesToOfficeAgents(profiles);
       setAgents((prev) => {
         const prevById = new Map(prev.map((a) => [a.id, a]));

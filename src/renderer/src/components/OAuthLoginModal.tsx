@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X } from "../assets/icons";
 import { useI18n } from "./useI18n";
+import { tauri } from "../shared/tauri";
 
 interface OAuthLoginModalProps {
   provider: string;
@@ -13,7 +14,7 @@ type Status = "running" | "success" | "error";
 
 /**
  * Drives an interactive OAuth sign-in for a subscription provider.
- * Spawns `hermes auth add <provider> --type oauth` in the main process,
+ * Spawns `oceanos auth add <provider> --type oauth` in the main process,
  * streams the CLI output here, and reports success/failure. The CLI
  * opens the system browser for the consent step.
  */
@@ -34,13 +35,12 @@ function OAuthLoginModal({
   const startedRef = useRef(false);
 
   useEffect(() => {
-    const cleanup = window.hermesAPI.onOAuthLoginProgress((chunk) => {
+    const cleanup = tauri.onOAuthLoginProgress((chunk) => {
       setLog((prev) => prev + chunk);
     });
     if (!startedRef.current) {
       startedRef.current = true;
-      window.hermesAPI
-        .oauthLogin(provider, profile)
+      tauri.oauthLogin(provider, profile)
         .then((res) => {
           if (res.success) {
             setStatus("success");
@@ -68,7 +68,7 @@ function OAuthLoginModal({
     // Abandoning a flow mid-OAuth: tell main to kill the CLI subprocess
     // so its loopback redirect server doesn't linger.
     if (status === "running") {
-      void window.hermesAPI.cancelOAuthLogin();
+      void tauri.cancelOAuthLogin();
     }
     onClose();
   }
@@ -105,7 +105,7 @@ function OAuthLoginModal({
             </div>
           )}
           {log && (
-            <pre className="settings-hermes-doctor" ref={logRef}>
+            <pre className="settings-oceanos-doctor" ref={logRef}>
               {log}
             </pre>
           )}

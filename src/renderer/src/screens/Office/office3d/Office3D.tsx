@@ -409,7 +409,7 @@ function InteriorWalls({
 
 /**
  * The native, in-renderer 3D office. Replaces the old webview that pointed at a
- * separately-cloned hermes-office dev server. Each agent corresponds to a
+ * separately-cloned oceanos-office dev server. Each agent corresponds to a
  * desktop profile.
  */
 export default function Office3D({

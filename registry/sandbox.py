@@ -3,8 +3,8 @@ import os, json, shutil, subprocess
 
 sandbox = FastAPI(title='OceanOS Sandbox Registry')
 REGISTRY_PATH = 'skills'
-DEFAULT_IMAGE = os.environ.get('HERMES_SANDBOX_IMAGE', 'python:3.11-slim')
-DOCKER_CMD = os.environ.get('HERMES_DOCKER_CMD', 'docker')
+DEFAULT_IMAGE = os.environ.get('OCEANOS_SANDBOX_IMAGE', 'python:3.11-slim')
+DOCKER_CMD = os.environ.get('OCEANOS_DOCKER_CMD', 'docker')
 
 
 def _run(cmd, **kw):
